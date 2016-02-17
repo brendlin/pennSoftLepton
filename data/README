@@ -1,0 +1,12 @@
+wget http://atlasdqm.web.cern.ch/atlasdqm/grlgen/CombinedPerf/data15_13TeV.periodA1_DetStatus-v62-pro17_DQDefects-00-01-02_PHYS_CombinedPerf_Tracking_Tracking.xml
+# Corresponding Luminosity Information: https://atlas-lumicalc.cern.ch/results/3abcb8/result.html
+
+wget https://atlasdqm.web.cern.ch/atlasdqm/grlgen/All_Good/data15_13TeV.periodA_DetStatus-v62-pro18_DQDefects-00-01-02_PHYS_StandardGRL_All_Good.xml
+# Corresponding Luminosity Information: https://atlas-lumicalc.cern.ch/results/a17927/result.html
+
+wget https://atlasdqm.web.cern.ch/atlasdqm/grlgen/All_Good/data15_13TeV.periodB1_DetStatus-v62-pro18_DQDefects-00-01-02_PHYS_StandardGRL_All_Good.xml
+# Corresponding Luminosity Information: https://atlas-lumicalc.cern.ch/results/a28d09/result.html
+
+# For EPS
+wget https://atlasdqm.web.cern.ch/atlasdqm/grlgen/All_Good/data15_13TeV.periodAllYear_DetStatus-v63-pro18-01_DQDefects-00-01-02_PHYS_StandardGRL_All_Good.xml
+# Luminosity: https://atlas-lumicalc.cern.ch/results/435718/result.html

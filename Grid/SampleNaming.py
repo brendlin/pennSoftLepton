@@ -1,0 +1,73 @@
+#
+# To reduce the file names to an acceptable level. 
+#
+
+#-------------------------------------------------------------------------
+def ShortenDatasetName(orig_name) :
+    import re
+    
+    name_new = orig_name
+    name_new = name_new.replace('.merge.','.')
+    name_new = name_new.replace('_A14NNPDF23LO_','_')
+    name_new = name_new.replace('_AUET2B_CTEQ6L1_','_')
+    name_new = name_new.replace('_AUET2BCTEQ6L1_','_')
+    name_new = name_new.replace('_AU2MSTW2008LO_','_')
+    name_new = name_new.replace('_UEEE3_CTEQ6L1_','_')
+    name_new = name_new.replace('_UEEE4_CTEQ6L1_','_')
+    name_new = name_new.replace('_AUET2CTEQ6L1_','_')
+    name_new = name_new.replace('_AU2_CTEQ6L1_','_')
+    name_new = name_new.replace('_AU2CTEQ6L1_','_')
+    name_new = name_new.replace('_A14_CTEQ6L1_','_')
+    name_new = name_new.replace('_AUET2CT10_','_')
+    name_new = name_new.replace('_AU2CT10_','_')
+    name_new = name_new.replace('_CT10_','_')
+    name_new = name_new.replace('_P2012_','_')
+    name_new = name_new.replace('_AZNLOCTEQ6L1_','_')
+    name_new = name_new.replace('_P2012CT10_','_')
+
+    name_new = name_new.replace('MadGraphPythia8EvtGen','MadGrPy8EvGn')
+    name_new = name_new.replace('MadGraphPythiaEvtGen','MadGrPyEvGn')
+    name_new = name_new.replace('MadGraphPythia8','MadGrPy8')
+    name_new = name_new.replace('MadGraphPythia','MadGrPy')
+    name_new = name_new.replace('PowHegPythia8','PowP8')
+    name_new = name_new.replace('PowhegPythiaEvtGen','PowPyEvtGen')
+    name_new = name_new.replace('PowhegPythia8EvtGen','PowPy8EvtGen')
+    name_new = name_new.replace('McAtNloJimmy','McAtNlo')
+    name_new = name_new.replace('AlpgenPythia_P2011C' ,'AlpPy')
+    name_new = name_new.replace('AlpgenPythia_Auto_P2011C' ,'AlpPyAuto')
+    name_new = name_new.replace('AlpgenJimmy' ,'AlpJim')
+
+    name_new = re.sub(r'\.e[0-9][0-9][0-9][0-9]_','.',name_new)
+
+    name_new = name_new.replace('NTUP_SUSY','SUSY')
+    name_new = name_new.replace('LeptonFilter5','LFil')
+    name_new = name_new.replace('LeptonFilter','LFil')
+    name_new = name_new.replace('LeptonPhotonFilter' ,'LPFil')
+    name_new = name_new.replace('CJetFilter' ,'CFil')
+    name_new = name_new.replace('CFilter' ,'CFil')
+    name_new = name_new.replace('CJetVeto' ,'CVet')
+    name_new = name_new.replace('CVeto' ,'CVet')
+    name_new = name_new.replace('BFilter' ,'BFil')
+    name_new = name_new.replace('BVeto' ,'BVet')
+    name_new = name_new.replace('_fullme','')
+    name_new = name_new.replace('mll0p250d0' ,'mll0p250')
+    name_new = name_new.replace('mll0p4614d0','mll0p4614')
+    name_new = name_new.replace('mll3p804d0' ,'mll3p804')
+    name_new = name_new.replace('Z11_mll' ,'Z11mll')
+    name_new = name_new.replace('Z13_mll' ,'Z13mll')
+    name_new = name_new.replace('Z15_mll' ,'Z15mll')
+    name_new = name_new.replace('Ztautau' ,'Ztt')
+    name_new = name_new.replace('Zmumu' ,'Zmm')
+    name_new = name_new.replace('Mll10to40' ,'M10t40')
+    name_new = name_new.replace('Mll40to60' ,'M40t60')
+    name_new = name_new.replace('Mll10to60' ,'M10t60')
+    name_new = name_new.replace('Excl' ,'Ex')
+    name_new = name_new.replace('Incl' ,'In')
+    name_new = name_new.replace('_inclusive_' ,'_incl_')
+    name_new = name_new.replace('_simplifiedModel_' ,'_')
+    name_new = name_new.replace('_simpMod_','_')
+    name_new = name_new.replace('MassiveCB','MsvCB')
+    name_new = name_new.replace('mtt_','m')
+    name_new = name_new.replace('nonallhad','noallhad')
+    name_new = name_new.replace('_E_CMS_','_')
+    return name_new

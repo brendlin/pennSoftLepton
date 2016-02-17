@@ -1,0 +1,24 @@
+# format : datasetID   finalState   XS   BF   filterEff   relUncertainty
+
+361601	PowhegPy8EG_CT10nloME_AZNLOCTEQ6L1_WZlvll_mll4		4.5023		1.000000	1.000000	1.000000
+361603	PowhegPy8EG_CT10nloME_AZNLOCTEQ6L1_ZZllll_mll4		1.2673		1.05		1.000000	1.000000
+361604	PowhegPy8EG_CT10nloME_AZNLOCTEQ6L1_ZZvvll_mll4		0.92498		1.05		1.000000	1.000000
+361073	Sherpa_CT10_ggllll		0.020931	1.67	1.		1.
+361077	Sherpa_CT10_ggllvv		0.8538		1.67	1.		1.
+410011	PowhegPythiaEvtGen_P2012_singletop_tchan_lept_top		43.739		1.0094		1.		1.
+410012	PowhegPythiaEvtGen_P2012_singletop_tchan_lept_antitop	25.778		1.0193		1.		1.
+410015	PowhegPythiaEvtGen_P2012_Wt_dilepton_top		3.5835		1.054		1.		1.
+410016	PowhegPythiaEvtGen_P2012_Wt_dilepton_antitop	3.5814		1.054		1.		1.
+410025	PowhegPythiaEvtGen_P2012_SingleTopSchan_noAllHad_top		2.0517		1.6806		1.		1.
+410026	PowhegPythiaEvtGen_P2012_SingleTopSchan_noAllHad_antitop	1.2615		1.7088		1.		1.
+410111	MadGraphPythia8EvtGen_A14NNPDF23LO_ttee_Np0		0.0088155	1.35		1.	1.
+410112	MadGraphPythia8EvtGen_A14NNPDF23LO_ttee_Np1		0.01438		1.35		1.	1.
+410113	MadGraphPythia8EvtGen_A14NNPDF23LO_ttmumu_Np0		0.0088422	1.35		1.	1.
+410114	MadGraphPythia8EvtGen_A14NNPDF23LO_ttmumu_Np1		0.014375	1.35		1.	1.
+410115	MadGraphPythia8EvtGen_A14NNPDF23LO_tttautau_Np0		0.0090148	1.35		1.	1.
+410116	MadGraphPythia8EvtGen_A14NNPDF23LO_tttautau_Np1		0.014636	1.35		1.	1.
+410080	MadGraphPythia8EvtGen_A14NNPDF23_4topSM				0.0091622	1.0042		1.	1.
+410066	MadGraphPythia8EvtGen_A14NNPDF23LO_ttW_Np0			0.17656			1.25	1.		1.
+410067	MadGraphPythia8EvtGen_A14NNPDF23LO_ttW_Np1			0.14062			1.25	1.		1.
+410068	MadGraphPythia8EvtGen_A14NNPDF23LO_ttW_Np2			0.13680			1.25	1.		1.
+

@@ -1,0 +1,53 @@
+#
+# Some contents of this directory:
+# - SUSY5_stop1l.py - from svn+ssh://svn.cern.ch/reps/atlasphys/Physics/SUSY/Analyses/Stop1L/trunk/Analysis-14TeV/derivationTesting/grid-submission/DerivationFrameworkSUSY/SUSY5.py (March 18 2015)
+# - SUSY5_ewk.py - our modifications (you can do a diff with SUSY5.py)
+# - SUSY5_fake_ewk.py - our modifications
+#    - see svn+ssh://svn.cern.ch/reps/atlasphys/Physics/SUSY/Analyses/Stop1L/trunk/Analysis-14TeV/derivationTesting/grid-submission/DerivationFrameworkSUSY/SUSY5_fake.py (March 18 2015)
+# 
+# THIS FILE WAS ORIGINALLY COPIED FROM: svn+ssh://svn.cern.ch/reps/atlasphys/Physics/SUSY/Analyses/Stop1L/trunk/Analysis-14TeV/derivationTesting/grid-submission/README
+# The original file contents are below:
+
+# This file describes how to submit jobs to produce DxAOD SUSY5/SUSY2 privately.
+
+# setup athena and all that
+
+setupATLAS
+# asetup 19.1.4.5,rel_6,AtlasDerivation,here #
+# asetup 20.1.5.1,AtlasDerivation,gcc48,here # corresponds to p2361 derivation tag
+# asetup 20.1.5.4,AtlasDerivation,gcc48,here # corresponds to p2375 (50ns)
+# asetup 20.1.6.3,AtlasDerivation,gcc48,here # corresponds to p2411 (25ns)
+asetup 20.1.7.1,AtlasDerivation,gcc48,here # corresponds to p2419 (cutbookkeepers bug fix)
+
+localSetupPandaClient
+
+#
+# IF you need to make modifications to the nominal derivation: Check out packages: 
+#
+
+export dftag=$(cat /cvmfs/atlas.cern.ch/repo/sw/software/x86_64-slc6-gcc48-opt/20.1.5/AtlasDerivation/$AtlasVersion/PhysicsAnalysis/DerivationFramework/DerivationFrameworkSUSY/cmt/version.cmt)
+svn co svn+ssh://svn.cern.ch/reps/atlasoff/PhysicsAnalysis/DerivationFramework/DerivationFrameworkSUSY/tags/$dftag DerivationFrameworkSUSY
+
+#
+# Make modifications to DerivationFrameworkSUSY/share/SUSY2.py  ... then:
+# 
+
+cd DerivationFrameworkSUSY/cmt
+cmt bro cmt config
+cmt bro gmake
+cd -
+
+#
+# Then test locally:
+#
+ln -s INPUTFILE inputXAOD.pool.root
+Reco_tf.py --inputAODFile inputXAOD.pool.root --outputDAODFile output.pool.root --reductionConf SUSY2
+
+#
+# EDIT THE TAG in sub.py . Use "_dc14_ew01" (we wil increment the 01) so we can differentiate our 
+# skims from others on the tier3 using string searches.
+#
+# submit our jobs, for a list of xAOD datasets specified in a text file <to be filled by you!>
+#
+
+# python sub.py --tag mc15_50ns_ew03 --user brendlin --susy2 --file GridSamples_mc15_50ns_ew03.txt --submit | tee -a mc15_50ns_ew03.out

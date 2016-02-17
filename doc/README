@@ -1,0 +1,11 @@
+#!/bin/bash
+
+#
+# Description of how this package was created
+#
+
+#
+# To make an EventLoop skeleton:
+#
+$ROOTCOREBIN/user_scripts/EventLoop/make_skeleton pennSoftLepton xAODWrapper
+$ROOTCOREBIN/user_scripts/EventLoop/make_skeleton pennSoftLepton LikelihoodAlg

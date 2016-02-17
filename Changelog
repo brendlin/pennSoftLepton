@@ -1,0 +1,44 @@
+2015-07-14 Kurt Brendlinger <kurt.brendlinger@cern.ch>
+	* Add LepVariable plots to PassEvent
+	* M       pennSoftLepton/Root/AlgBase.cxx
+	* M       pennSoftLepton/Root/PassEvent.cxx
+	* M       pennSoftLepton/Root/Variables.cxx
+	* M       pennSoftLepton/pennSoftLepton/AlgBase.h
+	* M       pennSoftLepton/pennSoftLepton/PassEvent.h
+
+2015-07-14 Kurt Brendlinger <kurt.brendlinger@cern.ch>
+	* top1, top2, top3 --> singletop, ttbar, ttv
+	* Make compatible with non-xaod compilation
+
+2015-07-11 Kurt Brendlinger <kurt.brendlinger@cern.ch>
+	* Add SRM dataset deletion helper file, delete old SampleStats file
+	A       share/datasetSizeOnSRM.py
+	D       share/SampleStats.py
+
+2015-07-10 Kurt Brendlinger <kurt.brendlinger@cern.ch>
+	* Fixed up Grid READMEs, missing truth info
+	M       Root/xAODWrapper.cxx
+	M       Grid/README
+	D       Grid/README_Rel20
+	M       Grid/SampleNaming.py
+	M       pennSoftLepton/Variables.h
+
+2015-07-08 Kurt Brendlinger <kurt.brendlinger@cern.ch>
+	* Moved testJob.py to runJob.py and run_all.sh to Run_all.sh
+	* Changed namespace from FJF to PSL
+
+2015-07-07 Kurt Brendlinger <kurt.brendlinger@cern.ch>
+	* Moved from flat ntuples to d3pd-style lepton branches
+	* Support for referring to lepton variables and indices in confs for cuts
+	* Added scale factor functionality
+	M       python/PyHelpers.py
+	M       Root/XSUSYObjDefAlg.cxx
+	M       Root/Ntupler.cxx
+	M       Root/xAODWrapper.cxx
+	M       Root/Variables.cxx
+	M       Root/CutItem.cxx
+	M       pennSoftLepton/Ntupler.h
+	M       pennSoftLepton/EventDefinition.h
+	M       pennSoftLepton/xAODWrapper.h
+	M       pennSoftLepton/Variables.h
+	M       pennSoftLepton/CutItem.h

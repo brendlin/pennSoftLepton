@@ -1,0 +1,7 @@
+data15_13TeV.00266904.physics_Main.merge.DAOD_SUSY2.f594_m1435_p2361/
+data15_13TeV.00266919.physics_Main.merge.DAOD_SUSY2.f594_m1435_p2361/
+data15_13TeV.00267069.physics_Main.merge.DAOD_SUSY2.f594_m1435_p2361/
+data15_13TeV.00267073.physics_Main.merge.DAOD_SUSY2.f594_m1435_p2361/
+data15_13TeV.00267359.physics_Main.merge.DAOD_SUSY2.f597_m1441_p2361/
+data15_13TeV.00267360.physics_Main.merge.DAOD_SUSY2.f597_m1441_p2361/
+data15_13TeV.00267367.physics_Main.merge.DAOD_SUSY2.f597_m1441_p2361/
