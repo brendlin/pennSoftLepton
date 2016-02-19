@@ -42,6 +42,7 @@ PSL::XSUSYObjDefAlgPlusPlus::XSUSYObjDefAlgPlusPlus() : ObjectSelectionBase()
   ,dec_wlep               ("wlep")
   ,dec_passOR_ll          ("passOR_ll")
   ,dec_passOR_MuDecision  ("passOR_MuORdec")
+  ,dec_passOR_JetClean    ("passOR_JetClean")
   ,dec_baselineJetPt20    ("baselineJetPt20")
 {
   MSG_DEBUG("Constructor");
@@ -214,10 +215,16 @@ bool PSL::XSUSYObjDefAlgPlusPlus::init(void)
     MSG_INFO("Failed to harmonizedTools setup overlap removal toolbox!");
     return false;
   }
+  if( ORUtils::harmonizedTools(m_orToolbox_jet,"OverlapRemovalToolJet","baselineJetPt20", "passOR_JetClean", true, m_doTauOR, m_doPhotonOR).isFailure() ){
+    MSG_INFO("Failed to harmonizedTools setup overlap removal toolbox for Jet Cleaning!");
+  }
 #else
   if( ORUtils::harmonizedTools(m_orToolbox,"baseline", "passOR", true, m_doTauOR, m_doPhotonOR).isFailure() ){
     MSG_INFO("Failed to harmonizedTools setup overlap removal toolbox!");
     return false;
+  }
+  if( ORUtils::harmonizedTools(m_orToolbox_jet,"baselineJetPt20", "passOR_JetClean", true, m_doTauOR, m_doPhotonOR).isFailure() ){
+    MSG_INFO("Failed to harmonizedTools setup overlap removal toolbox for Jet Cleaning!");
   }
 #endif // BEFORE_SUSYTOOLS_000709
   m_orTool = static_cast<ORUtils::OverlapRemovalTool*>(m_orToolbox.getMasterTool());
@@ -232,8 +239,17 @@ bool PSL::XSUSYObjDefAlgPlusPlus::init(void)
     return false;
   }
   MSG_INFO("Initialized overlap removal toolbox");
+  m_orToolJet = static_cast<ORUtils::OverlapRemovalTool*>(m_orToolbox_jet.getMasterTool());
+  m_orTool->setName("OverlapRemovalJet");
+  if( m_orToolbox_jet.initialize().isFailure() ){
+    MSG_INFO("Failed to initialize jet overlap removal toolbox");
+    return false;
+  }
+  MSG_INFO("Initialized jet overlap removal toolbox");
+
   // get electron-muon overlap tool
   m_orTool_ll = new ORUtils::EleMuSharedTrkOverlapTool("EleMuORTool");
+  m_orTool_ll->setProperty("RemoveCaloMuons",false); // derp
   m_orTool_ll->setProperty("InputLabel","baseline");
   m_orTool_ll->setProperty("OutputLabel","passOR_ll");
   m_orTool_ll->setProperty("OutputPassValue",true);
@@ -271,6 +287,7 @@ bool PSL::XSUSYObjDefAlgPlusPlus::init(void)
 
 //-----------------------------------------------------------------------------
 void PSL::XSUSYObjDefAlgPlusPlus::loop(void){
+
   MSG_DEBUG("loop.");
 
   if (m_EDM->jets         ){ delete m_EDM->jets         ; m_EDM->jets          = 0 ;}
@@ -343,22 +360,26 @@ void PSL::XSUSYObjDefAlgPlusPlus::loop(void){
     const xAOD::Electron* ele = m_EDM->getElectron(i);
     // initialize decorators to false
     dec_baseline(*ele) = false;
+    dec_baselineJetPt20(*ele) = false;
     dec_zlep(*ele) = false;
     dec_wlep(*ele) = false;
     // baseline
     if(!isBaselineElectron(i)) continue;
     dec_baseline(*ele) = true;
+    dec_baselineJetPt20(*ele) = true;
   }
 
   for(unsigned int i=0;i<m_EDM->muons->size();++i){
     const xAOD::Muon* muon = m_EDM->getMuon(i);
     // initialize decorators to false
     dec_baseline(*muon) = false;
+    dec_baselineJetPt20(*muon) = false;
     dec_zlep(*muon) = false;
     dec_wlep(*muon) = false;
     // baseline
     if(!isBaselineMuon(i)) continue;
     dec_baseline(*muon) = true;
+    dec_baselineJetPt20(*muon) = true;
   }
 
   if (m_EDM->taus) {
@@ -414,6 +435,7 @@ void PSL::XSUSYObjDefAlgPlusPlus::loop(void){
       passBaselineMuon->Fill(8.); // update baseline cut flow histogram
     }
   }
+
   // --- End lepton-lepton overlap removal ---
 
   // --- Start MET dectorating, etc. ---
@@ -493,22 +515,26 @@ void PSL::XSUSYObjDefAlgPlusPlus::loop(void){
     MSG_DEBUG("Overlap removal start (full)");
 
     // separate jet-electron OR with pt > 20GeV BL jets
-    for(unsigned int i=0;i<m_EDM->jets->size();++i){
-      const xAOD::Jet *jet = m_EDM->getJet(i);
-      if(!dec_baselineJetPt20(*jet)) continue;
-      if(passJetElectronOR(i)) dec_passOR(*jet) = true;
-    }
+    //for(unsigned int i=0;i<m_EDM->jets->size();++i){
+    //  const xAOD::Jet *jet = m_EDM->getJet(i);
+    //  if(!dec_baselineJetPt20(*jet)) continue;
+    //  if(passJetElectronOR(i)) dec_passOR(*jet) = true;
+    //}
+
+    // jet OR tool
+        if( m_orToolJet->removeOverlaps(m_EDM->electrons,m_EDM->muons,m_EDM->jets).isFailure() )
+      MSG_WARNING("Overlap removal (jet) returned StatusCode::FAILURE");
 
     // full OR tool
     if( m_orTool->removeOverlaps(m_EDM->electrons,m_EDM->muons,m_EDM->jets).isFailure() )
       MSG_WARNING("Overlap removal (full) returned StatusCode::FAILURE");
 
     // separate jet-muon OR with pt > 20GeV BL jets
-    for(unsigned int i=0;i<m_EDM->jets->size();++i){
-      const xAOD::Jet *jet = m_EDM->getJet(i);
-      if(!dec_baselineJetPt20(*jet)) continue;
-      if(passJetMuonOR(i)) dec_passOR(*jet) = true;
-    }
+    //for(unsigned int i=0;i<m_EDM->jets->size();++i){
+    //  const xAOD::Jet *jet = m_EDM->getJet(i);
+    //  if(!dec_baselineJetPt20(*jet)) continue;
+    //  if(dec_passOR(*jet) && passJetMuonOR(i)) dec_passOR(*jet) = true;
+    //}
 
     MSG_DEBUG("Overlap removal end (full)");
     if (m_makefakentuples) {
@@ -586,7 +612,7 @@ void PSL::XSUSYObjDefAlgPlusPlus::loop(void){
   for(unsigned int i=0;i<m_EDM->jets->size();++i){
     const xAOD::Jet* jet = m_EDM->getJet(i);
     // fill bad jet flag -- we check all jets that pass OR
-    if(dec_passOR(*jet) || !do_overlapremove){
+    if(dec_passOR_JetClean(*jet) || !do_overlapremove){
       if(isBadJet(i)){
 	dec_badjet(*jet) = true;
 	m_evtdef.m_passBadJet = false;

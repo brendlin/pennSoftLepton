@@ -108,8 +108,9 @@ namespace PSL
     // lepton-lepton OR
     SG::AuxElement::Decorator<char> dec_passOR_ll; //!
     SG::AuxElement::Decorator<char> dec_passOR_MuDecision; //!
+    SG::AuxElement::Decorator<char> dec_passOR_JetClean; //!
     // special baseline for jet-jet OR
-    SG::AuxElement::Decorator<char> dec_baselineJetPt20;
+    SG::AuxElement::Decorator<char> dec_baselineJetPt20; //!
 
     virtual void ApplyLeptonVeto(void){};
 
@@ -141,7 +142,9 @@ namespace PSL
 
     // define overlap removal tool
     ORUtils::ORToolBox m_orToolbox; //!
+    ORUtils::ORToolBox m_orToolbox_jet; //!
     ORUtils::OverlapRemovalTool *m_orTool; //!
+    ORUtils::OverlapRemovalTool *m_orToolJet; //!
     ORUtils::EleMuSharedTrkOverlapTool *m_orTool_ll; //!
     bool m_doTauOR    = false;
     bool m_doPhotonOR = false;
