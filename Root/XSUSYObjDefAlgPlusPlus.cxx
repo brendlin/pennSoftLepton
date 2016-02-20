@@ -87,8 +87,40 @@ bool PSL::XSUSYObjDefAlgPlusPlus::init(void)
   else m_SUSYObjDef->setProperty("MuIsoWP",ConvertAnaIsoToStr(mu_isowp )).isSuccess();
 #endif // BEFORE_ANALYSISBASE_2p3p41
 
-
-  m_SUSYObjDef->setProperty("ConfigFile", "$ROOTCOREBIN/../pennSoftLepton/config/"+m_ConfigFile).isSuccess();
+  // The following lines are intended to override tools that SUSYTools tries
+  // to create, resulting in duplicate or buggy tools that we do not use.
+  std::string str_idsf = "efficiencySF.offline.TightLLH_d0z0";
+  ToolHandle<IAsgElectronEfficiencyCorrectionTool> sftool_id = asg::ToolStore::get<AsgElectronEfficiencyCorrectionTool>(str_idsf);
+  if (!m_SUSYObjDef->setProperty("ElectronEfficiencyCorrectionTool_reco",sftool_id).isSuccess()) {
+    MSG_INFO("Could not overwrite ElectronEfficiencyCorrectionTool_reco.");
+    return false;
+  }
+  if (!m_SUSYObjDef->setProperty("ElectronEfficiencyCorrectionTool_trig_singleLep",sftool_id).isSuccess()) {
+    MSG_INFO("Could not overwrite ElectronEfficiencyCorrectionTool_trig_singleLep.");
+    return false;
+  }
+  if (!m_SUSYObjDef->setProperty("ElectronEfficiencyCorrectionTool_trig_diLep",sftool_id).isSuccess()) {
+    MSG_INFO("Could not overwrite ElectronEfficiencyCorrectionTool_trig_diLep.");
+    return false;
+  }
+  if (!m_SUSYObjDef->setProperty("ElectronEfficiencyCorrectionTool_trig_mixLep",sftool_id).isSuccess()) {
+     MSG_INFO("Could not overwrite ElectronEfficiencyCorrectionTool_trig_mixLep.");
+    return false;
+  }
+  if (!m_SUSYObjDef->setProperty("ElectronEfficiencyCorrectionTool_id",sftool_id).isSuccess()) {
+    MSG_INFO("Could not overwrite ElectronEfficiencyCorrectionTool_id.");
+    return false;
+  }
+  if (!m_SUSYObjDef->setProperty("ElectronEfficiencyCorrectionTool_iso",sftool_id).isSuccess()) {
+    MSG_INFO("Could not overwrite ElectronEfficiencyCorrectionTool_iso.");
+    return false;
+  }
+  // End of SUSYTools Tool Override code.
+    
+  if (!m_SUSYObjDef->setProperty("ConfigFile", "$ROOTCOREBIN/../pennSoftLepton/config/"+m_ConfigFile).isSuccess()){
+    MSG_INFO("Could not set SUSYTools ConfigFile.");
+    return false;
+  }
 
   m_SUSYObjDef->msg().setLevel( MSG::WARNING );
   
@@ -141,10 +173,11 @@ bool PSL::XSUSYObjDefAlgPlusPlus::init(void)
 
   // Local Trigger Matching tools since the ones in SUSYTools always return false?
   m_EgammaMatchTool = new Trig::TrigEgammaMatchingTool("EgammaTrigMatchTool");
-  m_EgammaMatchTool->setProperty("TriggerTool", m_EDM->m_trigDecTool).ignore();
+  ToolHandle<Trig::TrigDecisionTool> dec_tool = asg::ToolStore::get<Trig::TrigDecisionTool>("TrigDecisionTool");
+  m_EgammaMatchTool->setProperty("TriggerTool",dec_tool).ignore();
   m_EgammaMatchTool->initialize().ignore();
   m_MuonMatchTool = new Trig::TrigMuonMatching("MuonTrigMatchTool");
-  m_MuonMatchTool->setProperty("TriggerTool", m_EDM->m_trigDecTool).ignore();
+  m_MuonMatchTool->setProperty("TriggerTool",dec_tool).ignore();
   m_MuonMatchTool->initialize().ignore();
 
   // Tool handle for JVT tool

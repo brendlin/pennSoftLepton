@@ -611,11 +611,27 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
 
   for (auto it=sf_pairs.begin();it != sf_pairs.end();++it) {
     MSG_INFO("Setting up Electron SF " << it->second);
-    m_elesfs[it->first] = new AsgElectronEfficiencyCorrectionTool(it->second);
+    std::string tool_name = it->second;
+    // The next lines are a really dumb hack intended to
+    // stop SUSYTools from initializing duplicate tools. Should not affect performance.
+    if (it->first == PhilipAntiID                                              ) tool_name = "AsgElectronEfficiencyCorrectionTool_trigEff_singleLep_TightLLH";          
+    if (it->first == ElectronSF_RecoTrk                                        ) tool_name = "AsgElectronEfficiencyCorrectionTool_trigEff_diLep_TightLLH";              
+    if (it->first == ElectronSF_LooseAndBLayerLLH                              ) tool_name = "AsgElectronEfficiencyCorrectionTool_trigEff_mixLep_TightLLH";             
+    if (it->first == ElectronSF_LooseAndBLayerLLH_d0z0                         ) tool_name = "AsgElectronEfficiencyCorrectionTool_trigEff_singleLep_fallback_MediumLLH";
+    if (it->first == ElectronSF_MediumLLH_d0z0                                 ) tool_name = "AsgElectronEfficiencyCorrectionTool_trigEff_diLep_fallback_MediumLLH";    
+    if (it->first == ElectronIsoSF_MediumLLH_d0z0_v8_isolGradientLoose         ) tool_name = "AsgElectronEfficiencyCorrectionTool_trigEff_mixLep_fallback_MediumLLH";   
+    if (it->first == ElectronIsoSF_TightLLH_d0z0_v8_isolGradient               ) tool_name = "AsgElectronEfficiencyCorrectionTool_id_fallback_MediumLLH";               
+    if (it->first == ElectronIsoSF_LooseAndBLayerLLH_d0z0_v8_isolLooseTrackOnly) tool_name = "AsgElectronEfficiencyCorrectionTool_trig_singleLep_fallback_MediumLLH";   
+    if (it->first == ElectronSF_Trigger_MediumLLH_isolGradientLoose            ) tool_name = "AsgElectronEfficiencyCorrectionTool_trig_diLep_fallback_MediumLLH";       
+    if (it->first == ElectronSF_TriggerMC_MediumLLH_isolGradientLoose          ) tool_name = "AsgElectronEfficiencyCorrectionTool_trig_mixLep_fallback_MediumLLH";
+    if (it->first == ElectronSF_Trigger_TightLLH_isolGradient                  ) tool_name = "AsgElectronEfficiencyCorrectionTool_iso_fallback_MediumLLHGradientLoose";
+
+    m_elesfs[it->first] = new AsgElectronEfficiencyCorrectionTool(tool_name);
     std::vector<std::string> tmp_list;
     TString s = Form("ElectronEfficiencyCorrection/%s.%s.root",(it->second).c_str(),eff_version.c_str());
     if ( (it->first) == PhilipAntiID ) s = Form("pennSoftLepton/%s.%s.root",(it->second).c_str(),eff_version.c_str());
     tmp_list.push_back(std::string(s));
+    m_elesfs[it->first]->msg().setLevel(MSG::ERROR);
     m_elesfs[it->first]->setProperty("CorrectionFileNameList",tmp_list).isSuccess();
     m_elesfs[it->first]->setProperty("ForceDataType",(int) data_type).isSuccess();
     if (m_EgammaToys) {
