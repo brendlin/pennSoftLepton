@@ -510,8 +510,8 @@ namespace PSL
       ,topoetcone30overPt
       ,topoetcone40overPt
       ,N_NONWP
-      ,VeryLooseTrackOnly
 #ifdef BEFORE_SUSYTOOLS_000611
+      ,VeryLooseTrackOnly
       ,VeryLoose
 #endif
       ,Loose

@@ -100,6 +100,8 @@ def main (options,args) :
     #
     passevent_alg = ROOT.PSL.PassEvent()
     passevent_alg.SetName('Top_PassEvent_Alg')
+    passevent_alg.set_Variables('GRL')
+    passevent_alg.set_LepVariables('lepPt')
     myjob.algsAdd(passevent_alg);
 
     all_cuts = pyhelpers.MakeCutsDictionaryFromTEnv(env)

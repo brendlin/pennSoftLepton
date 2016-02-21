@@ -24,6 +24,8 @@ void PSL::Ntupler::set_SkipIsoVariables(std::string v){
   m_lep_iso.clear();
   for(unsigned int i=0;i<isovariables.size();i++){
     if (std::find(tmp.begin(),tmp.end(),ConvertAnaIsoToStr(isovariables[i])) != tmp.end()) continue;
+    if (isovariables[i] == AnaIso::UserDefined) continue;
+    MSG_DEBUG("Adding " << ConvertAnaIsoToStr(isovariables[i]));
     m_lep_iso.push_back(isovariables[i]);
   }
 }
@@ -62,26 +64,6 @@ bool PSL::Ntupler::init(void){
   }
   // save lepton isolation information in vectors
   if (m_DoLeptonID && !m_lep_iso.size()) {
-    m_lep_iso.push_back(AnaIso::etcone20    );
-    m_lep_iso.push_back(AnaIso::etcone30    );
-    m_lep_iso.push_back(AnaIso::etcone40    );
-    m_lep_iso.push_back(AnaIso::topoetcone20);
-    m_lep_iso.push_back(AnaIso::topoetcone30);
-    m_lep_iso.push_back(AnaIso::topoetcone40);
-    m_lep_iso.push_back(AnaIso::ptcone20    );
-    m_lep_iso.push_back(AnaIso::ptcone30    );
-    m_lep_iso.push_back(AnaIso::ptcone40    );
-#ifdef ISREL20      
-    m_lep_iso.push_back(AnaIso::ptvarcone20 ); //AnaIso::ptvarcone20
-    m_lep_iso.push_back(AnaIso::ptvarcone30 ); //AnaIso::ptvarcone30
-    m_lep_iso.push_back(AnaIso::ptvarcone40 ); //AnaIso::ptvarcone40
-#endif
-    m_lep_iso.push_back(AnaIso::etcone20overPt    );
-    m_lep_iso.push_back(AnaIso::etcone30overPt    );
-    m_lep_iso.push_back(AnaIso::etcone40overPt    );
-    m_lep_iso.push_back(AnaIso::ptcone20overPt    );
-    m_lep_iso.push_back(AnaIso::ptcone30overPt    );
-    m_lep_iso.push_back(AnaIso::ptcone40overPt    );
 #ifdef ISREL20      
     m_lep_iso.push_back(AnaIso::ptvarcone20overPt );
     m_lep_iso.push_back(AnaIso::ptvarcone30overPt );
@@ -90,12 +72,6 @@ bool PSL::Ntupler::init(void){
     m_lep_iso.push_back(AnaIso::topoetcone20overPt);
     m_lep_iso.push_back(AnaIso::topoetcone30overPt);
     m_lep_iso.push_back(AnaIso::topoetcone40overPt);
-#ifdef BEFORE_SUSYTOOLS_000611
-    m_lep_iso.push_back(AnaIso::VeryLooseTrackOnly); // WPs from the isolation group
-    m_lep_iso.push_back(AnaIso::VeryLoose         );
-#endif
-    m_lep_iso.push_back(AnaIso::Loose             );
-    m_lep_iso.push_back(AnaIso::Tight             );
     m_lep_iso.push_back(AnaIso::Gradient          );
     m_lep_iso.push_back(AnaIso::GradientLoose     );
     m_lep_iso.push_back(AnaIso::LooseTrackOnly    );

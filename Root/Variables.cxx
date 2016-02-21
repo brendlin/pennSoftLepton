@@ -902,7 +902,7 @@ const std::vector<std::pair<PSL::AnaIso::AnaIso,std::string> > PSL::GetAnaIsoStr
     iso_pairs.push_back(std::make_pair(PSL::AnaIso::GradientLoose     ,"GradientLoose"     ));
     iso_pairs.push_back(std::make_pair(PSL::AnaIso::UserDefined       ,"UserDefined"       ));
 #else
-    iso_pairs.push_back(std::make_pair(PSL::AnaIso::VeryLooseTrackOnly,"VeryLooseTrackOnly"));
+    //iso_pairs.push_back(std::make_pair(PSL::AnaIso::VeryLooseTrackOnly,"VeryLooseTrackOnly"));
     //iso_pairs.push_back(std::make_pair(PSL::AnaIso::VeryLoose         ,"VeryLoose"         ));
     iso_pairs.push_back(std::make_pair(PSL::AnaIso::Loose             ,"Loose"             ));
     iso_pairs.push_back(std::make_pair(PSL::AnaIso::Tight             ,"Tight"             ));

@@ -39,7 +39,7 @@ namespace PSL
     bool m_DoTriggers;
     std::vector<ElectronID::ElectronID> m_lep_id; //!
     std::vector<xAOD::Muon::Quality> m_lep_muon_id; //!
-    std::vector<AnaIso::AnaIso> m_lep_iso; //!
+    std::vector<AnaIso::AnaIso> m_lep_iso;
     bool m_DoLeptonID;
 
     unsigned long long int m_eventnumber; //!
