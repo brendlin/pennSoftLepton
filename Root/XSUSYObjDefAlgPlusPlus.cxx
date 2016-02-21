@@ -1142,13 +1142,12 @@ bool PSL::XSUSYObjDefAlgPlusPlus::isBaselineJet(int icontainer, bool forOR /*tru
     if(jet->pt() < 20000.) return false;
   }
   // eta cut
-  double JetEta = m_EDM->getJet(icontainer)->eta();
   if(fabs(jet->eta()) > jet_eta_max) return false;
   if(!forOR)
     passBaselineJet->Fill(2.);
 
   // jvt cut
-  bool passJvt = (jet->pt() > jet_central_jvfpt_max || 
+  bool passJvt = (jet->pt() > jet_central_jvfpt_max*1000. || 
                   fabs(jet->eta()) > jet_central_jvfeta_max || 
                   m_jetjvf_cut_and_sf->passesJvtCut(*jet));
   if (!passJvt) return false;
@@ -1173,20 +1172,20 @@ bool PSL::XSUSYObjDefAlgPlusPlus::isBadJet(int icontainer){
   const xAOD::Jet *jet = m_EDM->getJet(icontainer);
   bool isBad = !m_jetCleaningTool->keep(*jet);
 
-  bool passJvt = (jet->pt() > jet_central_jvfpt_max || 
+  bool passJvt = (jet->pt() > jet_central_jvfpt_max*1000. || 
                   fabs(jet->eta()) > jet_central_jvfeta_max || 
                   m_jetjvf_cut_and_sf->passesJvtCut(*jet));
 
   // These are hardcoded, instead of using the configurable cuts.
   // see https://twiki.cern.ch/twiki/bin/view/AtlasProtected/HowToCleanJets2015#Event_Cleaning
   // Mimicking the logic on the twiki:
-  if (20000. < jet->pt() && jet->pt() < 50000. && fabs(jet->eta()) < 2.4) {
+  if (20000. < jet->pt() && jet->pt() < jet_central_jvfpt_max*1000. && fabs(jet->eta()) < jet_central_jvfeta_max) {
     if (passJvt && isBad) return true;
   }
-  else if (20000. < jet->pt() && jet->pt() < 50000. && fabs(jet->eta()) >= 2.4) {
+  else if (20000. < jet->pt() && jet->pt() < jet_central_jvfpt_max*1000. && fabs(jet->eta()) >= jet_central_jvfeta_max) {
     if (isBad) return true;
   }
-  else if (jet->pt() > 50000.) {
+  else if (jet->pt() > jet_central_jvfpt_max*1000.) {
     if (isBad) return true;
   }
   return false;
