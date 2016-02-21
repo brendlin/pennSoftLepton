@@ -15,11 +15,6 @@
 205131	125	8.729504	0.0326651892	1.00	0.0775599286
 
 #https://twiki.cern.ch/twiki/bin/view/AtlasProtected/XsecSummaryDibosonPowheg
-361601	WZ	4.4625		1.0		1.00	0.0
-361604	ZZvvll	0.92498		1.0		1.0	1.0
-361603	ZZ	1.2568		1.0		1.0	0.0
-361600	WW	10.631		1.0		1.0	0.0
-
 # https://twiki.cern.ch/twiki/bin/view/AtlasProtected/MC15DibosonOther
 361553	wz	0.099781		1.0		1.0	0.0
 361554	wz	0.061584		1.0		1.0	0.0
