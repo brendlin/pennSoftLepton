@@ -180,14 +180,14 @@ bool PSL::XSUSYObjDefAlgPlusPlus::init(void)
   m_MuonMatchTool->setProperty("TriggerTool",dec_tool).ignore();
   m_MuonMatchTool->initialize().ignore();
 
-  // Tool handle for JVT tool
-  if ( asg::ToolStore::contains<JetVertexTaggerTool>("JetVertexTaggerTool") ) {
-    m_jvt = asg::ToolStore::get<JetVertexTaggerTool>("JetVertexTaggerTool");
-  }
-  else{
-    MSG_ERROR("Failed to get ToolHandle for JetVertexTaggerTool!! Check your SUSYTools setup!!");
+  // set up JVT tool
+  m_jetjvf_cut_and_sf = new CP::JetJvtEfficiency("jet_jvt");
+  //m_jetjvf_cut_and_sf->setProperty("WorkingPoint","Default");
+  if (m_jetjvf_cut_and_sf->initialize().isFailure()) {
+    MSG_INFO("jvf tool initialization failed. Exiting.");
     return false;
   }
+
   // Tool handle for Jet Cleaning Tool
   if ( asg::ToolStore::contains<JetCleaningTool>("JetCleaningTool") ) {
     m_jetCleaningTool = asg::ToolStore::get<JetCleaningTool>("JetCleaningTool");
@@ -883,7 +883,6 @@ void PSL::XSUSYObjDefAlgPlusPlus::PrintConfiguration(void){
   MSG_INFO("jet_forward_ptmin      : " << jet_forward_ptmin      );
   MSG_INFO("jet_bjet_ptmin         : " << jet_bjet_ptmin         );
   MSG_INFO("jet_bjet_mv1           : " << jet_bjet_mv1           );
-  MSG_INFO("jet_central_jvfcut     : " << jet_central_jvfcut     );
   MSG_INFO("jet_central_jvfeta_max : " << jet_central_jvfeta_max );
   MSG_INFO("jet_central_eta_max    : " << jet_central_eta_max    );
   MSG_INFO("jet_central_ptmin      : " << jet_central_ptmin      );
@@ -1133,28 +1132,27 @@ bool PSL::XSUSYObjDefAlgPlusPlus::isBaselineJet(int icontainer, bool forOR /*tru
   // Total jets
   passBaselineJet->Fill(0.);
   // pT cut
-  double JetPt = m_EDM->getJet(icontainer)->pt();
+  const xAOD::Jet *jet = m_EDM->getJet(icontainer);
+
   if(!forOR){ // our regular baseline pT cut
-    if(JetPt < jet_ptmin*1000.)
-      return false;
+    if(jet->pt() < jet_ptmin*1000.) return false;
     passBaselineJet->Fill(1.);
   }
   else{
-    if(JetPt < 20000.)
-      return false;
+    if(jet->pt() < 20000.) return false;
   }
   // eta cut
   double JetEta = m_EDM->getJet(icontainer)->eta();
-  if(fabs(JetEta) > jet_eta_max)
-    return false;
+  if(fabs(jet->eta()) > jet_eta_max) return false;
   if(!forOR)
     passBaselineJet->Fill(2.);
+
   // jvt cut
-  double JVT = m_jvt->updateJvt(*m_EDM->getJet(icontainer));
-  if(JetPt < jet_central_jvfpt_max*1000. &&
-     fabs(JetEta) < jet_central_jvfeta_max &&
-     JVT <= jet_central_jvfcut)
-    return false;
+  bool passJvt = (jet->pt() > jet_central_jvfpt_max || 
+                  fabs(jet->eta()) > jet_central_jvfeta_max || 
+                  m_jetjvf_cut_and_sf->passesJvtCut(*jet));
+  if (!passJvt) return false;
+
   if(!forOR)
     passBaselineJet->Fill(3.);
   return true;
@@ -1172,24 +1170,24 @@ bool PSL::XSUSYObjDefAlgPlusPlus::isBadJet(int icontainer){
   3. For all jets with pT >= 50 GeV
   - If jetIsBad: reject the event
   */
-  double JVT = m_jvt->updateJvt(*m_EDM->getJet(icontainer));
-  double JetPt = m_EDM->getJet(icontainer)->pt();
-  double JetEta = m_EDM->getJet(icontainer)->eta();
-  bool isBad = !m_jetCleaningTool->keep(*m_EDM->getJet(icontainer));
+  const xAOD::Jet *jet = m_EDM->getJet(icontainer);
+  bool isBad = !m_jetCleaningTool->keep(*jet);
 
-  if(JetPt > 20000. && JetPt < 50000.){
-    if(fabs(JetEta) <= 2.4){
-      if( (JVT > jet_central_jvfcut) && isBad )
-	return true;
-    }
-    else{
-      if(isBad)
-	return true;
-    }
+  bool passJvt = (jet->pt() > jet_central_jvfpt_max || 
+                  fabs(jet->eta()) > jet_central_jvfeta_max || 
+                  m_jetjvf_cut_and_sf->passesJvtCut(*jet));
+
+  // These are hardcoded, instead of using the configurable cuts.
+  // see https://twiki.cern.ch/twiki/bin/view/AtlasProtected/HowToCleanJets2015#Event_Cleaning
+  // Mimicking the logic on the twiki:
+  if (20000. < jet->pt() && jet->pt() < 50000. && fabs(jet->eta()) < 2.4) {
+    if (passJvt && isBad) return true;
   }
-  if(JetPt >= 50000){
-    if(isBad)
-      return true;
+  else if (20000. < jet->pt() && jet->pt() < 50000. && fabs(jet->eta()) >= 2.4) {
+    if (isBad) return true;
+  }
+  else if (jet->pt() > 50000.) {
+    if (isBad) return true;
   }
   return false;
 }

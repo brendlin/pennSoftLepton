@@ -167,16 +167,14 @@ namespace PSL
     //* \brief Min Bjet mv1 */
     double jet_bjet_mv1;
     
-    //* \brief Min central jvf cut */
-    double jet_central_jvfcut;
     //* \brief Max jvf eta (according to jvf twiki) */
     double jet_central_jvfeta_max;
+    //* \brief jet central jvf ptmax
+    double jet_central_jvfpt_max;
     //* \brief Max eta */
     double jet_central_eta_max;
     //* \brief Min central pt */
     double jet_central_ptmin;
-    //* \brief jet central jvf ptmax
-    double jet_central_jvfpt_max;
     //* \brief Max central (non-bjet) mv1 */
     double jet_central_mv1;
 
@@ -294,7 +292,6 @@ namespace PSL
     void set_jet_forward_ptmin     (double d){jet_forward_ptmin      = d;};
     void set_jet_bjet_ptmin        (double d){jet_bjet_ptmin         = d;};
     void set_jet_bjet_mv1          (double d){jet_bjet_mv1           = d;};
-    void set_jet_central_jvfcut    (double d){jet_central_jvfcut     = d;};
     void set_jet_central_jvfeta_max(double d){jet_central_jvfeta_max = d;};
     void set_jet_central_eta_max   (double d){jet_central_eta_max    = d;};
     void set_jet_central_ptmin     (double d){jet_central_ptmin      = d;};

@@ -472,7 +472,6 @@ void PSL::XSUSYObjDefAlgV7::PrintConfiguration(void){
   MSG_INFO("jet_forward_ptmin      : " << jet_forward_ptmin      );
   MSG_INFO("jet_bjet_ptmin         : " << jet_bjet_ptmin         );
   MSG_INFO("jet_bjet_mv1           : " << jet_bjet_mv1           );
-  MSG_INFO("jet_central_jvfcut     : " << jet_central_jvfcut     );
   MSG_INFO("jet_central_jvfeta_max : " << jet_central_jvfeta_max );
   MSG_INFO("jet_central_eta_max    : " << jet_central_eta_max    );
   MSG_INFO("jet_central_ptmin      : " << jet_central_ptmin      );

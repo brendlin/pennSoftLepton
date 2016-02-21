@@ -31,6 +31,9 @@
 #include "TrigEgammaMatchingTool/TrigEgammaMatchingTool.h"
 #include "TrigMuonMatching/TrigMuonMatching.h"
 
+// jet jvt
+#include "JetJvtEfficiency/JetJvtEfficiency.h"
+
 namespace ST{
   class SUSYObjDef_xAOD;
 }
@@ -160,7 +163,7 @@ namespace PSL
     ORUtils::OverlapRemovalTool *m_orToolPopulateMuOrDecision; //!
 
     // Tool Handles
-    ToolHandle<IJetUpdateJvt> m_jvt; //!
+    CP::JetJvtEfficiency* m_jetjvf_cut_and_sf; //!
     ToolHandle<IJetSelector> m_jetCleaningTool; //!
     //ToolHandle<Trig::ITrigEgammaMatchingTool> m_EgammaMatchTool; //!
     //ToolHandle<Trig::ITrigMuonMatching> m_MuonMatchTool; //!
