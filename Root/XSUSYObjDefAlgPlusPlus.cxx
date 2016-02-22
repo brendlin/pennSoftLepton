@@ -282,7 +282,6 @@ bool PSL::XSUSYObjDefAlgPlusPlus::init(void)
 
   // get electron-muon overlap tool
   m_orTool_ll = new ORUtils::EleMuSharedTrkOverlapTool("EleMuORTool");
-  m_orTool_ll->setProperty("RemoveCaloMuons",false); // derp
   m_orTool_ll->setProperty("InputLabel","baseline");
   m_orTool_ll->setProperty("OutputLabel","passOR_ll");
   m_orTool_ll->setProperty("OutputPassValue",true);
