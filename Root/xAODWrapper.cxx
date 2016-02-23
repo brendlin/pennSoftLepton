@@ -1007,8 +1007,10 @@ EL::StatusCode PSL::xAODWrapper::execute()
   // getLumiBlockMu not available before SUSYTools 06-11
 #elif defined(BEFORE_SUSYTOOLS_000709)
   m_LumiBlockMu = m_prwTool->getLumiBlockMu( *eventInfo );
-#else 
+#elif defined(BEFORE_ANALYSISBASE_2p3p45)
   m_LumiBlockMu = m_prwTool->getCorrectedMu( *eventInfo );
+#else
+  m_LumiBlockMu = m_prwTool->getCorrectedMu( *eventInfo , false /* includeDataScaleFactor */);
 #endif // BEFORE_SUSYTOOLS_000611
 
   m_weight = 1;
@@ -2582,7 +2584,11 @@ double PSL::xAODWrapper::getTriggerSF_Winter2016WZAnalysis(){
 std::pair<double,double> PSL::xAODWrapper::getMuonTriggerWeight(int icontainer){
 
   //get run number and avoid warnings
+#ifdef BEFORE_ANALYSISBASE_2p3p45
   int tmp_rdmRN = m_prwTool->getRandomRunNumber( *eventInfo ); 
+#else
+  int tmp_rdmRN = m_prwTool->getRandomRunNumber( *eventInfo , true ); 
+#endif
   int rdmRN = (tmp_rdmRN == 0) ? 267639 : tmp_rdmRN; //this is the internal run of the tool if zero
   m_muonTriggerSFTool->setRunNumber(rdmRN);
   m_muonTriggerSFToolNOSYST->setRunNumber(rdmRN);

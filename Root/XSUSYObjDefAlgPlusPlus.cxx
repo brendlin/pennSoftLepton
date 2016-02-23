@@ -64,6 +64,22 @@ bool PSL::XSUSYObjDefAlgPlusPlus::init(void)
   // m_SUSYObjDef->setProperty("EleIsoWP","GradientLoose").isSuccess();
   // m_SUSYObjDef->setProperty("MuIsoWP","GradientLoose").isSuccess();
   //PathResolverSetOutputLevel(MSG::ERROR);
+
+  // set up JVT tool
+  m_jetjvf_cut_and_sf = new CP::JetJvtEfficiency("jet_jvt");
+  //m_jetjvf_cut_and_sf->setProperty("WorkingPoint","Default");
+  if (m_jetjvf_cut_and_sf->initialize().isFailure()) {
+    MSG_INFO("jvf tool initialization failed. Exiting.");
+    return false;
+  }
+#ifndef BEFORE_ANALYSISBASE_2p3p45
+  if (!asg::ToolStore::contains<CP::JetJvtEfficiency>("jet_jvt")) MSG_INFO("JVT Handle DNE??");
+  ToolHandle<CP::IJetJvtEfficiency> jvt_handle = asg::ToolStore::get<CP::JetJvtEfficiency>("jet_jvt");
+  if (!m_SUSYObjDef->setProperty("JetJvtEfficiencyTool",jvt_handle).isSuccess()) {
+    MSG_INFO("Could not overwrite JetJvtEfficiencyTool in SUSYTools.");
+    return false;
+  }
+#endif
   
 #ifdef BEFORE_ANALYSISBASE_2p3p41
   m_SUSYObjDef->setProperty("PhotonIsoWP","FixedCutLoose").isSuccess();
@@ -179,14 +195,6 @@ bool PSL::XSUSYObjDefAlgPlusPlus::init(void)
   m_MuonMatchTool = new Trig::TrigMuonMatching("MuonTrigMatchTool");
   m_MuonMatchTool->setProperty("TriggerTool",dec_tool).ignore();
   m_MuonMatchTool->initialize().ignore();
-
-  // set up JVT tool
-  m_jetjvf_cut_and_sf = new CP::JetJvtEfficiency("jet_jvt");
-  //m_jetjvf_cut_and_sf->setProperty("WorkingPoint","Default");
-  if (m_jetjvf_cut_and_sf->initialize().isFailure()) {
-    MSG_INFO("jvf tool initialization failed. Exiting.");
-    return false;
-  }
 
   // Tool handle for Jet Cleaning Tool
   if ( asg::ToolStore::contains<JetCleaningTool>("JetCleaningTool") ) {
