@@ -30,7 +30,7 @@
 #include <sstream>
 using namespace std;
     
-int yields(const char *path)
+int mc_event(const char *path)
 {
   //  gROOT->SetBatch();
     TCut weight = "TotalWeightNoSF";
@@ -56,6 +56,7 @@ int yields(const char *path)
     data_total = 0.0;
     data_eee = 0.0;
     data_eem = 0.0;
+    data_emm = 0.0;
     data_mmm = 0.0;
     data_wp = 0.0;
     data_wm = 0.0;
@@ -323,9 +324,9 @@ int yields(const char *path)
     cout  <<  " & " << total_other_wp << "$\\pm$ " << (sqrt(uncert_other_wp)) << " & " << total_other_wm << "$\\pm$ " << (sqrt(uncert_other_wm));
     cout << " & " << total_other << "$\\pm$ " << (sqrt(uncert_other)) << endl;
 						  
-    cout << "Total Exp. & " << final_eee << "$\\pm$ " << (sqrt(uncert_final_eee)) << " & " << final_eem << "$\\pm$ " << (sqrt(final_eem));
-    cout <<  " & " << final_emm << "$\\pm$ " << (sqrt(uncert_final_emm)) <<  " & " << final_mmm << "$\\pm$ " << (sqrt(final_mmm));
-    cout  <<  " & " << final_wp << "$\\pm$ " << (sqrt(uncert_final_wp)) << " & " << final_wm << "$\\pm$ " << (sqrt(final_wm));
+    cout << "Total Exp. & " << final_eee << "$\\pm$ " << (sqrt(uncert_final_eee)) << " & " << final_eem << "$\\pm$ " << (sqrt(uncert_final_eem));
+    cout <<  " & " << final_emm << "$\\pm$ " << (sqrt(uncert_final_emm)) <<  " & " << final_mmm << "$\\pm$ " << (sqrt(uncert_final_mmm));
+    cout  <<  " & " << final_wp << "$\\pm$ " << (sqrt(uncert_final_wp)) << " & " << final_wm << "$\\pm$ " << (sqrt(uncert_final_wm));
     cout << " & " << final << "$\\pm$ " << (sqrt(uncert_final)) <<endl;
     
     cout << "Data & " << data_eee << " & " << data_eem << " & " << data_emm << " & " << data_mmm << " & " << data_wp << " & " << data_wm << " & " << data_total << endl;
