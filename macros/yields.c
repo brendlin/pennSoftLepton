@@ -30,7 +30,7 @@
 #include <sstream>
 using namespace std;
     
-int mc_event(const char *path)
+int yields(const char *path)
 {
   //  gROOT->SetBatch();
     TCut weight = "TotalWeightNoSF";
