@@ -16,12 +16,22 @@ def GetFFHist(f,k,r,c,p='ttbar',v='MTW',num_or_den='Den') : # file key region ch
     keyregionchannel = 'PassEvent_FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)
     #print 'Adding','%s/%s_%s'%(keyregionchannel,keyregionchannel,other)
     print 'Adding',('FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)).replace('__','_')
-    hist = anaplot.GetPassEventBkgHistos(v,('FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)).replace('__','_'),p,f)[0]
+    hists = anaplot.GetPassEventBkgHistos(v,('FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)).replace('__','_'),p,f)
+    if not hists :
+        print 'NOT Adding (was missing): ',('FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)).replace('__','_')
+        return 0
+    hist = hists[0]
     if r == 'all' :
         hist.Add(GetFFHist(f,k,'tlt',c,p,v,num_or_den))
         hist.Add(GetFFHist(f,k,'ttl',c,p,v,num_or_den))
     return hist
     #return pyhelpers.GetRootObj(f,'%s/%s_%s'%(keyregionchannel,keyregionchannel,other))
+
+def AddIf(hist,f,k,r,c,p='ttbar',v='MTW',num_or_den='Den') :
+    h = GetFFHist(f,k,r,c,p,v,num_or_den)
+    if h :
+        hist.Add(h)
+    return
 
 pm = "$\pm$"
 #channels = ['euu','uee','all']
@@ -65,13 +75,21 @@ for r in regions :
         # ttcr_ttt (data times FF
         #
         hists_ttbar[r][c] = GetFFHist('all.root','z_ttvalid',r,c,p='ttbar',num_or_den='Den')
+        AddIf(hists_ttbar[r][c],'all.root','z_ttvalid',r,c,p='tw',num_or_den='Den')
+        AddIf(hists_ttbar[r][c],'all.root','z_ttvalid',r,c,p='qqww',num_or_den='Den')
         nevt_ttbar[r][c] = hists_ttbar[r][c].Integral(0,hists_ttbar[r][c].GetNbinsX()+1)
         err_ttbar[r][c] = math.sqrt(sum(list(hists_ttbar[r][c].GetSumw2())))
 
         hists_other[r][c] = GetFFHist('all.root','z_ttvalid',r,c,p='wz',num_or_den='Den')
-        hists_other[r][c].Add(GetFFHist('all.root','z_ttvalid',r,c,p='zz',num_or_den='Den'))
-        #hists_other[r][c].Add(GetFFHist('all.root','z_ttvalid',r,c,p='ttv',num_or_den='Den'))
-        #hists_other[r][c].Add(GetFFHist('all.root','z_ttvalid',r,c,p='tz',num_or_den='Den'))
+        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='zz',num_or_den='Den')
+        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='vvv',num_or_den='Den')
+        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='tother',num_or_den='Den')
+        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='ttv',num_or_den='Den')
+        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='zjet',num_or_den='Den')
+        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='zgam',num_or_den='Den')
+        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='singletop',num_or_den='Den')
+        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='tz',num_or_den='Den')
+
         nevt_other[r][c] = hists_other[r][c].Integral(0,hists_other[r][c].GetNbinsX()+1)
         err_other[r][c] = math.sqrt(sum(list(hists_other[r][c].GetSumw2())))
 
@@ -123,23 +141,23 @@ for r in regions :
     if r == 'ttl' : print '\\hline'
     if r == 'all' : print '\\hline'
 
-# for r in regions :
-#     if r == 'ltt' : print '$\\nltt$, other MC & ',
-#     if r == 'tlt' : print '$\\ntlt$, other MC & ',
-#     if r == 'ttl' : print '$\\nttl$, other MC & ',
-#     if r == 'all' : print 'Total, other MC   & ',
-#     for c in channels :
-#         end = '\\\\' if c == 'all' else '&'
-#         print ('%2.2f%s%2.2f %s'%(nevt_other[r][c],pm,err_other[r][c],end)).rjust(19),
-#     print
+for r in regions :
+    if r == 'ltt' : print '$\\nltt$, other MC & ',
+    if r == 'tlt' : print '$\\ntlt$, other MC & ',
+    if r == 'ttl' : print '$\\nttl$, other MC & ',
+    if r == 'all' : print 'Total, other MC   & ',
+    for c in channels :
+        end = '\\\\' if c == 'all' else '&'
+        print ('%2.2f%s%2.2f %s'%(nevt_other[r][c],pm,err_other[r][c],end)).rjust(19),
+    print
 print 'Data/MC scale factor & ',
 
-cf_euu = (nevt_data['all']['euu'])/float(nevt_ttbar['all']['euu'])
+cf_euu = (nevt_data['all']['euu'] - nevt_other['all']['euu'])/float(nevt_ttbar['all']['euu'])
 cf_euu_err_datastat = err_data['all']['euu']/nevt_ttbar['all']['euu']
 cf_euu_err_ttbarstat = cf_euu * err_ttbar['all']['euu']/nevt_ttbar['all']['euu']
 cf_euu_toterr = math.sqrt(cf_euu_err_datastat**2 + cf_euu_err_ttbarstat**2)
 
-cf_uee = (nevt_data['all']['uee'])/float(nevt_ttbar['all']['uee'])
+cf_uee = (nevt_data['all']['uee'] - nevt_other['all']['uee'])/float(nevt_ttbar['all']['uee'])
 cf_uee_err_datastat = err_data['all']['uee']/nevt_ttbar['all']['uee']
 cf_uee_err_ttbarstat = cf_uee * err_ttbar['all']['uee']/nevt_ttbar['all']['uee']
 cf_uee_toterr = math.sqrt(cf_uee_err_datastat**2 + cf_uee_err_ttbarstat**2)
