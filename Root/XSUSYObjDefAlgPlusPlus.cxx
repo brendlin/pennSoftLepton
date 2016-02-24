@@ -43,7 +43,7 @@ PSL::XSUSYObjDefAlgPlusPlus::XSUSYObjDefAlgPlusPlus() : ObjectSelectionBase()
   ,dec_passOR_ll          ("passOR_ll")
   ,dec_passOR_MuDecision  ("passOR_MuORdec")
   ,dec_passOR_JetClean    ("passOR_JetClean")
-  ,dec_baselineJetPt20    ("baselineJetPt20")
+  ,dec_baselineForJetCleaning("baselineForJetCleaning")
 {
   MSG_DEBUG("Constructor");
 }
@@ -256,7 +256,7 @@ bool PSL::XSUSYObjDefAlgPlusPlus::init(void)
     MSG_INFO("Failed to harmonizedTools setup overlap removal toolbox!");
     return false;
   }
-  if( ORUtils::harmonizedTools(m_orToolbox_jet,"OverlapRemovalToolJet","baselineJetPt20", "passOR_JetClean", true, m_doTauOR, m_doPhotonOR).isFailure() ){
+  if( ORUtils::harmonizedTools(m_orToolbox_jetCleaning,"OverlapRemovalToolJet","baselineForJetCleaning", "passOR_JetClean", true, m_doTauOR, m_doPhotonOR).isFailure() ){
     MSG_INFO("Failed to harmonizedTools setup overlap removal toolbox for Jet Cleaning!");
   }
 #else
@@ -264,7 +264,7 @@ bool PSL::XSUSYObjDefAlgPlusPlus::init(void)
     MSG_INFO("Failed to harmonizedTools setup overlap removal toolbox!");
     return false;
   }
-  if( ORUtils::harmonizedTools(m_orToolbox_jet,"baselineJetPt20", "passOR_JetClean", true, m_doTauOR, m_doPhotonOR).isFailure() ){
+  if( ORUtils::harmonizedTools(m_orToolbox_jetCleaning,"baselineForJetCleaning", "passOR_JetClean", true, m_doTauOR, m_doPhotonOR).isFailure() ){
     MSG_INFO("Failed to harmonizedTools setup overlap removal toolbox for Jet Cleaning!");
   }
 #endif // BEFORE_SUSYTOOLS_000709
@@ -280,9 +280,9 @@ bool PSL::XSUSYObjDefAlgPlusPlus::init(void)
     return false;
   }
   MSG_INFO("Initialized overlap removal toolbox");
-  m_orToolJet = static_cast<ORUtils::OverlapRemovalTool*>(m_orToolbox_jet.getMasterTool());
+  m_orToolJetCleaning = static_cast<ORUtils::OverlapRemovalTool*>(m_orToolbox_jetCleaning.getMasterTool());
   m_orTool->setName("OverlapRemovalJet");
-  if( m_orToolbox_jet.initialize().isFailure() ){
+  if( m_orToolbox_jetCleaning.initialize().isFailure() ){
     MSG_INFO("Failed to initialize jet overlap removal toolbox");
     return false;
   }
@@ -380,14 +380,15 @@ void PSL::XSUSYObjDefAlgPlusPlus::loop(void){
     const xAOD::Jet* jet = m_EDM->getJet(i);
     dec_baseline(*jet) = false;
     dec_badjet(*jet) = false;
-    dec_baselineJetPt20(*jet) = false;
-    // fill special decorator for jet-jetOR (baseline w/ pT > 20. GeV)
-    if(isBaselineJet(i,true)){
-      dec_baselineJetPt20(*jet) = true;
-      //std::cout << "Pass baselineJetPt20 with pT " << jet->pt() << std::endl;
+    dec_baselineForJetCleaning(*jet) = false;
+    // fill special decorator for baseline jets to be fed into jet cleaning.
+    // These jets must be consistent with jets used in the MET, e.g. >20 GeV, |eta|<4.5.
+    if(isBaselineJet(i,20,4.5,false)){
+      dec_baselineForJetCleaning(*jet) = true;
+      //std::cout << "Pass baselineForJetCleaning with pT " << jet->pt() << std::endl;
     }
     // check baseline jets (with normal 25 GeV cut)
-    if(!isBaselineJet(i,false)) continue;
+    if(!isBaselineJet(i,jet_ptmin,jet_eta_max,true)) continue;
     dec_baseline(*jet) = true;
 
     // hopefully this is redundant, but I needed to put this in for SUSYTools-00-05-00-31
@@ -400,26 +401,26 @@ void PSL::XSUSYObjDefAlgPlusPlus::loop(void){
     const xAOD::Electron* ele = m_EDM->getElectron(i);
     // initialize decorators to false
     dec_baseline(*ele) = false;
-    dec_baselineJetPt20(*ele) = false;
+    dec_baselineForJetCleaning(*ele) = false;
     dec_zlep(*ele) = false;
     dec_wlep(*ele) = false;
     // baseline
     if(!isBaselineElectron(i)) continue;
     dec_baseline(*ele) = true;
-    dec_baselineJetPt20(*ele) = true;
+    dec_baselineForJetCleaning(*ele) = true;
   }
 
   for(unsigned int i=0;i<m_EDM->muons->size();++i){
     const xAOD::Muon* muon = m_EDM->getMuon(i);
     // initialize decorators to false
     dec_baseline(*muon) = false;
-    dec_baselineJetPt20(*muon) = false;
+    dec_baselineForJetCleaning(*muon) = false;
     dec_zlep(*muon) = false;
     dec_wlep(*muon) = false;
     // baseline
     if(!isBaselineMuon(i)) continue;
     dec_baseline(*muon) = true;
-    dec_baselineJetPt20(*muon) = true;
+    dec_baselineForJetCleaning(*muon) = true;
   }
 
   if (m_EDM->taus) {
@@ -540,41 +541,16 @@ void PSL::XSUSYObjDefAlgPlusPlus::loop(void){
   // START REAL (FULL) OVERLAP REMOVAL
   ////////////////////////////////////////////////////////////////////////////////
 
-  // This should overwrite the dec_passOR(*lepton) set earlier
-  /*
-    A comment on the additional jet-lepton OR functions: they are not performed simultaneously due to 
-    the fact that the recommended OR prescription is done in steps.  
-    - Removing jets due to electrons is the second step (after electron-muon OR that is performed 
-      manually earlier)
-    - Removing jets due to muons is the last step in the OR
-    Therefore, in order to respect this hierarchy as closely as possible, the jet-electron OR is done
-    first, followed by the full OR (which should NOT overwrite the previous step -- I think), and lastly
-    the full OR will be overwritten by the jet-muon OR
-   */
   if(do_overlapremove){
     MSG_DEBUG("Overlap removal start (full)");
 
-    // separate jet-electron OR with pt > 20GeV BL jets
-    //for(unsigned int i=0;i<m_EDM->jets->size();++i){
-    //  const xAOD::Jet *jet = m_EDM->getJet(i);
-    //  if(!dec_baselineJetPt20(*jet)) continue;
-    //  if(passJetElectronOR(i)) dec_passOR(*jet) = true;
-    //}
-
-    // jet OR tool
-        if( m_orToolJet->removeOverlaps(m_EDM->electrons,m_EDM->muons,m_EDM->jets).isFailure() )
+    // jet OR tool - to prepare MET-jets for jet cleaning
+    if( m_orToolJetCleaning->removeOverlaps(m_EDM->electrons,m_EDM->muons,m_EDM->jets).isFailure() )
       MSG_WARNING("Overlap removal (jet) returned StatusCode::FAILURE");
 
     // full OR tool
     if( m_orTool->removeOverlaps(m_EDM->electrons,m_EDM->muons,m_EDM->jets).isFailure() )
       MSG_WARNING("Overlap removal (full) returned StatusCode::FAILURE");
-
-    // separate jet-muon OR with pt > 20GeV BL jets
-    //for(unsigned int i=0;i<m_EDM->jets->size();++i){
-    //  const xAOD::Jet *jet = m_EDM->getJet(i);
-    //  if(!dec_baselineJetPt20(*jet)) continue;
-    //  if(dec_passOR(*jet) && passJetMuonOR(i)) dec_passOR(*jet) = true;
-    //}
 
     MSG_DEBUG("Overlap removal end (full)");
     if (m_makefakentuples) {
@@ -1135,47 +1111,31 @@ bool PSL::XSUSYObjDefAlgPlusPlus::isWElectron(int icontainer){
   return true;
 }
 
-bool PSL::XSUSYObjDefAlgPlusPlus::isBaselineJet(int icontainer, bool forOR /*true for 20GeV pT cut*/){
+bool PSL::XSUSYObjDefAlgPlusPlus::isBaselineJet(int icontainer,float ptcut_gev,float etacut,bool forAnalysis){
   // Total jets
-  passBaselineJet->Fill(0.);
+  if (forAnalysis) passBaselineJet->Fill(0.);
   // pT cut
   const xAOD::Jet *jet = m_EDM->getJet(icontainer);
 
-  if(!forOR){ // our regular baseline pT cut
-    if(jet->pt() < jet_ptmin*1000.) return false;
-    passBaselineJet->Fill(1.);
-  }
-  else{
-    if(jet->pt() < 20000.) return false;
-  }
+  if (jet->pt() < ptcut_gev*1000.) return false;
+  if(forAnalysis) passBaselineJet->Fill(1.);
+
   // eta cut
-  if(fabs(jet->eta()) > jet_eta_max) return false;
-  if(!forOR)
-    passBaselineJet->Fill(2.);
+  if (fabs(jet->eta()) > etacut) return false;
+  if (forAnalysis) passBaselineJet->Fill(2.);
 
   // jvt cut
   bool passJvt = (jet->pt() > jet_central_jvfpt_max*1000. || 
                   fabs(jet->eta()) > jet_central_jvfeta_max || 
                   m_jetjvf_cut_and_sf->passesJvtCut(*jet));
   if (!passJvt) return false;
+  if(forAnalysis) passBaselineJet->Fill(3.);
 
-  if(!forOR)
-    passBaselineJet->Fill(3.);
   return true;
 }
 
 bool PSL::XSUSYObjDefAlgPlusPlus::isBadJet(int icontainer){
   // returns true if the jet is bad!
-  /*
-  1. For all jets within |eta|<=2.4 and with (20 GeV < pT < 50 GeV)
-  - If JVT > 0.64 && jetIsBad: reject the event
-
-  2. For all jets within |eta|>2.4 and with (20 GeV < pT < 50 GeV)
-  - If jetIsBad: reject the event
-  
-  3. For all jets with pT >= 50 GeV
-  - If jetIsBad: reject the event
-  */
   const xAOD::Jet *jet = m_EDM->getJet(icontainer);
   bool isBad = !m_jetCleaningTool->keep(*jet);
 
@@ -1183,13 +1143,15 @@ bool PSL::XSUSYObjDefAlgPlusPlus::isBadJet(int icontainer){
                   fabs(jet->eta()) > jet_central_jvfeta_max || 
                   m_jetjvf_cut_and_sf->passesJvtCut(*jet));
 
-  // These are hardcoded, instead of using the configurable cuts.
   // see https://twiki.cern.ch/twiki/bin/view/AtlasProtected/HowToCleanJets2015#Event_Cleaning
   // Mimicking the logic on the twiki:
-  if (20000. < jet->pt() && jet->pt() < jet_central_jvfpt_max*1000. && fabs(jet->eta()) < jet_central_jvfeta_max) {
+  if (20000. < jet->pt() && jet->pt() < 50000. && fabs(jet->eta()) < jet_central_jvfeta_max) {
     if (passJvt && isBad) return true;
   }
-  else if (20000. < jet->pt() && jet->pt() < jet_central_jvfpt_max*1000. && fabs(jet->eta()) >= jet_central_jvfeta_max) {
+  else if (50000. < jet->pt() && jet->pt() < 60000. && fabs(jet->eta()) < jet_central_jvfeta_max) {
+    if (isBad) return true;
+  }
+  else if (fabs(jet->eta()) >= jet_central_jvfeta_max) {
     if (isBad) return true;
   }
   else if (jet->pt() > jet_central_jvfpt_max*1000.) {

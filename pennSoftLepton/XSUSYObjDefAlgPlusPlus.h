@@ -113,7 +113,7 @@ namespace PSL
     SG::AuxElement::Decorator<char> dec_passOR_MuDecision; //!
     SG::AuxElement::Decorator<char> dec_passOR_JetClean; //!
     // special baseline for jet-jet OR
-    SG::AuxElement::Decorator<char> dec_baselineJetPt20; //!
+    SG::AuxElement::Decorator<char> dec_baselineForJetCleaning; //!
 
     virtual void ApplyLeptonVeto(void){};
 
@@ -128,7 +128,7 @@ namespace PSL
     bool isZElectron(int icontainer);
     bool isWMuon(int icontainer);
     bool isWElectron(int icontainer);
-    bool isBaselineJet(int icontainer,bool forOR = false);
+    bool isBaselineJet(int icontainer,float ptcut_gev,float etacut,bool forAnalysis);
     bool isBadJet(int icontainer);
     // Trigger matching function
     bool isTriggerMatchedElectron(const xAOD::Electron *ele);
@@ -145,9 +145,9 @@ namespace PSL
 
     // define overlap removal tool
     ORUtils::ORToolBox m_orToolbox; //!
-    ORUtils::ORToolBox m_orToolbox_jet; //!
+    ORUtils::ORToolBox m_orToolbox_jetCleaning; //!
     ORUtils::OverlapRemovalTool *m_orTool; //!
-    ORUtils::OverlapRemovalTool *m_orToolJet; //!
+    ORUtils::OverlapRemovalTool *m_orToolJetCleaning; //!
     ORUtils::EleMuSharedTrkOverlapTool *m_orTool_ll; //!
     bool m_doTauOR    = false;
     bool m_doPhotonOR = false;
