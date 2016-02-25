@@ -2,36 +2,10 @@
 
 import ROOT
 import pennSoftLepton.PyAnalysisPlotting as anaplot
+from pennSoftLepton.PyRandomStuff import GetFFHist,AddFFHistIf
 import math
 
 anaplot.LoadRootCore()
-#
-# expand "region" to include ltt, tlt, ttl, all
-#
-def GetFFHist(f,k,r,c,p='ttbar',v='MTW',num_or_den='Den') : # file key region channel process variable
-    other = '%s_%s'%(p,v)
-    rtmp = r
-    if r == 'all' :
-        rtmp = 'ltt'
-    keyregionchannel = 'PassEvent_FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)
-    #print 'Adding','%s/%s_%s'%(keyregionchannel,keyregionchannel,other)
-    print 'Adding',('FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)).replace('__','_')
-    hists = anaplot.GetPassEventBkgHistos(v,('FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)).replace('__','_'),p,f)
-    if not hists :
-        print 'NOT Adding (was missing): ',('FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)).replace('__','_')
-        return 0
-    hist = hists[0]
-    if r == 'all' and c not in ['euu','uee'] :
-        hist.Add(GetFFHist(f,k,'tlt',c,p,v,num_or_den))
-        hist.Add(GetFFHist(f,k,'ttl',c,p,v,num_or_den))
-    return hist
-    #return pyhelpers.GetRootObj(f,'%s/%s_%s'%(keyregionchannel,keyregionchannel,other))
-
-def AddIf(hist,f,k,r,c,p='ttbar',v='MTW',num_or_den='Den') :
-    h = GetFFHist(f,k,r,c,p,v,num_or_den)
-    if h :
-        hist.Add(h)
-    return
 
 pm = "$\pm$"
 #channels = ['euu','uee','all']
@@ -84,11 +58,11 @@ for r in regions :
         hists_other[r][c] = GetFFHist('all.root','ttcr',r,c,p='wz',num_or_den='Num')
         hists_other[r][c].Add(GetFFHist('all.root','ttcr',r,c,p='zz',num_or_den='Num'))
         hists_other[r][c].Add(GetFFHist('all.root','ttcr',r,c,p='vvv',num_or_den='Num'))
-        AddIf(hists_other[r][c],'all.root','ttcr',r,c,p='tother',num_or_den='Num')
+        AddFFHistIf(hists_other[r][c],'all.root','ttcr',r,c,p='tother',num_or_den='Num')
         hists_other[r][c].Add(GetFFHist('all.root','ttcr',r,c,p='ttv',num_or_den='Num'))
-        AddIf(hists_other[r][c],'all.root','ttcr',r,c,p='zjet',num_or_den='Num')
-        AddIf(hists_other[r][c],'all.root','ttcr',r,c,p='zgam',num_or_den='Num')
-        AddIf(hists_other[r][c],'all.root','ttcr',r,c,p='singletop',num_or_den='Num')
+        AddFFHistIf(hists_other[r][c],'all.root','ttcr',r,c,p='zjet',num_or_den='Num')
+        AddFFHistIf(hists_other[r][c],'all.root','ttcr',r,c,p='zgam',num_or_den='Num')
+        AddFFHistIf(hists_other[r][c],'all.root','ttcr',r,c,p='singletop',num_or_den='Num')
         hists_other[r][c].Add(GetFFHist('all.root','ttcr',r,c,p='tz',num_or_den='Num'))
         nevt_other[r][c] = hists_other[r][c].Integral(0,hists_other[r][c].GetNbinsX()+1)
         err_other[r][c] = math.sqrt(sum(list(hists_other[r][c].GetSumw2())))
