@@ -2,36 +2,10 @@
 
 import ROOT
 import pennSoftLepton.PyAnalysisPlotting as anaplot
+from pennSoftLepton.PyRandomStuff import GetFFHist,AddFFHistIf
 import math
 
 anaplot.LoadRootCore()
-#
-# expand "region" to include ltt, tlt, ttl, all
-#
-def GetFFHist(f,k,r,c,p='ttbar',v='MTW',num_or_den='Den') : # file key region channel process variable
-    other = '%s_%s'%(p,v)
-    rtmp = r
-    if r == 'all' :
-        rtmp = 'ltt'
-    keyregionchannel = 'PassEvent_FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)
-    #print 'Adding','%s/%s_%s'%(keyregionchannel,keyregionchannel,other)
-    print 'Adding',('FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)).replace('__','_')
-    hists = anaplot.GetPassEventBkgHistos(v,('FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)).replace('__','_'),p,f)
-    if not hists :
-        print 'NOT Adding (was missing): ',('FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)).replace('__','_')
-        return 0
-    hist = hists[0]
-    if r == 'all' :
-        hist.Add(GetFFHist(f,k,'tlt',c,p,v,num_or_den))
-        hist.Add(GetFFHist(f,k,'ttl',c,p,v,num_or_den))
-    return hist
-    #return pyhelpers.GetRootObj(f,'%s/%s_%s'%(keyregionchannel,keyregionchannel,other))
-
-def AddIf(hist,f,k,r,c,p='ttbar',v='MTW',num_or_den='Den') :
-    h = GetFFHist(f,k,r,c,p,v,num_or_den)
-    if h :
-        hist.Add(h)
-    return
 
 pm = "$\pm$"
 #channels = ['euu','uee','all']
@@ -74,21 +48,23 @@ for r in regions :
         #
         # ttcr_ttt (data times FF
         #
-        hists_ttbar[r][c] = GetFFHist('all.root','z_ttvalid',r,c,p='ttbar',num_or_den='Den')
-        AddIf(hists_ttbar[r][c],'all.root','z_ttvalid',r,c,p='tw',num_or_den='Den')
-        AddIf(hists_ttbar[r][c],'all.root','z_ttvalid',r,c,p='qqww',num_or_den='Den')
+        hists_ttbar[r][c] = GetFFHist('all.root','z_ttvalid',r,c,p='ttbar',num_or_den='Den',add_desert=True)
+        AddFFHistIf(hists_ttbar[r][c],'all.root','z_ttvalid',r,c,p='tw',num_or_den='Den',add_desert=True)
+        AddFFHistIf(hists_ttbar[r][c],'all.root','z_ttvalid',r,c,p='qqww',num_or_den='Den',add_desert=True)
         nevt_ttbar[r][c] = hists_ttbar[r][c].Integral(0,hists_ttbar[r][c].GetNbinsX()+1)
         err_ttbar[r][c] = math.sqrt(sum(list(hists_ttbar[r][c].GetSumw2())))
 
-        hists_other[r][c] = GetFFHist('all.root','z_ttvalid',r,c,p='wz',num_or_den='Den')
-        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='zz',num_or_den='Den')
-        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='vvv',num_or_den='Den')
-        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='tother',num_or_den='Den')
-        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='ttv',num_or_den='Den')
-        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='zjet',num_or_den='Den')
-        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='zgam',num_or_den='Den')
-        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='singletop',num_or_den='Den')
-        AddIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='tz',num_or_den='Den')
+        hists_other[r][c] = GetFFHist('all.root','z_ttvalid',r,c,p='wz',num_or_den='Den',add_desert=True)
+        AddFFHistIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='zz',num_or_den='Den',add_desert=True)
+        AddFFHistIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='vvv',num_or_den='Den',add_desert=True)
+        AddFFHistIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='tother',num_or_den='Den',add_desert=True)
+        AddFFHistIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='ttv',num_or_den='Den',add_desert=True)
+        # for some reason this (zjet) was turned off. or maybe it was a tinny tiny bug, in which the ttl zjet
+        # did not get picked up. Oh well.
+        #AddFFHistIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='zjet',num_or_den='Den',add_desert=True)
+        AddFFHistIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='zgam',num_or_den='Den',add_desert=True)
+        AddFFHistIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='singletop',num_or_den='Den',add_desert=True)
+        AddFFHistIf(hists_other[r][c],'all.root','z_ttvalid',r,c,p='tz',num_or_den='Den',add_desert=True)
 
         nevt_other[r][c] = hists_other[r][c].Integral(0,hists_other[r][c].GetNbinsX()+1)
         err_other[r][c] = math.sqrt(sum(list(hists_other[r][c].GetSumw2())))
@@ -99,7 +75,7 @@ for r in regions :
         nevt_total[r][c] = hists_total[r][c].Integral(0,hists_total[r][c].GetNbinsX()+1)
         err_total[r][c] = math.sqrt(sum(list(hists_total[r][c].GetSumw2())))
 
-        hists_data[r][c] = GetFFHist('all.root','z_ttvalid',r,c,p='data',num_or_den='Den')
+        hists_data[r][c] = GetFFHist('all.root','z_ttvalid',r,c,p='data',num_or_den='Den',add_desert=True)
         nevt_data[r][c] = hists_data[r][c].Integral(0,hists_data[r][c].GetNbinsX()+1)
         err_data[r][c] = math.sqrt(sum(list(hists_data[r][c].GetSumw2())))
 
