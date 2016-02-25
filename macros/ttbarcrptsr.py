@@ -16,12 +16,22 @@ def GetFFHist(f,k,r,c,p='ttbar',v='MTW',num_or_den='Den') : # file key region ch
     keyregionchannel = 'PassEvent_FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)
     #print 'Adding','%s/%s_%s'%(keyregionchannel,keyregionchannel,other)
     print 'Adding',('FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)).replace('__','_')
-    hist = anaplot.GetPassEventBkgHistos(v,('FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)).replace('__','_'),p,f)[0]
+    hists = anaplot.GetPassEventBkgHistos(v,('FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)).replace('__','_'),p,f)
+    if not hists :
+        print 'NOT Adding (was missing): ',('FFTool_%s_%s_%s%s'%(k,rtmp,c,num_or_den)).replace('__','_')
+        return 0
+    hist = hists[0]
     if r == 'all' and c not in ['euu','uee'] :
         hist.Add(GetFFHist(f,k,'tlt',c,p,v,num_or_den))
         hist.Add(GetFFHist(f,k,'ttl',c,p,v,num_or_den))
     return hist
     #return pyhelpers.GetRootObj(f,'%s/%s_%s'%(keyregionchannel,keyregionchannel,other))
+
+def AddIf(hist,f,k,r,c,p='ttbar',v='MTW',num_or_den='Den') :
+    h = GetFFHist(f,k,r,c,p,v,num_or_den)
+    if h :
+        hist.Add(h)
+    return
 
 pm = "$\pm$"
 #channels = ['euu','uee','all']
@@ -66,12 +76,19 @@ for r in regions :
         # ttcr_ttt (data times FF
         #
         hists_ttbar[r][c] = GetFFHist('all.root','ttcr',r,c,p='ttbar',num_or_den='Num')
+        hists_ttbar[r][c].Add(GetFFHist('all.root','ttcr',r,c,p='tw',num_or_den='Num'))
+        hists_ttbar[r][c].Add(GetFFHist('all.root','ttcr',r,c,p='qqww',num_or_den='Num'))
         nevt_ttbar[r][c] = hists_ttbar[r][c].Integral(0,hists_ttbar[r][c].GetNbinsX()+1)
         err_ttbar[r][c] = math.sqrt(sum(list(hists_ttbar[r][c].GetSumw2())))
 
         hists_other[r][c] = GetFFHist('all.root','ttcr',r,c,p='wz',num_or_den='Num')
         hists_other[r][c].Add(GetFFHist('all.root','ttcr',r,c,p='zz',num_or_den='Num'))
+        hists_other[r][c].Add(GetFFHist('all.root','ttcr',r,c,p='vvv',num_or_den='Num'))
+        AddIf(hists_other[r][c],'all.root','ttcr',r,c,p='tother',num_or_den='Num')
         hists_other[r][c].Add(GetFFHist('all.root','ttcr',r,c,p='ttv',num_or_den='Num'))
+        AddIf(hists_other[r][c],'all.root','ttcr',r,c,p='zjet',num_or_den='Num')
+        AddIf(hists_other[r][c],'all.root','ttcr',r,c,p='zgam',num_or_den='Num')
+        AddIf(hists_other[r][c],'all.root','ttcr',r,c,p='singletop',num_or_den='Num')
         hists_other[r][c].Add(GetFFHist('all.root','ttcr',r,c,p='tz',num_or_den='Num'))
         nevt_other[r][c] = hists_other[r][c].Integral(0,hists_other[r][c].GetNbinsX()+1)
         err_other[r][c] = math.sqrt(sum(list(hists_other[r][c].GetSumw2())))
@@ -101,17 +118,19 @@ for c in channels :
         # print '%2.2f%s%2.2f%s%2.2f'%(nevt[r][c],pm,err[r][c],pm,syst[r][c]),
         print '%2.2f%s%2.2f &'%(nevt_ttbar[r][c],pm,err_ttbar[r][c]),
         print '%2.2f%s%2.2f &'%(nevt_other[r][c],pm,err_other[r][c]),
-        print '%2.2f%s%2.2f &'%(nevt_data[r][c],pm,err_data[r][c]),
         print '%2.2f%s%2.2f &'%(nevt_total[r][c],pm,err_total[r][c]),
+        print '%2.2f%s%2.2f &'%(nevt_data[r][c],pm,err_data[r][c]),
         cf = (nevt_data[r][c] - nevt_other[r][c])/float(nevt_ttbar[r][c])
         cf_err_data = err_data[r][c]/float(nevt_ttbar[r][c])
         cf_err_other_stat = err_other[r][c]/float(nevt_ttbar[r][c])
         cf_err_other_syst = 0.15*nevt_other[r][c]/float(nevt_ttbar[r][c])
         cf_err_ttbar_stat = cf*err_ttbar[r][c]/float(nevt_ttbar[r][c])
-        cf_err_total = math.sqrt(cf_err_data**2 + cf_err_other_stat**2 + cf_err_ttbar_stat**2)
-        #cf_err_total = math.sqrt(cf_err_data**2 + cf_err_other_stat**2 + cf_err_other_syst**2 + cf_err_ttbar_stat**2)
-        print '%2.2f%s%2.2f%s%2.2f'%(cf,pm,0,pm,cf_err_total),
-        print '%2.2f'%(cf_err_other_syst),
+#         cf_err_total = math.sqrt(cf_err_data**2 + cf_err_ttbar_stat**2)
+#         cf_err_total = math.sqrt(cf_err_data**2 + cf_err_ttbar_stat**2 + cf_err_other_stat**2)
+#         cf_err_total = math.sqrt(cf_err_data**2 + cf_err_ttbar_stat**2 + cf_err_other_stat**2 + cf_err_other_syst**2)
+        print '%2.2f%s%2.2f%s%2.2f'%(cf,pm,cf_err_data,pm,cf_err_ttbar_stat),
+#         print '%2.2f%s%2.2f%s%2.2f'%(cf,pm,0,pm,cf_err_total),
+#         print '%2.2f'%(cf_err_other_syst),
         #print '%2.2f'%(nevt[r][c]),
         #print '%2.2f'%(nevt[r][c]*0.15),
         #print '%2.2f'%(err[r][c]),
