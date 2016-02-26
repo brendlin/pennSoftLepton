@@ -65,6 +65,8 @@ def main(options,args) :
 
             xlabel = ROOT.PSL.GetXaxisLabel(v.split('[')[0])
             cans.append(anaplot.DrawHistos('%s_%s'%(k,v),v,xlabel,bkg_hists,sig_hists,data_hist=data_hist,dostack=options.stack,log=options.log,ratio=options.ratio,fb=options.fb))
+            taxisfunc.SetXaxisRanges(cans[-1],low,high)
+
 
     #
     # Specifically get the fake factor in pt:
@@ -299,26 +301,10 @@ def main(options,args) :
         if not options.e  : hists_MuNum['dijet'].Write('Muons')
         if not options.mu : hists_EleNum['dijet'].Write('Electrons')
     g.Close()
-    
-    if 'zjet_sr' in hists_MuNum.keys() : 
-        cans.append(plotfunc.RatioCanvas('lepPt_Mu_ff_systematic','%s_Mu_ff_systematic'%(v),500,500))
-    else :
-        cans.append(ROOT.TCanvas('lepPt_Mu_ff','%s_Mu_ff'%(v),500,500))    
-
-    if 'data'in hists_EleNum.keys() : 
-
-        if (options.region == 'dijet') :
-            plotfunc.AddHistogram(cans[-1],hists_MuNum['data_bws'])
-            plotfunc.AddHistogram(cans[-1],hists_MuNum['data_bzs'])
-            if 'dijet' in hists_EleNum.keys() :
-                plotfunc.AddHistogram(cans[-1],hists_MuNum['dijet'])
-
-        if (options.region == 'zjet') :
-            if not options.syst : plotfunc.AddHistogram(cans[-1],hists_MuNum['data_bvvs'])
-            #plotfunc.AddHistogram(cans[-1],hists_MuNum['data_vv15sys'])
-            pass
-        if not options.syst : plotfunc.AddHistogram(cans[-1],hists_MuNum['data'])
-
+ 
+    #
+    # systematic band histogram
+    #
     from array import array
     band = ROOT.TH1F('band','band',5,array('d',[0,15,20,30,50,100]))
     def SetSysts(h_band,systs) :
@@ -328,69 +314,97 @@ def main(options,args) :
     band.SetFillColor(ROOT.kOrange-0)
     band.SetMarkerSize(0)
     band.SetMarkerColor(ROOT.kOrange-0)
-
-    if (options.region == 'zjet') :
-        if 'zjet' in hists_MuNum.keys() :
-            plotfunc.AddHistogram(cans[-1],hists_MuNum['zjet'])
-            if 'zjet_sr' in hists_MuNum.keys() : 
-                if z_w == 'zid' :
-                    SetSysts(band,[0.0,0.3,0.2,0.2,0.2])
-                else :
-                    SetSysts(band,[0.0,0.0,0.2,0.25,0.25])
-                plotfunc.AddHistogram(cans[-1].GetPrimitive('pad_bot'),band,'E2')
-                plotfunc.AddRatio(cans[-1],hists_MuNum['zjet_sr'],hists_MuNum['zjet'])
-                #plotfunc.AddRatio(cans[-1],hists_MuNum['ttbar_sr'],hists_MuNum['zjet'])
-
-    if not plotfunc.CanvasEmpty(cans[-1]) :
-        plotfunc.FormatCanvasAxes(cans[-1])
-        #taxisfunc.SetYaxisRanges(cans[-1],0,0.5)
-        plotfunc.MakeLegend(cans[-1])
-        additionaltext = ('supporting triggers' if options.region == 'dijet' else None)
-        plotfunc.FullFormatCanvasDefault(cans[-1],sqrts=13,lumi=options.fb,additionaltext=additionaltext)
+   
+    #
+    # Muon fake factor plots
+    #
+    if not options.e :
         if 'zjet_sr' in hists_MuNum.keys() : 
-           taxisfunc.SetYaxisRanges(cans[-1].GetPrimitive('pad_bot'),-1,3)
-    plotfunc.SetAxisLabels(cans[-1],'p_{T} [GeV]','fake factor')
+            cans.append(plotfunc.RatioCanvas('lepPt_Mu_ff_systematic','%s_Mu_ff_systematic'%(v),500,500))
+        else :
+            cans.append(ROOT.TCanvas('lepPt_Mu_ff','%s_Mu_ff'%(v),500,500))    
 
-    if 'zjet_sr' in hists_EleNum.keys() : 
-        cans.append(plotfunc.RatioCanvas('lepPt_Ele_ff_systematic','%s_Ele_ff_systematic'%(v),500,500))
-    else :
-        cans.append(ROOT.TCanvas('lepPt_Ele_ff','%s_Ele_ff'%(v),500,500))
+        if 'data'in hists_EleNum.keys() : 
 
-    if 'data'in hists_EleNum.keys() : 
+            if (options.region == 'dijet') :
+                plotfunc.AddHistogram(cans[-1],hists_MuNum['data_bws'])
+                plotfunc.AddHistogram(cans[-1],hists_MuNum['data_bzs'])
+                if 'dijet' in hists_EleNum.keys() :
+                    plotfunc.AddHistogram(cans[-1],hists_MuNum['dijet'])
 
-        if (options.region == 'dijet') :
-            plotfunc.AddHistogram(cans[-1],hists_EleNum['data_bws'])
-            plotfunc.AddHistogram(cans[-1],hists_EleNum['data_bzs'])
-            if 'dijet' in hists_EleNum.keys() :
-                plotfunc.AddHistogram(cans[-1],hists_EleNum['dijet'])
+            if (options.region == 'zjet') :
+                if not options.syst : plotfunc.AddHistogram(cans[-1],hists_MuNum['data_bvvs'])
+                #plotfunc.AddHistogram(cans[-1],hists_MuNum['data_vv15sys'])
+                pass
+            if not options.syst : plotfunc.AddHistogram(cans[-1],hists_MuNum['data'])
 
         if (options.region == 'zjet') :
-            if not options.syst : plotfunc.AddHistogram(cans[-1],hists_EleNum['data_bvvs'])
-            #plotfunc.AddHistogram(cans[-1],hists_EleNum['data_vv15sys'])
+            if 'zjet' in hists_MuNum.keys() :
+                plotfunc.AddHistogram(cans[-1],hists_MuNum['zjet'])
+                if 'zjet_sr' in hists_MuNum.keys() : 
+                    if z_w == 'zid' :
+                        SetSysts(band,[0.0,0.25,0.2,0.25,0.25])
+                    else :
+                        SetSysts(band,[0.0,0.0,0.2,0.30,0.30])
+                    plotfunc.AddHistogram(cans[-1].GetPrimitive('pad_bot'),band,'E2')
+                    plotfunc.AddRatio(cans[-1],hists_MuNum['zjet_sr'],hists_MuNum['zjet'])
+                    #plotfunc.AddRatio(cans[-1],hists_MuNum['ttbar_sr'],hists_MuNum['zjet'])
 
-        if not options.syst : plotfunc.AddHistogram(cans[-1],hists_EleNum['data'])
+        if not plotfunc.CanvasEmpty(cans[-1]) :
+            plotfunc.FormatCanvasAxes(cans[-1])
+            #taxisfunc.SetYaxisRanges(cans[-1],0,0.5)
+            plotfunc.MakeLegend(cans[-1])
+            additionaltext = ('supporting triggers' if options.region == 'dijet' else None)
+            plotfunc.FullFormatCanvasDefault(cans[-1],sqrts=13,lumi=options.fb,additionaltext=additionaltext)
+            if 'zjet_sr' in hists_MuNum.keys() : 
+               taxisfunc.SetYaxisRanges(cans[-1].GetPrimitive('pad_bot'),-1,3)
+        plotfunc.SetAxisLabels(cans[-1],'p_{T} [GeV]','fake factor')
 
-    if (options.region == 'zjet') :
-        if 'zjet' in hists_EleNum.keys() :
-            plotfunc.AddHistogram(cans[-1],hists_EleNum['zjet'])
-            if 'zjet_sr' in hists_EleNum.keys() : 
-                if z_w == 'zid' :
-                    SetSysts(band,[0.0,0.6,0.35,0.35,0.50])
-                else :
-                    SetSysts(band,[0.0,0.0,0.3,0.3,0.8])
-                plotfunc.AddHistogram(cans[-1].GetPrimitive('pad_bot'),band,'E2')
-                plotfunc.AddRatio(cans[-1],hists_EleNum['zjet_sr'],hists_EleNum['zjet'])
-                #plotfunc.AddRatio(cans[-1],hists_EleNum['ttbar_sr'],hists_EleNum['zjet'])
 
-    if not plotfunc.CanvasEmpty(cans[-1]) :
-        plotfunc.FormatCanvasAxes(cans[-1])
-        #taxisfunc.SetYaxisRanges(cans[-1],0,0.5)
-        plotfunc.MakeLegend(cans[-1])
-        additionaltext = ('supporting triggers' if options.region == 'dijet' else None)
-        plotfunc.FullFormatCanvasDefault(cans[-1],sqrts=13,lumi=options.fb,additionaltext=additionaltext)
+    #
+    # electron fake factor plots
+    #
+    if not options.mu :
         if 'zjet_sr' in hists_EleNum.keys() : 
-           taxisfunc.SetYaxisRanges(cans[-1].GetPrimitive('pad_bot'),-1,3)
-    plotfunc.SetAxisLabels(cans[-1],'p_{T} [GeV]','fake factor')
+            cans.append(plotfunc.RatioCanvas('lepPt_Ele_ff_systematic','%s_Ele_ff_systematic'%(v),500,500))
+        else :
+            cans.append(ROOT.TCanvas('lepPt_Ele_ff','%s_Ele_ff'%(v),500,500))
+
+        if 'data'in hists_EleNum.keys() : 
+
+            if (options.region == 'dijet') :
+                plotfunc.AddHistogram(cans[-1],hists_EleNum['data_bws'])
+                plotfunc.AddHistogram(cans[-1],hists_EleNum['data_bzs'])
+                if 'dijet' in hists_EleNum.keys() :
+                    plotfunc.AddHistogram(cans[-1],hists_EleNum['dijet'])
+
+            if (options.region == 'zjet') :
+                if not options.syst : plotfunc.AddHistogram(cans[-1],hists_EleNum['data_bvvs'])
+                #plotfunc.AddHistogram(cans[-1],hists_EleNum['data_vv15sys'])
+
+            if not options.syst : plotfunc.AddHistogram(cans[-1],hists_EleNum['data'])
+
+        if (options.region == 'zjet') :
+            if 'zjet' in hists_EleNum.keys() :
+                plotfunc.AddHistogram(cans[-1],hists_EleNum['zjet'])
+                if 'zjet_sr' in hists_EleNum.keys() : 
+                    if z_w == 'zid' :
+                        SetSysts(band,[0.0,0.55,0.30,0.40,0.60])
+                    else :
+                        SetSysts(band,[0.0,0.0,0.25,0.25,0.65])
+                    plotfunc.AddHistogram(cans[-1].GetPrimitive('pad_bot'),band,'E2')
+                    plotfunc.AddRatio(cans[-1],hists_EleNum['zjet_sr'],hists_EleNum['zjet'])
+                    #plotfunc.AddRatio(cans[-1],hists_EleNum['ttbar_sr'],hists_EleNum['zjet'])
+
+        if not plotfunc.CanvasEmpty(cans[-1]) :
+            plotfunc.FormatCanvasAxes(cans[-1])
+            #taxisfunc.SetYaxisRanges(cans[-1],0,0.5)
+            plotfunc.MakeLegend(cans[-1])
+            additionaltext = ('supporting triggers' if options.region == 'dijet' else None)
+            plotfunc.FullFormatCanvasDefault(cans[-1],sqrts=13,lumi=options.fb,additionaltext=additionaltext)
+            if 'zjet_sr' in hists_EleNum.keys() : 
+               taxisfunc.SetYaxisRanges(cans[-1].GetPrimitive('pad_bot'),-1,3)
+        plotfunc.SetAxisLabels(cans[-1],'p_{T} [GeV]','fake factor')
 
     raw_input('Pausing. Press enter to exit.')
 
