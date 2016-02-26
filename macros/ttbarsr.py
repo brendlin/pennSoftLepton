@@ -31,6 +31,11 @@ def GetFFHist(f,k,r,c,p='ttbar',v='MTW',num_or_den='Den') : # file key region ch
     return hist
     #return pyhelpers.GetRootObj(f,'%s/%s_%s'%(keyregionchannel,keyregionchannel,other))
 
+def AddIf(hist,f,k,r,c,p='ttbar',v='MTW',num_or_den='Den') :
+    h = GetFFHist(f,k,r,c,p,v,num_or_den)
+    if h :
+        hist.Add(h)
+    return
 
 pm = "$\pm$"
 channels = ['eee','euu','uee','uuu','all']
@@ -68,16 +73,16 @@ for r in regions :
 
         print 'nominal'
         hists_ttbar[r][c] = GetFFHist('all.root','',r,c,p='ttbar',num_or_den='Num')
-        if GetFFHist('all.root','',r,c,p='tw',num_or_den='Num') :
-            hists_ttbar[r][c].Add(GetFFHist('all.root','',r,c,p='tw',num_or_den='Num'))
+        AddIf(hists_ttbar[r][c],'all.root','',r,c,p='tw',num_or_den='Num')
+        AddIf(hists_ttbar[r][c],'all.root','',r,c,p='qqww',num_or_den='Num')
         nevt_ttbar[r][c] = hists_ttbar[r][c].Integral(0,hists_ttbar[r][c].GetNbinsX()+1)
         err_ttbar[r][c] = math.sqrt(sum(list(hists_ttbar[r][c].GetSumw2())))
 
         print 'U'
         if c != 'eee' :
             hists_ttbar_u[r][c] = GetFFHist('../%sTtbarSR_Ufake/all.root'%(wpwm),'',r,c,p='ttbar',num_or_den='Num')
-            if GetFFHist('../%sTtbarSR_Ufake/all.root'%(wpwm),'',r,c,p='tw',num_or_den='Num') :
-                hists_ttbar_u[r][c].Add(GetFFHist('../%sTtbarSR_Ufake/all.root'%(wpwm),'',r,c,p='tw',num_or_den='Num'))
+            AddIf(hists_ttbar_u[r][c],'../%sTtbarSR_Ufake/all.root'%(wpwm),'',r,c,p='tw',num_or_den='Num')
+            AddIf(hists_ttbar_u[r][c],'../%sTtbarSR_Ufake/all.root'%(wpwm),'',r,c,p='qqww',num_or_den='Num')
             nevt_ttbar_u[r][c] = hists_ttbar_u[r][c].Integral(0,hists_ttbar_u[r][c].GetNbinsX()+1)
             err_ttbar_u[r][c] = math.sqrt(sum(list(hists_ttbar_u[r][c].GetSumw2())))
         else :
@@ -87,8 +92,8 @@ for r in regions :
         print 'E'
         if c != 'uuu' :
             hists_ttbar_e[r][c] = GetFFHist('../%sTtbarSR_Efake/all.root'%(wpwm),'',r,c,p='ttbar',num_or_den='Num')
-            if GetFFHist('../%sTtbarSR_Efake/all.root'%(wpwm),'',r,c,p='tw',num_or_den='Num') :
-                hists_ttbar_e[r][c].Add(GetFFHist('../%sTtbarSR_Efake/all.root'%(wpwm),'',r,c,p='tw',num_or_den='Num'))
+            AddIf(hists_ttbar_e[r][c],'../%sTtbarSR_Efake/all.root'%(wpwm),'',r,c,p='tw',num_or_den='Num')
+            AddIf(hists_ttbar_e[r][c],'../%sTtbarSR_Efake/all.root'%(wpwm),'',r,c,p='qqww',num_or_den='Num')
             nevt_ttbar_e[r][c] = hists_ttbar_e[r][c].Integral(0,hists_ttbar_e[r][c].GetNbinsX()+1)
             err_ttbar_e[r][c] = math.sqrt(sum(list(hists_ttbar_e[r][c].GetSumw2())))
         else :
@@ -96,32 +101,41 @@ for r in regions :
             err_ttbar_e[r][c] = 0
         
 
-print '\\ttbar MC, $\mu$-fake   &',
+print '\\ttbar MC$\\times$SF, $\mu$-fake   &',
 for c in channels :
     r = 'ttt'
     print '%2.2f%s%2.2f &'%(nevt_ttbar_u[r][c],pm,err_ttbar_u[r][c]),
 print
-print '\\ttbar MC, $e$-fake     &',
+print '\\ttbar MC$\\times$SF, $e$-fake     &',
 for c in channels :
     r = 'ttt'
     print '%2.2f%s%2.2f &'%(nevt_ttbar_e[r][c],pm,err_ttbar_e[r][c]),
 print
-print '\\ttbar MC, total        &',
+print '\\ttbar MC$\\times$SF, total        &',
 for c in channels :
     r = 'ttt'
     print '%2.2f%s%2.2f &'%(nevt_ttbar[r][c],pm,err_ttbar[r][c]),
-    #print '%2.2f &'%(nevt_ttbar[r][c]),
-    #print '%2.2f &'%(err_ttbar[r][c]),
+    #print ' %2.2f  &'%(nevt_ttbar[r][c]),
+    #print ' %2.2f  &'%(err_ttbar[r][c]),
 print
 
+# This should be good for W+Z, W-Z, All
 print 'statistical errors on SF, propagated to the SR:'
-print '$\mu$ SF Uncertainty           &',
-for c in channels : # 1.44$\pm$0.48$\pm$0.17
+print '$\mu$-fake Uncertainty           &',
+for c in channels : # 1.44$\pm$0.48$\pm$0.17 ---> 1.41$\pm$0.49$\pm$0.17
     r = 'ttt'
-    print '%2.2f &'%(math.sqrt(0.48**2+0.17**2)*nevt_ttbar_u[r][c]/1.44),
+    print ' %2.2f  &'%(math.sqrt(0.49**2+0.17**2)*nevt_ttbar_u[r][c]/1.41),
 print
-print 'ele SF Uncertainty             &',
-for c in channels : # 0.72$\pm$0.35$\pm$0.07
+print '$e$-fake Uncertainty             &',
+for c in channels : # 0.72$\pm$0.35$\pm$0.07 ---> 0.54$\pm$0.32$\pm$0.05
     r = 'ttt'
-    print '%2.2f &'%(math.sqrt(0.35**2+0.07**2)*nevt_ttbar_e[r][c]/0.72),
+    print ' %2.2f  &'%(math.sqrt(0.32**2+0.05**2)*nevt_ttbar_e[r][c]/0.54),
 print
+
+# For the Wp and Wm inputs, there was a small typo. The results are fairly
+# similar, but the correct results should be (v5 of the support note)
+# wp
+# $\mu$-fake Uncertainty           &  0.00  &  0.40  &  0.10  &  0.83  &  1.33  & %%% MISTAKE IT SHOULD BE THIS!!!
+# wm
+# $\mu$-fake Uncertainty           &  0.00  &  0.27  &  0.20  &  0.49  &  0.96  & %%% MISTAKE IT SHOULD BE THIS!!!
+
