@@ -68,9 +68,7 @@ def AddToMap(srm_files,runNumber,sim_tag,derivation) :
 def main(options,args) :
 
     # Load c++
-    print 'Loading c++...'
-    ROOT.gROOT.ProcessLine (".x $ROOTCOREDIR/scripts/load_packages.C")
-    ROOT.PSL.EDM # needs to be here for some reason?
+    pyhelpers.LoadRootCore()
 
     start_time = time.time()
     myhandler = ROOT.SH.SampleHandler()
