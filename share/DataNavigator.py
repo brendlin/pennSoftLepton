@@ -23,9 +23,7 @@ def main (options,args) :
     #
     # Load c++
     #
-    print 'Loading c++...'
-    ROOT.gROOT.ProcessLine (".x $ROOTCOREDIR/scripts/load_packages.C")
-    ROOT.PSL.EDM # this needs to be here for some reason. do not remove.
+    pyhelpers.LoadRootCore()
 
     fulltag = ''
     #if options.rtag :
