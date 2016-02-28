@@ -142,9 +142,9 @@ def main (options,args) :
     #
     sampleslist = []
     for i in options.samples.split(',') :
-        tmp = list(ROOT.PSL.ConvertSampleToSampleVec(ROOT.PSL.ConvertToSample(i)))
+        tmp = list(ROOT.PSL.ConvertSampleToSampleVec(i))
         for t in tmp : 
-            sampleslist.append(ROOT.PSL.ConvertSampleToStr(t))
+            sampleslist.append(t)
 
     confname = '%s/../pennSoftLepton/config/%s'%(os.getenv('ROOTCOREBIN'),options.config)
     if not os.path.exists(confname) :
