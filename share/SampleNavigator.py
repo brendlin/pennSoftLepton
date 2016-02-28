@@ -34,10 +34,18 @@ def buildSRM(inputFile,outputFile,derivation):
             runNumber = f.split('mc15_13TeV.')[1].split('.')[0]
         atlfast = re.findall('a[0-9][0-9][0-9]',f)
         fullsim = re.findall('s[0-9][0-9][0-9][0-9]',f)
+        recosim = re.findall('r[0-9][0-9][0-9][0-9]',f)
+
         isdata = ('data' in f)
         sim_tag = ''
         if len(atlfast) : sim_tag = atlfast[0].replace('_','')+'*'
         if len(fullsim) : sim_tag = fullsim[0].replace('_','')+'*'
+
+        mc15_tag = 'mc15'
+
+        if len(recosim) :
+            mytag = int(recosim[0].replace('r',''))
+            if (mytag > 7266) : mc15_tag = 'mc15b'
 
         cmd = 'dq2-ls -fpL UPENN_LOCALGROUPDISK '+f
         ls_output = os.popen(cmd).readlines()
@@ -67,10 +75,10 @@ def buildSRM(inputFile,outputFile,derivation):
             sys.exit()            
         if n_total == n_local and n_total > 0 and ds_name :
             print ds_name
-            outputFile.write(AddToMap(srm_files,runNumber,sim_tag,derivation))
+            outputFile.write(AddToMap(srm_files,runNumber,sim_tag+mc15_tag,derivation))
         elif ds_name and n_local > 0 :
             print '# '+ds_name
-            outputFile.write(AddToMap(srm_files,runNumber,sim_tag,derivation))
+            outputFile.write(AddToMap(srm_files,runNumber,sim_tag+mc15_tag,derivation))
         else :
             print
 
