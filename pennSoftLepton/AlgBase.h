@@ -98,6 +98,7 @@ namespace PSL
     std::string GetHistogramLocation(std::string classname,std::string instname,Sample s,std::string name);
     std::string GetHistogramLocation(std::string classname,std::string instname,Sample s,LepVariable v,Variable lep_index);
     std::string GetHistogramLocation(std::string classname,std::string instname,Sample s,LepVariable v);
+    std::string GetHistogramLocation(std::string classname,std::string instname,Sample s,JetVariable v);
     
     // this is needed to distribute the algorithm to the workers
     ClassDef(AlgBase, 1);

@@ -281,6 +281,17 @@ std::string PSL::AlgBase::GetHistogramLocation(std::string classname,std::string
 }
 
 //-----------------------------------------------------------------------------
+std::string PSL::AlgBase::GetHistogramLocation(std::string classname,std::string instname,Sample s,JetVariable v){
+  std::string samplename = ConvertSampleToStr(s);
+  std::string varname = ConvertJetVarToStr(v);
+  std::string location = classname+"_"+instname;
+  location += "/";
+  location += classname+"_"+instname;
+  location += "_"+samplename+"_"+varname;
+  return location;
+}
+
+//-----------------------------------------------------------------------------
 void PSL::AlgBase::set_Variables(std::string v){
   MSG_DEBUG("setting algorithm " << GetName() << " variables to " << v);
   std::vector<std::string> tmp;
