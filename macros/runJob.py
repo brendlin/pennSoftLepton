@@ -75,7 +75,7 @@ def main (options,args) :
                 print '# Using SUSYTools Object Selection, via PSL::XSUSYCutflow'
                 print '##########################################'
                 susytools_alg = ROOT.PSL.XSUSYCutflow()
-            if options.susy :
+            elif options.susy :
                 print '##########################################'
                 print '# Using SUSYTools Object Selection, via PSL::XSUSYObjDefAlgV7'
                 print '##########################################'

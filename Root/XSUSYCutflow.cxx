@@ -482,6 +482,15 @@ void PSL::XSUSYCutflow::loop(void){
   //   //MSG_INFO("refEle: " << xAOD::MissingETBase::Source::Electron);
   // }
   // --- End MET dectorating, etc ---
+  //
+  for(unsigned int i=0;i<m_EDM->muons->size();++i){
+    const xAOD::Muon* muon = m_EDM->getMuon(i);
+    //if (dec_baseline(*muon) && m_SUSYObjDef->IsBadMuon(*muon,0.2)) {
+    if (dec_baseline(*muon) && m_SUSYObjDef->IsBadMuon(*muon,0.2)) {
+      m_evtdef.m_passBadMuon = false;
+      break;
+    }
+  }
 
   ////////////////////////////////////////////////////////////////////////////////
   // START REAL (FULL) OVERLAP REMOVAL
