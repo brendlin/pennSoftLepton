@@ -70,6 +70,11 @@ def main (options,args) :
             pyhelpers.ConfigureCxxAlg(susytools_alg,env,class_name='TruthObjDef')
             myjob.algsAdd(susytools_alg)
         else :
+            if options.susy2016 :
+                print '##########################################'
+                print '# Using SUSYTools Object Selection, via PSL::XSUSYCutflow'
+                print '##########################################'
+                susytools_alg = ROOT.PSL.XSUSYCutflow()
             if options.susy :
                 print '##########################################'
                 print '# Using SUSYTools Object Selection, via PSL::XSUSYObjDefAlgV7'
@@ -333,6 +338,7 @@ if __name__ == "__main__":
     p.add_option('--tag',type  ='string'    ,default='dc14_ew01'   ,dest='tag',help='dataset tag' )
     p.add_option('--truth'  ,action='store_true',default=False  ,dest='truth',help='truth level analysis on truth DAODs' )
     p.add_option('--susy'  ,action='store_true',default=False  ,dest='susy',help='Use susy object selection (instead of WZ object selection)' )
+    p.add_option('--susy2016'  ,action='store_true',default=False  ,dest='susy2016',help='Use susy2016 object selection (instead of WZ object selection)' )
     p.add_option('--systematics'  ,action='store_true',default=False  ,dest='systematics',help='Run all systematic variations' )
 
     options,args = p.parse_args()
