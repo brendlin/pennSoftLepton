@@ -72,36 +72,12 @@ bool PSL::XSUSYCutflow::init(void)
     MSG_INFO("jvf tool initialization failed. Exiting.");
     return false;
   }
-#ifndef BEFORE_ANALYSISBASE_2p3p45
   if (!asg::ToolStore::contains<CP::JetJvtEfficiency>("jet_jvt")) MSG_INFO("JVT Handle DNE??");
   ToolHandle<CP::IJetJvtEfficiency> jvt_handle = asg::ToolStore::get<CP::JetJvtEfficiency>("jet_jvt");
   if (!m_SUSYObjDef->setProperty("JetJvtEfficiencyTool",jvt_handle).isSuccess()) {
     MSG_INFO("Could not overwrite JetJvtEfficiencyTool in SUSYTools.");
     return false;
   }
-#endif
-  
-#ifdef BEFORE_ANALYSISBASE_2p3p41
-  m_SUSYObjDef->setProperty("PhotonIsoWP","FixedCutLoose").isSuccess();
-
-  //m_SUSYObjDef->setProperty("EleID"        ,ConvertElectronIDToStr(ele_id)     ).isSuccess();
-  m_SUSYObjDef->setProperty("Ele.Id"        ,"TightLLH"               ).isSuccess();
-  //m_SUSYObjDef->setProperty("EleIdBaseline",ConvertElectronIDToStr(ele_id_base)).isSuccess();
-  m_SUSYObjDef->setProperty("EleIdBaseline","LooseAndBLayerLLH"      ).isSuccess();
-  //m_SUSYObjDef->setProperty("EleIdFallback","MediumLH"               ).isSuccess();
-  m_SUSYObjDef->setProperty("EleIdFallback","MediumLLH"              ).isSuccess();
-  m_SUSYObjDef->setProperty("PhotonId"     ,"Tight"                  ).isSuccess();
-  m_SUSYObjDef->setProperty("MuId"         ,ConvertMuonIDToStr(mu_id)).isSuccess();
-  // no baseline muon id?
-  m_SUSYObjDef->setProperty("BtagWP"       ,"FixedCutBEff_77"        ).isSuccess();
-  // what to do when you do not want to apply id?
-  if (ele_isowp == AnaIso::None)
-    m_SUSYObjDef->setProperty("EleIsoWP","GradientLoose").isSuccess(); // give SUSYTools a dummy iso
-  else m_SUSYObjDef->setProperty("EleIsoWP",ConvertAnaIsoToStr(ele_isowp)).isSuccess();
-  if (mu_isowp == AnaIso::None)
-    m_SUSYObjDef->setProperty("MuIsoWP","GradientLoose").isSuccess(); // give SUSYTools a dummy iso
-  else m_SUSYObjDef->setProperty("MuIsoWP",ConvertAnaIsoToStr(mu_isowp )).isSuccess();
-#endif // BEFORE_ANALYSISBASE_2p3p41
 
   // The following lines are intended to override tools that SUSYTools tries
   // to create, resulting in duplicate or buggy tools that we do not use.
@@ -139,15 +115,6 @@ bool PSL::XSUSYCutflow::init(void)
   }
 
   m_SUSYObjDef->msg().setLevel( MSG::WARNING );
-  
-// from SUSYTools-00-05-00-30 SUSYToolsInit is called internally during initialize
-#ifdef BEFORE_SUSYTOOLS_050030
-  if( m_SUSYObjDef->SUSYToolsInit().isFailure() ) {
-    MSG_INFO("Failed to initialise tools in SUSYToolsInit()...");
-    MSG_INFO("Exiting..." );
-    return false;
-  }
-#endif // BEFORE_SUSYTOOLS_050030
   
   if( m_SUSYObjDef->initialize() != StatusCode::SUCCESS){
     PrintConfiguration();
@@ -251,7 +218,6 @@ bool PSL::XSUSYCutflow::init(void)
   }
     
   // Initialize OverlapRemovalTool
-#ifndef BEFORE_SUSYTOOLS_000709
   if( ORUtils::harmonizedTools(m_orToolbox, "OverlapRemovalTool", "baseline", "passOR", true, m_doTauOR, m_doPhotonOR).isFailure() ){
     MSG_INFO("Failed to harmonizedTools setup overlap removal toolbox!");
     return false;
@@ -259,15 +225,6 @@ bool PSL::XSUSYCutflow::init(void)
   if( ORUtils::harmonizedTools(m_orToolbox_jetCleaning,"OverlapRemovalToolJet","baselineForJetCleaning", "passOR_JetClean", true, m_doTauOR, m_doPhotonOR).isFailure() ){
     MSG_INFO("Failed to harmonizedTools setup overlap removal toolbox for Jet Cleaning!");
   }
-#else
-  if( ORUtils::harmonizedTools(m_orToolbox,"baseline", "passOR", true, m_doTauOR, m_doPhotonOR).isFailure() ){
-    MSG_INFO("Failed to harmonizedTools setup overlap removal toolbox!");
-    return false;
-  }
-  if( ORUtils::harmonizedTools(m_orToolbox_jetCleaning,"baselineForJetCleaning", "passOR_JetClean", true, m_doTauOR, m_doPhotonOR).isFailure() ){
-    MSG_INFO("Failed to harmonizedTools setup overlap removal toolbox for Jet Cleaning!");
-  }
-#endif // BEFORE_SUSYTOOLS_000709
   m_orTool = static_cast<ORUtils::OverlapRemovalTool*>(m_orToolbox.getMasterTool());
   m_orTool->setName("OverlapRemoval");
   if (m_makefakentuples) {
@@ -301,15 +258,9 @@ bool PSL::XSUSYCutflow::init(void)
 
   // Initialize OverlapRemovalTool for Mu decision only
   if (m_makefakentuples) {
-#ifndef BEFORE_SUSYTOOLS_000709
     if( ORUtils::harmonizedTools(m_orToolboxPopulateMuOrDecision, "ORTool_MuOROnly", "baseline", "passOR_MuORdec", true, m_doTauOR, m_doPhotonOR).isFailure() ){
       MSG_INFO("Failed to harmonizedTools setup overlap removal toolbox!"); return false;
     }
-#else
-    if( ORUtils::harmonizedTools(m_orToolboxPopulateMuOrDecision,"baseline", "passOR_MuORdec", true, m_doTauOR, m_doPhotonOR).isFailure() ){
-      MSG_INFO("Failed to harmonizedTools setup overlap removal toolbox!"); return false;
-    }
-#endif // BEFORE_SUSYTOOLS_000709
     m_orToolPopulateMuOrDecision = static_cast<ORUtils::OverlapRemovalTool*>(m_orToolboxPopulateMuOrDecision.getMasterTool());
     m_orToolPopulateMuOrDecision->setName("ORTool_MuOROnly");
     if( m_orToolboxPopulateMuOrDecision.initialize().isFailure() ){
@@ -346,12 +297,7 @@ void PSL::XSUSYCutflow::loop(void){
   // baseline jets (before overlap) automatically have a 20 GeV hard-coded cut.
   // ptmin and eta_max are enforced on the bad_jet bit.
   // Not sure how to treat forward jets here.
-#ifdef BEFORE_SUSYTOOLS_000611
-  m_SUSYObjDef->GetJets(m_EDM->jets,m_EDM->jets_aux
-                        ,/*recordSG*/false,jet_ptmin*1000.,jet_central_eta_max).isSuccess();
-#else
   m_SUSYObjDef->GetJets(m_EDM->jets,m_EDM->jets_aux,/*recordSG*/false).isSuccess();  
-#endif
   MSG_DEBUG("Number of jets: " << (static_cast< int >( m_EDM->jets->size() )));
 
   //m_SUSYObjDef->GetElectrons(m_EDM->electrons,m_EDM->electrons_aux,/*recordSG*/false).isSuccess();
