@@ -31,6 +31,7 @@
 
 #include <pennSoftLepton/XSUSYObjDefAlgExpert.h>
 #include <pennSoftLepton/XSUSYObjDefAlgPlusPlus.h>
+#include <pennSoftLepton/XSUSYCutflow.h>
 #include <pennSoftLepton/TruthObjDef.h>
 
 // d3pd
@@ -121,6 +122,7 @@
 #pragma link C++ class PSL::XSUSYObjDefAlgExpert+;
 #endif // BEFORE_SUSYTOOLS_000709
 #pragma link C++ class PSL::XSUSYObjDefAlgPlusPlus+;
+#pragma link C++ class PSL::XSUSYCutflow+;
 #pragma link C++ class PSL::TruthObjDef+;
 #pragma link C++ class PSL::WeightSystematics+;
 #endif // SKIP_XAOD_COMPILATION
