@@ -369,6 +369,16 @@ void PSL::XSUSYCutflow::loop(void){
     dec_baselineForJetCleaning(*muon) = true;
   }
 
+  // Bad muon event veto cut (function IsBadMuon in SUSYTools):
+  // veto any event where a baseline muon before overlap removal and satisfying σ(q/p)/abs(q/p) > 0.2 is found.
+  for(unsigned int i=0;i<m_EDM->muons->size();++i){
+    const xAOD::Muon* muon = m_EDM->getMuon(i);
+    if (isBaselineMuon(i) && m_SUSYObjDef->IsBadMuon(*muon,0.2)) {
+      m_evtdef.m_passBadMuon = false;
+      break;
+    }
+  }
+  
   if (m_EDM->taus) {
     for(unsigned int i=0;i<m_EDM->taus->size();++i){
       const xAOD::TauJet* tau = m_EDM->getTau(i);
@@ -483,14 +493,6 @@ void PSL::XSUSYCutflow::loop(void){
   // }
   // --- End MET dectorating, etc ---
   //
-  for(unsigned int i=0;i<m_EDM->muons->size();++i){
-    const xAOD::Muon* muon = m_EDM->getMuon(i);
-    //if (dec_baseline(*muon) && m_SUSYObjDef->IsBadMuon(*muon,0.2)) {
-    if (dec_baseline(*muon) && m_SUSYObjDef->IsBadMuon(*muon,0.2)) {
-      m_evtdef.m_passBadMuon = false;
-      break;
-    }
-  }
 
   ////////////////////////////////////////////////////////////////////////////////
   // START REAL (FULL) OVERLAP REMOVAL
@@ -916,18 +918,18 @@ bool PSL::XSUSYCutflow::isBaselineMuon(int icontainer){
     return false;
   passBaselineMuon->Fill(4.);
   // d0 cut
-  if( mu_d0_max < fabs(m_EDM->MuonD0Significance(icontainer)) )
+  /*if( mu_d0_max < fabs(m_EDM->MuonD0Significance(icontainer)) )
     return false;
-  passBaselineMuon->Fill(5.);
+    passBaselineMuon->Fill(5.);*/
   // z0 cut
-  float z0sintheta = m_EDM->MuonZ0(icontainer)*( sin(m_EDM->GetContainerMuonTLV(icontainer).Theta()) );
+  /*float z0sintheta = m_EDM->MuonZ0(icontainer)*( sin(m_EDM->GetContainerMuonTLV(icontainer).Theta()) );
   if ( mu_z0_max < fabs(z0sintheta) ) 
     return false; 
-  passBaselineMuon->Fill(6.);
+    passBaselineMuon->Fill(6.);*/
   // iso cut
-  if( !(bool)m_EDM->MuonIsolation(icontainer,mu_isowp_base) )
+  /*if( !(bool)m_EDM->MuonIsolation(icontainer,mu_isowp_base) )
     return false;
-  passBaselineMuon->Fill(7.);
+    passBaselineMuon->Fill(7.);*/
   return true;
 }
 
