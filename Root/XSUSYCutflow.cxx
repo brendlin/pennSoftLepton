@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////
 //
-// Alternate version of XSUSYObjDefAlg for implimenting
-//   SMWZ selection criteria
+// Cutflow for implementing
+//   SUSY 3L selection criteria
 //
 //////////////////////////////////////////////////////////
 
@@ -64,7 +64,7 @@ bool PSL::XSUSYCutflow::init(void)
   // m_SUSYObjDef->setProperty("EleIsoWP","GradientLoose").isSuccess();
   // m_SUSYObjDef->setProperty("MuIsoWP","GradientLoose").isSuccess();
   //PathResolverSetOutputLevel(MSG::ERROR);
-
+  
   // set up JVT tool
   m_jetjvf_cut_and_sf = new CP::JetJvtEfficiency("jet_jvt");
   //m_jetjvf_cut_and_sf->setProperty("WorkingPoint","Default");
@@ -300,12 +300,12 @@ void PSL::XSUSYCutflow::loop(void){
   m_SUSYObjDef->GetJets(m_EDM->jets,m_EDM->jets_aux,/*recordSG*/false).isSuccess();  
   MSG_DEBUG("Number of jets: " << (static_cast< int >( m_EDM->jets->size() )));
 
-  //m_SUSYObjDef->GetElectrons(m_EDM->electrons,m_EDM->electrons_aux,/*recordSG*/false).isSuccess();
-  GetElectrons(m_EDM->electrons,m_EDM->electrons_aux).isSuccess();
+  m_SUSYObjDef->GetElectrons(m_EDM->electrons,m_EDM->electrons_aux,/*recordSG*/false).isSuccess();
+  //GetElectrons(m_EDM->electrons,m_EDM->electrons_aux).isSuccess();
   MSG_DEBUG("Number of elecs: " << m_EDM->electrons->size() );
 
-  //m_SUSYObjDef->GetMuons(m_EDM->muons,m_EDM->muons_aux,/*recordSG*/false).isSuccess();
-  GetMuons(m_EDM->muons,m_EDM->muons_aux).isSuccess();
+  m_SUSYObjDef->GetMuons(m_EDM->muons,m_EDM->muons_aux,/*recordSG*/false).isSuccess();
+  //GetMuons(m_EDM->muons,m_EDM->muons_aux).isSuccess();
   MSG_DEBUG("Number of muons: " << m_EDM->muons->size() );
 
 #ifndef ISREL20 // SUSY2 (which we are switching to starting in Rel20) does not save taus
@@ -322,26 +322,33 @@ void PSL::XSUSYCutflow::loop(void){
 
   // for harmonization, signal lepton determination has to happen before overlap removal
   // jets: need to find b-jets, for lepton veto purposes
-  for(unsigned int i=0;i<m_EDM->jets->size();++i){
-    const xAOD::Jet* jet = m_EDM->getJet(i);
-    dec_baseline(*jet) = false;
-    dec_badjet(*jet) = false;
-    dec_baselineForJetCleaning(*jet) = false;
+  //for(unsigned int i=0;i<m_EDM->jets->size();++i){
+  // const xAOD::Jet* jet = m_EDM->getJet(i);
+  // dec_baseline(*jet) = false;
+  // dec_badjet(*jet) = false;
+  // dec_baselineForJetCleaning(*jet) = false;
     // fill special decorator for baseline jets to be fed into jet cleaning.
     // These jets must be consistent with jets used in the MET, e.g. >20 GeV, |eta|<4.5.
-    if(isBaselineJet(i,20,4.5,false)){
+    /*    if(isBaselineJet(i,20,4.5,false)){
       dec_baselineForJetCleaning(*jet) = true;
       //std::cout << "Pass baselineForJetCleaning with pT " << jet->pt() << std::endl;
-    }
+      }*/
     // check baseline jets (with normal 25 GeV cut)
-    if(!isBaselineJet(i,jet_ptmin,jet_eta_max,true)) continue;
-    dec_baseline(*jet) = true;
+    //if(!isBaselineJet(i,jet_ptmin,jet_eta_max,true)) continue;
+  // dec_baseline(*jet) = true;
 
     // hopefully this is redundant, but I needed to put this in for SUSYTools-00-05-00-31
     //if (fabs(jet->eta()) > 2.8) dec_baseline(*jet) = false;
     //dec_passOR(*jet) = dec_baseline(*jet);
+  //}
+
+  //check for bjets
+  for (unsigned int i=0; i<m_EDM->jets->size();++i){
+    const xAOD::Jet* jet = m_EDM->getJet(i);
+    //m_SUSYObjDef->FillJet(*jet,true);
+    dec_bjet (*jet) = m_SUSYObjDef->IsBJet(*jet);
+    dec_badjet(*jet) = m_SUSYObjDef->IsBadJet(*jet, 0.59);
   }
-  
   // --- select baseline electrons & muons. We will do OR next
   for(unsigned int i=0;i<m_EDM->electrons->size();++i){
     const xAOD::Electron* ele = m_EDM->getElectron(i);
@@ -398,7 +405,7 @@ void PSL::XSUSYCutflow::loop(void){
   // do the Z-lepton selection.  Hopefully this works.........
 
   // --- Start lepton-lepton overlap removal ---
-  if(do_overlapremove){
+  /*if(do_overlapremove){
     MSG_DEBUG("Overlap removal start (lepton-lepton)");
     if( m_orTool_ll->findOverlaps(*m_EDM->electrons,*m_EDM->muons).isFailure() )
       MSG_WARNING("Overlap removal (lepton-lepton) returned StatusCode::FAILURE");
@@ -432,7 +439,7 @@ void PSL::XSUSYCutflow::loop(void){
       passBaselineMuon->Fill(8.); // update baseline cut flow histogram
     }
   }
-
+  */
   // --- End lepton-lepton overlap removal ---
 
   // --- Start MET dectorating, etc. ---
@@ -498,11 +505,12 @@ void PSL::XSUSYCutflow::loop(void){
   // START REAL (FULL) OVERLAP REMOVAL
   ////////////////////////////////////////////////////////////////////////////////
 
-  if(do_overlapremove){
-    MSG_DEBUG("Overlap removal start (full)");
+  //if(do_overlapremove){
+  //MSG_DEBUG("Overlap removal start (full)");
 
+    //    m_SUSYObjDef->OverlapRemoval(m_EDM->electrons, m_EDM->muons, m_EDM->jets);
     // jet OR tool - to prepare MET-jets for jet cleaning
-    if( m_orToolJetCleaning->removeOverlaps(m_EDM->electrons,m_EDM->muons,m_EDM->jets).isFailure() )
+    /*if( m_orToolJetCleaning->removeOverlaps(m_EDM->electrons,m_EDM->muons,m_EDM->jets).isFailure() )
       MSG_WARNING("Overlap removal (jet) returned StatusCode::FAILURE");
 
     // full OR tool
@@ -523,9 +531,11 @@ void PSL::XSUSYCutflow::loop(void){
   }
   else{
     MSG_DEBUG("Not doing overlap removal because do_overlapremove = false");
-  }
+    }*/
   // --- End real (full) overlap removal---
 
+  m_SUSYObjDef->OverlapRemoval(m_EDM->electrons, m_EDM->muons,m_EDM->jets);
+  
   // Nominally ApplyLeptonVeto does nothing, but the option is used in XSUSYCutflowExpert.
   ApplyLeptonVeto();
 
@@ -535,9 +545,21 @@ void PSL::XSUSYCutflow::loop(void){
   // overlap removal to avoid removing muons from heavy flavor decays.
   for(unsigned int i=0;i<m_EDM->muons->size();++i){
     const xAOD::Muon* muon = m_EDM->getMuon(i);
-    if (dec_passOR(*muon) && dec_baseline(*muon) && dec_cosmic(*muon)) {
+    if (dec_passOR(*muon) && dec_baseline(*muon) && m_SUSYObjDef->IsCosmicMuon(*muon,1, 0.2)) {
+      dec_cosmic(*muon) = true;
       m_evtdef.m_passCosmicMuon = false;
       break;
+    }
+  }
+ 
+  //IsBadJet: applies the jet cleaning recommendation using the JetCleaningTool (with LooseBad as default, see HowToCleanJets2015 twiki). 
+  //This function returns a boolean which is true if the jet is bad, false otherwise, and sets the corresponding bad decoration to the jet object. 
+  //Any event which contains such a bad jet after the overlap removal with electrons should be vetoed. Only 20 GeV jets will be marked as bad.
+  for (unsigned int i=0;i<m_EDM->jets->size();++i){
+    const xAOD::Jet* jet = m_EDM->getJet(i);
+    if (dec_passOR(*jet) && dec_baseline(*jet) &&dec_badjet(*jet)){
+	m_evtdef.m_passBadJet= false;  
+	break;
     }
   }
   
@@ -585,17 +607,17 @@ void PSL::XSUSYCutflow::loop(void){
   for(unsigned int i=0;i<m_EDM->jets->size();++i){
     const xAOD::Jet* jet = m_EDM->getJet(i);
     // fill bad jet flag -- we check all jets that pass OR
-    if(dec_passOR_JetClean(*jet) || !do_overlapremove){
+    /* if(dec_passOR_JetClean(*jet) || !do_overlapremove){
       if(isBadJet(i)){
 	dec_badjet(*jet) = true;
 	m_evtdef.m_passBadJet = false;
       }
-    }
+      }*/
     // fill baseline/signal jets
-    if (dec_baseline(*jet) && (dec_passOR(*jet) || !do_overlapremove) ) { // 
+    if (dec_baseline(*jet) && (dec_passOR(*jet) || !do_overlapremove )) { // 
       m_evtdef.n_baseline_jet++;
       Particle p(jet->p4(),ObjType::Jet,i,0);
-      
+    
       // Bjet
 #ifndef BEFORE_SUSYTOOLS_000611
       // m_SUSYObjDef->IsSignalJet(*jet); // now called in GetJets
@@ -748,7 +770,7 @@ void PSL::XSUSYCutflow::loop(void){
 //-----------------------------------------------------------------------------
 void PSL::XSUSYCutflow::finish(void){
   if (m_SUSYObjDef) { delete m_SUSYObjDef; m_SUSYObjDef = 0;}
-  // maybe write a function to print out the object level cut flows and call it here?
+  // maybe write a function to print out the objct level cut flows and call it here?
   MSG_DEBUG("finish.");
 }
 
@@ -952,28 +974,31 @@ bool PSL::XSUSYCutflow::isBaselineElectron(int icontainer){
     return false;
   passBaselineElectron->Fill(2.);
   // eta cut
-  double ElectronClusterEta = m_EDM->getElectron(icontainer)->caloCluster()->etaBE(2);
+  double ElectronClusterEta = m_EDM->getElectron(icontainer)->caloCluster()->eta();//etaBE(2);
   double ElectronTrackEta = m_EDM->getElectron(icontainer)->eta();
-  if( fabs(ElectronClusterEta) > ele_eta_max || fabs(ElectronTrackEta) > 2.5 )
+  //if( fabs(ElectronClusterEta) > ele_eta_max || fabs(ElectronTrackEta) > 2.5 )
+  if (fabs(ElectronClusterEta) >= ele_eta_max)
     return false;
   passBaselineElectron->Fill(3.);
   // ID Cut
-  if( !m_EDM->passLikelihood(icontainer,ele_id_base) )
+  /*if( !m_EDM->passLikelihood(icontainer,ele_id_base) )
     return false;
   passBaselineElectron->Fill(4.);
+  */
   // d0 cut
-  if( ele_d0_max < fabs(m_EDM->EleD0Significance(icontainer)) )
+  /*  if( ele_d0_max < fabs(m_EDM->EleD0Significance(icontainer)) )
     return false;
-  passBaselineElectron->Fill(5.);
+    passBaselineElectron->Fill(5.);*/
   // z0 cut
-  float z0sintheta = m_EDM->EleZ0(icontainer)*( sin(m_EDM->GetContainerEleTLV(icontainer).Theta()) );
+  /*float z0sintheta = m_EDM->EleZ0(icontainer)*( sin(m_EDM->GetContainerEleTLV(icontainer).Theta()) );
   if ( ele_z0_max < fabs(z0sintheta) ) 
     return false; 
   passBaselineElectron->Fill(6.);
+  */
   // iso cut
-  if( !(bool)m_EDM->EleIsolation(icontainer,ele_isowp_base) )
+  /*if( !(bool)m_EDM->EleIsolation(icontainer,ele_isowp_base) )
     return false;
-  passBaselineElectron->Fill(7.);
+    passBaselineElectron->Fill(7.);*/
   return true;
 }
 
@@ -992,8 +1017,8 @@ bool PSL::XSUSYCutflow::isZMuon(int icontainer){
     return false;
   passZMuon->Fill(4.);
   // iso cut
-  if( !(bool)m_EDM->MuonIsolation(icontainer,zmu_isowp) )
-    return false;
+  /*if( !(bool)m_EDM->MuonIsolation(icontainer,zmu_isowp) )
+    return false;*/
   passZMuon->Fill(5.);
   return true;
 }
@@ -1012,12 +1037,12 @@ bool PSL::XSUSYCutflow::isZElectron(int icontainer){
     return false;
   passZElectron->Fill(3.);
   // ID cut
-  if( !m_EDM->passLikelihood(icontainer,zele_id) )
+  /*if( !m_EDM->passLikelihood(icontainer,zele_id) )
     return false;
   passZElectron->Fill(4.);
   // iso cut
   if( !(bool)m_EDM->EleIsolation(icontainer,zele_isowp) )
-    return false;
+    return false;*/
   passZElectron->Fill(5.);
   return true;
 }
@@ -1040,8 +1065,8 @@ bool PSL::XSUSYCutflow::isWMuon(int icontainer){
     return false;
   passWMuon->Fill(2.);
   // iso cut
-  if( !(bool)m_EDM->MuonIsolation(icontainer,mu_isowp) )
-    return false;
+  /*if( !(bool)m_EDM->MuonIsolation(icontainer,mu_isowp) )
+    return false;*/
   passWMuon->Fill(3.);
   return true;
 }
@@ -1062,13 +1087,13 @@ bool PSL::XSUSYCutflow::isWElectron(int icontainer){
     return false;
   passWElectron->Fill(2.);
   // iso cut
-  if( !(bool)m_EDM->EleIsolation(icontainer,ele_isowp) )
-    return false;
+  /*if( !(bool)m_EDM->EleIsolation(icontainer,ele_isowp) )
+    return false;*/
   passWElectron->Fill(3.);
   return true;
 }
 
-bool PSL::XSUSYCutflow::isBaselineJet(int icontainer,float ptcut_gev,float etacut,bool forAnalysis){
+/*bool PSL::XSUSYCutflow::isBaselineJet(int icontainer,float ptcut_gev,float etacut,bool forAnalysis){
   // Total jets
   if (forAnalysis) passBaselineJet->Fill(0.);
   // pT cut
@@ -1084,7 +1109,7 @@ bool PSL::XSUSYCutflow::isBaselineJet(int icontainer,float ptcut_gev,float etacu
   // jvt cut
   bool passJvt = (jet->pt() > jet_central_jvfpt_max*1000. || 
                   fabs(jet->eta()) > jet_central_jvfeta_max || 
-                  m_jetjvf_cut_and_sf->passesJvtCut(*jet));
+                  m_jetjvf_cut_and_sf->passesJvtCut(*jet) );
   if (!passJvt) return false;
   if(forAnalysis) passBaselineJet->Fill(3.);
 
@@ -1116,7 +1141,7 @@ bool PSL::XSUSYCutflow::isBadJet(int icontainer){
   }
   return false;
 }
-
+*/
 // Custom jet-lepton OR function (since we need jet pt > 20)
 /* 
    Basically if jets overlap with leptons, we want to use 20GeV jets, but if leptons overlap with jets we want
@@ -1127,7 +1152,7 @@ bool PSL::XSUSYCutflow::isBadJet(int icontainer){
 
    The jet passed to these functions should already have been checked to see if it passes the required 
    decorators -- there is no check for this within the function itself!!
-*/
+
 bool PSL::XSUSYCutflow::passJetElectronOR(int icontainer){
   // get the jet
   const xAOD::Jet *jet = m_EDM->getJet(icontainer);
@@ -1161,7 +1186,7 @@ bool PSL::XSUSYCutflow::passJetMuonOR(int icontainer){
   }
   return true;
 }
-
+*/
 // Trigger matching functions.  I'll probably move these to xAODWrapper at some point...
 bool PSL::XSUSYCutflow::isTriggerMatchedElectron(const xAOD::Electron *ele){
   std::string elTriggers[3] = {"HLT_e24_lhmedium_L1EM20VH","HLT_e60_lhmedium","HLT_e120_lhloose"}; // hard coded for now
