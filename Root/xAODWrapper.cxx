@@ -831,6 +831,8 @@ EL::StatusCode PSL::xAODWrapper::initialize()
   /////////////////////////
   /////////////////////////
 
+  // Used for test of whether TriggerMenu stuff exists, just below:
+  const DataVector<xAOD::TriggerMenu>* tmp_triggerMenu; 
   if ( asg::ToolStore::contains<TrigConf::xAODConfigTool>("xAODConfigTool") ) {
     m_trigConfTool = asg::ToolStore::get<TrigConf::xAODConfigTool>("xAODConfigTool");
     m_trigDecTool = asg::ToolStore::get<Trig::TrigDecisionTool>("TrigDecisionTool");
@@ -838,7 +840,7 @@ EL::StatusCode PSL::xAODWrapper::initialize()
     m_trigDecTool->setProperty("ConfigTool", handle).ignore();
     MSG_INFO("Getting xAODConfigTool and TrigDecisionTool from SUSYTools");
   }
-  else {
+  else if (m_event->retrieveMetaInput(tmp_triggerMenu,"TriggerMenu").isSuccess()) {
     MSG_INFO("Making xAODConfigTool");
     m_trigConfTool = new TrigConf::xAODConfigTool("xAODConfigTool");
     m_trigConfTool->initialize().ignore();
@@ -851,6 +853,9 @@ EL::StatusCode PSL::xAODWrapper::initialize()
     m_trigDecTool->setProperty("OutputLevel", MSG::ERROR).ignore(); // suppress MSG::WARNING
     m_trigDecTool->setProperty("TrigDecisionKey","xTrigDecision").ignore();
     m_trigDecTool->initialize().ignore();
+  }
+  else {
+    MSG_WARNING("Warning! Trigger info does not exist. Skipping.");
   }
 
   // MuonSelectionTool
