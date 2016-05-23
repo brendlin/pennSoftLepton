@@ -79,7 +79,7 @@ def main (options,args) :
                 print '##########################################'
                 print '# Using SUSYTools Object Selection, via PSL::XSUSYObjDefAlgV7'
                 print '##########################################'
-                susytools_alg = ROOT.PSL.XSUSYObjDefAlgV7()
+                susytools_alg = ROOT.PSL.XSUSYCutflow()
             else :
                 print '##########################################'
                 print '# Using SMWZ Object Selection, via PSL::XSUSYObjDefAlgPlusPlus'
@@ -187,15 +187,14 @@ def main (options,args) :
     # Input by samples
     #
     if options.samples :
-        pennsrm = '%s/../pennSoftLepton/config/MapSRM_%s.txt'%(os.getenv('ROOTCOREBIN'),options.tag)
+        pennsrm = '%s/../pennSoftLepton/config/MapSRM_mc15_%s.txt'%(os.getenv('ROOTCOREBIN'),options.tag)
         pyhelpers.GetFilesFromSamples(ROOT.SH,myhandler,DsInfoFromTxtFile
                                       ,pennsrm,options.samples,edm_alg)
 
         if 'data' in options.samples :
-            pennsrm_data = '%s/../pennSoftLepton/config/MapSRM_data_%s.txt'%(os.getenv('ROOTCOREBIN')
+            pennsrm_data = '%s/../pennSoftLepton/config/MapSRM_data15_%s.txt'%(os.getenv('ROOTCOREBIN')
                                                                             ,options.tag)
             pyhelpers.GetDataFiles(ROOT.SH,myhandler,pennsrm_data,edm_alg)
-
         edm_alg.PrintRunConfiguration()
 
     elif options.input :
