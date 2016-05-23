@@ -260,7 +260,7 @@ void PSL::XSUSYCutflow::loop(void){
   for (unsigned int i=0; i<m_EDM->jets->size();++i){
     const xAOD::Jet* jet = m_EDM->getJet(i);
     // hopefully this is redundant, but I needed to put this in for SUSYTools-00-05-00-31
-    //if (fabs(jet->eta()) > 2.8) dec_baseline(*jet) = false;
+    if (fabs(jet->eta()) > 2.8) dec_baseline(*jet) = false;
     dec_passOR(*jet) = dec_baseline(*jet);
   }
   ////////////////////////////////////////////////////////////////////////
@@ -361,8 +361,8 @@ void PSL::XSUSYCutflow::loop(void){
       //if (dec_signal(*jet){ m_evtdef.AddSignalJet(p); }
       p.is_Bjet = dec_bjet(*jet);
       }*/
-    // if ((fabs(jet->eta()) < 2.5) || (jet->pt() > 20000.)){
-    if (dec_baseline(*jet)&&dec_passOR(*jet)&&m_SUSYObjDef->IsBadJet(*jet,0.59)){
+    //if ((fabs(jet->eta()) < 2.5) || (jet->pt() > 20000.)){
+    if (dec_baseline(*jet)&&(dec_passOR(*jet))&&(m_SUSYObjDef->IsBadJet(*jet,0.59))){
       m_evtdef.m_passBadJet= false;  
       break;
     }
