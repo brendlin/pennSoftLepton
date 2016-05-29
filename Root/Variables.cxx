@@ -164,6 +164,8 @@ const std::vector<PSL::evtvar_props> PSL::GetAllEvtVariableProperties(){
     p.push_back(evtvar_props(vXCheckAntiIDSF_lep3_flavor,"XCheckAntiIDSF_lep3_flavor","XCheckAntiIDSF_lep3_flavor",  5,   0,    5));
     p.push_back(evtvar_props(vXCheckAntiIDSF_lep3_origin,"XCheckAntiIDSF_lep3_origin","XCheckAntiIDSF_lep3_origin", 20,   0,   20));
     p.push_back(evtvar_props(vXCheckAntiIDSF_lep3_type  ,"XCheckAntiIDSF_lep3_type"  ,"XCheckAntiIDSF_lep3_type"  , 20,   0,   20));
+    p.push_back(evtvar_props(vnBaselineJet              ,"nBaselineJets"             ,"nBaselineJets"             ,  10,    0,   10,true));
+    p.push_back(evtvar_props(vnSignalJet                ,"nSignalJets"               ,"nSignalJets"               ,  10,    0,   10,true));
   } // Add_new_variables_here
   return p;
 }
