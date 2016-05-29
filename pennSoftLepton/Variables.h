@@ -235,6 +235,8 @@ namespace PSL
     ,vXCheckAntiIDSF_lep3_flavor
     ,vXCheckAntiIDSF_lep3_origin
     ,vXCheckAntiIDSF_lep3_type
+    ,vnBaselineJet
+    ,vnSignalJet
     // Add_new_variables_here
     ,N_VARIABLES
   };
