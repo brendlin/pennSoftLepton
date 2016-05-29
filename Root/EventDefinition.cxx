@@ -60,6 +60,8 @@ void PSL::EventDefinition::FillVectorOfFunctions(){
   m_VariableFunctions_int[vPassTriggerEle         ] = &EventDefinition::PassTriggerEle       ;
   m_VariableFunctions_int[vPassTriggerMu          ] = &EventDefinition::PassTriggerMu        ;
   m_VariableFunctions_int[vPassTriggerMatch       ] = &EventDefinition::PassTriggerMatch     ;
+  m_VariableFunctions_int[vnBaselineJet           ] = &EventDefinition::NBaselineJet         ;
+  m_VariableFunctions_int[vnSignalJet             ] = &EventDefinition::NSignalJet           ;
 
   // now the double functions
   m_VariableFunctions_double[vmet_Et          ] = &EventDefinition::met_Et_gev               ;
