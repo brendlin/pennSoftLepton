@@ -130,6 +130,9 @@ void PSL::EventDefinition::FillVectorOfFunctions(){
   m_VariableFunctions_double[vYZminusYlW      ] = &EventDefinition::YZminusYlW               ;
   m_VariableFunctions_double[vMtZ             ] = &EventDefinition::Mtll_gev                 ;
   m_VariableFunctions_double[vPtWZ            ] = &EventDefinition::PtWZ                     ;
+  m_VariableFunctions_double[vLt              ] = &EventDefinition::Lt_gev                   ;
+  m_VariableFunctions_double[vMeff            ] = &EventDefinition::Meff_gev                 ;
+  m_VariableFunctions_double[vMetOverMeff     ] = &EventDefinition::MetOverMeff              ;
   return;
 }
 

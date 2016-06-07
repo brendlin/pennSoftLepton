@@ -330,6 +330,23 @@ namespace PSL
       return Mt_singleLepton(p.tlv);
     }
 
+    //SUSY variables
+    double Lt(void){
+      if (leps.size() < 3) return -999;
+      return ((leps[0].tlv).Pt()+(leps[1].tlv).Pt()+(leps[2].tlv).Pt());
+    }
+    double Lt_gev(void){return Lt()/1000.;};
+
+    double Meff(){
+      if (leps.size() < 3) return -999;
+      return ((leps[0].tlv).Pt()+(leps[1].tlv).Pt()+(leps[2].tlv).Pt()+(met_tlv()).Pt());
+    }
+    double Meff_gev(void){return Meff()/1000.;};
+
+    double MetOverMeff(){
+      return met_Et()/Meff();
+    }
+
     //delta R
 
     double DeltaRll(void){

@@ -31,7 +31,7 @@ def main(options,args) :
     options.fb,lumi_scale_factor = helpers.GetTTreeLumiScaleFactor(files_b+files_s,options.fb)
 
     dweight = ''
-    weight = 'TotalWeightNoSF'
+    weight = 'TotalWeightNoSF*lepSFRecoIdIso[lep0_index]*lepSFRecoIdIso[lep1_index]*lepSFRecoIdIso[lep2_index]*EvtTrigSF*AntiIDSF_lep3*PassEvent_SMWZsig'
     #weight = 'TotalWeightNoPupNoSF'
     if ''.join(options.cuts) :
         weight = weight+'*(%s)'%(' && '.join(options.cuts))
@@ -99,6 +99,7 @@ def main(options,args) :
                 plotfunc.FormatCanvasAxes(cans[-1])
                 plotfunc.SetAxisLabels(cans[-1],xlabel1,xlabel2)
 
+            cans.append(anaplot.DrawHistos(v,v,xlabel,bkg_hists,sig_hists,data_hist,dostack=options.stack,log=options.log,ratio=options.ratio,fb=options.fb))
     if not options.batch :
         raw_input('Press enter to exit')
 

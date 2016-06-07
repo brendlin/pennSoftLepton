@@ -357,6 +357,24 @@ double PSL::xAODWrapper::GetSignalLeptonVariable(PSL::LepVariable lepv,int iptor
     else if (lepv == lepMuonID          ) d = ContinuousMuonID(iptordered);
     else if (lepv == lepPassBlayer      ) d = 0;
     else if (lepv == lepEleEtaBE        ) d = 0;
+    else if (lepv == lepOrigin          ){
+      if (IsData()) d = -999;
+      else{
+	const xAOD::TrackParticle* track = getMuon(p.i_cont)->primaryTrackParticle();
+	const xAOD::TruthParticle *tp = xAOD::TruthHelpers::getTruthParticle(*track);
+	if (m_acc_truthType.isAvailable(*track)) d = TruthOrigin(*track);
+	else if (tp && m_acc_particleType.isAvailable(*tp)) d = m_acc_particleOrigin(*tp);    
+      }
+    }
+    else if (lepv == lepType            ){
+      if (IsData()) d = -999;
+      else{
+	const xAOD::TrackParticle* track = getMuon(p.i_cont)->primaryTrackParticle();
+	const xAOD::TruthParticle *tp = xAOD::TruthHelpers::getTruthParticle(*track);
+	if (m_acc_truthType.isAvailable(*track)) d  = TruthType(*track);
+	else if (tp && m_acc_particleType.isAvailable(*tp)) d = m_acc_particleType(*tp);
+      }
+    }
     else MSG_INFO("Error! LepVariable not implemented in xAODWrapper::GetSignalLeptonVariable: " << ConvertLepVarToStr(lepv));
   }
   else if (p.obj_type == ObjType::Electron) {
@@ -368,6 +386,20 @@ double PSL::xAODWrapper::GetSignalLeptonVariable(PSL::LepVariable lepv,int iptor
     else if (lepv == lepMuonID          ) d = 4;
     else if (lepv == lepPassBlayer      ) d = EleBlayer(p.i_cont);
     else if (lepv == lepEleEtaBE        ) d = (electrons) ? getElectron(p.i_cont)->caloCluster()->etaBE(2) : -999;
+    else if (lepv == lepOrigin          ){
+      if (IsData()) d = -999;
+      else{
+	const xAOD::Electron* ele = getElectron(p.i_cont);
+	d = TruthOrigin(*ele);
+      }
+    }
+    else if (lepv == lepType            ){
+      if (IsData()) d = -999;
+      else{
+        const xAOD::Electron* ele = getElectron(p.i_cont);
+        d = TruthType(*ele);
+      }
+    }
     else MSG_INFO("Error! LepVariable not implemented in xAODWrapper::GetSignalLeptonVariable: " << ConvertLepVarToStr(lepv));
   }
   if (!m_LepVariables.count(lepv)) {
