@@ -268,6 +268,7 @@ void PSL::XSUSYCutflow::loop(void){
   ////////////////////////////////////////////////////////////////////////
   // MET Decorating
   ////////////////////////////////////////////////////////////////////////
+
   
   // --- Start MET dectorating, etc. ---
   m_EDM->met = new xAOD::MissingETContainer;
@@ -280,6 +281,7 @@ void PSL::XSUSYCutflow::loop(void){
                        ,m_EDM->photons
                        ,m_EDM->taus
                        ).isSuccess();
+
   
   xAOD::MissingETContainer::const_iterator metterm = m_EDM->met->find("RefEle");
   if (metterm==m_EDM->met->end()) { MSG_INFO("Error! RefEle missing!"); exit(1); }
@@ -332,7 +334,7 @@ void PSL::XSUSYCutflow::loop(void){
   //  OVERLAP REMOVAL
   ////////////////////////////////////////////////////////////////////////////////
 
-   m_SUSYObjDef->OverlapRemoval(m_EDM->electrons, m_EDM->muons,m_EDM->jets);
+  m_SUSYObjDef->OverlapRemoval(m_EDM->electrons, m_EDM->muons,m_EDM->jets).ignore();
   
   // Nominally ApplyLeptonVeto does nothing, but the option is used in XSUSYCutflowExpert.
    //   ApplyLeptonVeto();
@@ -612,7 +614,7 @@ p.is_Bjet = m_SUSYObjDef->IsBJet(*jet,true,jet_bjet_mv1);*/
   }
   // Trigger scale factors are done in xAODWrapper now!
   // m_evtdef.m_evt_trigger_sf = m_EDM->getTriggerSF_Winter2016WZAnalysis();
-  MSG_VERBOSE("loop end");
+  MSG_DEBUG("loop end");
 }
 
 //-----------------------------------------------------------------------------
