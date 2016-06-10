@@ -16,8 +16,8 @@
 #include "xAODMissingET/MissingET.h"
 #include "JetMomentTools/JetVertexTaggerTool.h"
 #include "JetSelectorTools/JetCleaningTool.h"
-#include "TrigEgammaMatchingTool/TrigEgammaMatchingTool.h"
-#include "TrigMuonMatching/TrigMuonMatching.h"
+//#include "TrigEgammaMatchingTool/TrigEgammaMatchingTool.h"
+//#include "TrigMuonMatching/TrigMuonMatching.h"
 
 #include "MuonMomentumCorrections/MuonCalibrationAndSmearingTool.h"
 #include "ElectronPhotonFourMomentumCorrection/EgammaCalibrationAndSmearingTool.h"
@@ -57,9 +57,9 @@ bool PSL::XSUSYObjDefAlgPlusPlus::init(void)
   int isData = !((wk()->metaData()->castString("IsData")).empty());
   bool isAtlFast = (wk()->metaData()->castString("Simulation") == "atlfast");
   bool isFullSim = (wk()->metaData()->castString("Simulation") == "fullsim");
-  if (isData    ) m_SUSYObjDef->setProperty("DataSource",ST::Data).isSuccess();
-  if (isAtlFast ) m_SUSYObjDef->setProperty("DataSource",ST::AtlfastII).isSuccess();
-  if (isFullSim ) m_SUSYObjDef->setProperty("DataSource",ST::FullSim).isSuccess();
+  if (isData    ) m_SUSYObjDef->setProperty("DataSource",ST::ISUSYObjDef_xAODTool::Data).isSuccess();
+  if (isAtlFast ) m_SUSYObjDef->setProperty("DataSource",ST::ISUSYObjDef_xAODTool::AtlfastII).isSuccess();
+  if (isFullSim ) m_SUSYObjDef->setProperty("DataSource",ST::ISUSYObjDef_xAODTool::FullSim).isSuccess();
   MSG_INFO("isAtlFast flag is set to: " << isAtlFast);
   // m_SUSYObjDef->setProperty("EleIsoWP","GradientLoose").isSuccess();
   // m_SUSYObjDef->setProperty("MuIsoWP","GradientLoose").isSuccess();
@@ -188,13 +188,13 @@ bool PSL::XSUSYObjDefAlgPlusPlus::init(void)
   } // asking for systematic
 
   // Local Trigger Matching tools since the ones in SUSYTools always return false?
-  m_EgammaMatchTool = new Trig::TrigEgammaMatchingTool("EgammaTrigMatchTool");
-  ToolHandle<Trig::TrigDecisionTool> dec_tool = asg::ToolStore::get<Trig::TrigDecisionTool>("TrigDecisionTool");
-  m_EgammaMatchTool->setProperty("TriggerTool",dec_tool).ignore();
-  m_EgammaMatchTool->initialize().ignore();
-  m_MuonMatchTool = new Trig::TrigMuonMatching("MuonTrigMatchTool");
-  m_MuonMatchTool->setProperty("TriggerTool",dec_tool).ignore();
-  m_MuonMatchTool->initialize().ignore();
+  //m_EgammaMatchTool = new Trig::TrigEgammaMatchingTool("EgammaTrigMatchTool");
+  //ToolHandle<Trig::TrigDecisionTool> dec_tool = asg::ToolStore::get<Trig::TrigDecisionTool>("TrigDecisionTool");
+  //m_EgammaMatchTool->setProperty("TriggerTool",dec_tool).ignore();
+  //m_EgammaMatchTool->initialize().ignore();
+  //m_MuonMatchTool = new Trig::TrigMuonMatching("MuonTrigMatchTool");
+  //m_MuonMatchTool->setProperty("TriggerTool",dec_tool).ignore();
+  //m_MuonMatchTool->initialize().ignore();
 
   // Tool handle for Jet Cleaning Tool
   if ( asg::ToolStore::contains<JetCleaningTool>("JetCleaningTool") ) {
@@ -1213,7 +1213,7 @@ bool PSL::XSUSYObjDefAlgPlusPlus::isTriggerMatchedElectron(const xAOD::Electron 
   }
   bool matched = false;
   for(int i=0;i<3;i++){ // loop over triggers
-    matched = m_EgammaMatchTool->matchHLT(ele,elTriggers[i]);
+    //matched = m_EgammaMatchTool->matchHLT(ele,elTriggers[i]);
     //std::cout << elTriggers[i] << " " << matched << std::endl;
     if(matched) break;
   }
@@ -1224,7 +1224,7 @@ bool PSL::XSUSYObjDefAlgPlusPlus::isTriggerMatchedMuon(const xAOD::Muon *muon){
   std::string muTriggers[2] = {"HLT_mu20_iloose_L1MU15","HLT_mu50"}; // hard coded for now
   bool matched = false;
   for(int i=0;i<2;i++){ // loop over triggers
-    matched = m_MuonMatchTool->match(muon,muTriggers[i].c_str());
+    //matched = m_MuonMatchTool->match(muon,muTriggers[i].c_str());
     //std::cout << muTriggers[i] << " " << matched << std::endl;
     if(matched) break;
   }

@@ -28,8 +28,8 @@
 
 // trigger matching
 //   (local for now)
-#include "TrigEgammaMatchingTool/TrigEgammaMatchingTool.h"
-#include "TrigMuonMatching/TrigMuonMatching.h"
+//#include "TrigEgammaMatchingTool/TrigEgammaMatchingTool.h"
+//#include "TrigMuonMatching/TrigMuonMatching.h"
 
 // jet jvt
 #include "JetJvtEfficiency/JetJvtEfficiency.h"
@@ -155,8 +155,8 @@ namespace PSL
     bool passJetElectronOR(int icontainer);
     bool passJetMuonOR(int icontainer);
     // trigger matching tools
-    Trig::TrigEgammaMatchingTool* m_EgammaMatchTool; //!
-    Trig::TrigMuonMatching* m_MuonMatchTool; //!
+    //Trig::TrigEgammaMatchingTool* m_EgammaMatchTool; //!
+    //Trig::TrigMuonMatching* m_MuonMatchTool; //!
 
     // define overlap removal tool
     ORUtils::ORToolBox m_orToolboxPopulateMuOrDecision; //!

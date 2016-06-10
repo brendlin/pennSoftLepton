@@ -59,7 +59,7 @@ namespace TrigConf{
 #include "IsolationSelection/IsolationSelectionTool.h"
 #endif // BEFORE_SUSYTOOLS_000611
 #include "xAODEgamma/EgammaxAODHelpers.h"
-#include "TruthUtils/PIDUtils.h"
+#include "TruthUtils/PIDHelpers.h"
 #ifdef ISREL20
 #include "xAODTruth/xAODTruthHelpers.h"
 #endif // ISREL20

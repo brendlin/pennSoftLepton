@@ -36,9 +36,9 @@ bool PSL::XSUSYObjDefAlgV7::init(void)
   int isData = !((wk()->metaData()->castString("IsData")).empty());
   bool isAtlFast = (wk()->metaData()->castString("Simulation") == "atlfast");
   bool isFullSim = (wk()->metaData()->castString("Simulation") == "fullsim");
-  if (isData    ) m_SUSYObjDef->setProperty("DataSource",ST::Data).isSuccess();
-  if (isAtlFast ) m_SUSYObjDef->setProperty("DataSource",ST::AtlfastII).isSuccess();
-  if (isFullSim ) m_SUSYObjDef->setProperty("DataSource",ST::FullSim).isSuccess();
+  if (isData    ) m_SUSYObjDef->setProperty("DataSource",ST::ISUSYObjDef_xAODTool::Data).isSuccess();
+  if (isAtlFast ) m_SUSYObjDef->setProperty("DataSource",ST::ISUSYObjDef_xAODTool::AtlfastII).isSuccess();
+  if (isFullSim ) m_SUSYObjDef->setProperty("DataSource",ST::ISUSYObjDef_xAODTool::FullSim).isSuccess();
   // m_SUSYObjDef->setProperty("EleIsoWP","GradientLoose").isSuccess();
   // m_SUSYObjDef->setProperty("MuIsoWP","GradientLoose").isSuccess();
   //PathResolverSetOutputLevel(MSG::ERROR);

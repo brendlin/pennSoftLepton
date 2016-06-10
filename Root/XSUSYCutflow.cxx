@@ -16,8 +16,8 @@
 #include "xAODMissingET/MissingET.h"
 #include "JetMomentTools/JetVertexTaggerTool.h"
 #include "JetSelectorTools/JetCleaningTool.h"
-#include "TrigEgammaMatchingTool/TrigEgammaMatchingTool.h"
-#include "TrigMuonMatching/TrigMuonMatching.h"
+//#include "TrigEgammaMatchingTool/TrigEgammaMatchingTool.h"
+//#include "TrigMuonMatching/TrigMuonMatching.h"
 
 #include "MuonMomentumCorrections/MuonCalibrationAndSmearingTool.h"
 #include "ElectronPhotonFourMomentumCorrection/EgammaCalibrationAndSmearingTool.h"
@@ -57,9 +57,9 @@ bool PSL::XSUSYCutflow::init(void)
   int isData = !((wk()->metaData()->castString("IsData")).empty());
   bool isAtlFast = (wk()->metaData()->castString("Simulation") == "atlfast");
   bool isFullSim = (wk()->metaData()->castString("Simulation") == "fullsim");
-  if (isData    ) m_SUSYObjDef->setProperty("DataSource",ST::Data).isSuccess();
-  if (isAtlFast ) m_SUSYObjDef->setProperty("DataSource",ST::AtlfastII).isSuccess();
-  if (isFullSim ) m_SUSYObjDef->setProperty("DataSource",ST::FullSim).isSuccess();
+  if (isData    ) m_SUSYObjDef->setProperty("DataSource",ST::ISUSYObjDef_xAODTool::Data).isSuccess();
+  if (isAtlFast ) m_SUSYObjDef->setProperty("DataSource",ST::ISUSYObjDef_xAODTool::AtlfastII).isSuccess();
+  if (isFullSim ) m_SUSYObjDef->setProperty("DataSource",ST::ISUSYObjDef_xAODTool::FullSim).isSuccess();
   MSG_INFO("isAtlFast flag is set to: " << isAtlFast);
   // m_SUSYObjDef->setProperty("EleIsoWP","GradientLoose").isSuccess();
   // m_SUSYObjDef->setProperty("MuIsoWP","GradientLoose").isSuccess();
@@ -1044,7 +1044,7 @@ bool PSL::XSUSYCutflow::isTriggerMatchedElectron(const xAOD::Electron *ele){
   }
   bool matched = false;
   for(int i=0;i<3;i++){ // loop over triggers
-    matched = m_EgammaMatchTool->matchHLT(ele,elTriggers[i]);
+    //matched = m_EgammaMatchTool->matchHLT(ele,elTriggers[i]); // FIXME
     //std::cout << elTriggers[i] << " " << matched << std::endl;
     if(matched) break;
   }
@@ -1055,7 +1055,7 @@ bool PSL::XSUSYCutflow::isTriggerMatchedMuon(const xAOD::Muon *muon){
   std::string muTriggers[2] = {"HLT_mu20_iloose_L1MU15","HLT_mu50"}; // hard coded for now
   bool matched = false;
   for(int i=0;i<2;i++){ // loop over triggers
-    matched = m_MuonMatchTool->match(muon,muTriggers[i].c_str());
+    //matched = m_MuonMatchTool->match(muon,muTriggers[i].c_str()); // FIXME
     //std::cout << muTriggers[i] << " " << matched << std::endl;
     if(matched) break;
   }

@@ -41,9 +41,9 @@ bool PSL::XSUSYObjDefAlg::init(void)
   if (isAtlFast) m_SUSYObjDef->setProperty("IsAtlfast",1).isSuccess();
   if (isFullSim) m_SUSYObjDef->setProperty("IsAtlfast",0).isSuccess();
 #else
-  if (isData    ) m_SUSYObjDef->setProperty("DataSource",ST::Data).isSuccess();
-  if (isAtlFast ) m_SUSYObjDef->setProperty("DataSource",ST::AtlfastII).isSuccess();
-  if (isFullSim ) m_SUSYObjDef->setProperty("DataSource",ST::FullSim).isSuccess();
+  if (isData    ) m_SUSYObjDef->setProperty("DataSource",ST::ISUSYObjDef_xAODTool::Data).isSuccess();
+  if (isAtlFast ) m_SUSYObjDef->setProperty("DataSource",ST::ISUSYObjDef_xAODTool::AtlfastII).isSuccess();
+  if (isFullSim ) m_SUSYObjDef->setProperty("DataSource",ST::ISUSYObjDef_xAODTool::FullSim).isSuccess();
 #ifdef BEFORE_SUSYTOOLS_000611
   m_SUSYObjDef->setProperty("IsoWP","GradientLoose").isSuccess();
 #else
