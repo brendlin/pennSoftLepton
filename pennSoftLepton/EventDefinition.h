@@ -69,7 +69,7 @@ namespace PSL
     int n_baseline_mu; //!
     int n_baseline_tau; //!
     int n_baseline_jet; //!
-    int n_signal_jet;
+    int n_signal_jet; //!
 
     bool m_passBadJet; //!
     bool m_passBadMuon; //!
