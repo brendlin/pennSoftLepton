@@ -92,26 +92,20 @@ bool PSL::xAODWrapper::ptorderedPassMuonQuality(int i,xAOD::Muon::Quality q){
 }
 
 double PSL::xAODWrapper::GetEventVariable(PSL::Variable v){
-  MSG_DEBUG("v is " << PSL::ConvertVarToStr(v));
   if (m_EventVariables.count(v)) return m_EventVariables[v];
   if (!m_evtdef) {MSG_INFO("Error: m_evtdef not set. You made a mistake in your code."); exit(1);}
   double d = -999;
   // begin all of the variable definitions
-  if (v == vGRL){
-    d = IsMC() ? 1 : (int)(m_grl->passRunLB(eventInfo->runNumber(),eventInfo->lumiBlock()));
-  }
-  else if (v == vpassLarError         ){
+  if (v == vGRL)
+    d = IsMC() ? 1 : (int)m_grl->passRunLB(eventInfo->runNumber(),eventInfo->lumiBlock());
+  else if (v == vpassLarError         )
     d = IsMC() ? 1 : (int)(eventInfo->errorState(xAOD::EventInfo::LAr)!=xAOD::EventInfo::Error);
-  }
-  else if (v == vpassTileError        ){
+  else if (v == vpassTileError        )
     d = IsMC() ? 1 : (int)(eventInfo->errorState(xAOD::EventInfo::Tile)!=xAOD::EventInfo::Error);
-  }
-  else if (v == vpassSctError        ){
+  else if (v == vpassSctError        )
     d = IsMC() ? 1 : (int)(eventInfo->errorState(xAOD::EventInfo::SCT)!=xAOD::EventInfo::Error);
-  }
-  else if (v == vpassCoreBit          ){ 
+  else if (v == vpassCoreBit          ) 
     d = IsMC() ? 1 : (int)(!eventInfo->isEventFlagBitSet(xAOD::EventInfo::Core, 18));
-  }
   else if (v == vpassPrimaryVtx       ) {
     const xAOD::Vertex* pv = GetPrimaryVertex(); d = (pv ? 1 : 0);
   }
@@ -130,24 +124,24 @@ double PSL::xAODWrapper::GetEventVariable(PSL::Variable v){
   else if (v == vMuIsValid            ) d = 1;
   else if (v == vPassTrigger          ) d = PassTrigger() ? 1. : 0.;
   else if (v == vLumiBlockMu          ) d = m_LumiBlockMu;
-  else if (v == vSample               ) d = m_CurrentSample;
-  else if (v == vtruthjet0Pt          ) d = LeadingTruthJet().Pt()/1000.;
-  else if (v == vtruthjet1Pt          ) d = SubleadingTruthJet().Pt()/1000.;
-  else if (v == vTotalWeight          ) d = 0; // Keep this 0! see implementation in Ntupler,PassEvent
-  else if (v == vTotalWeightNoSF      ) d = m_weight_pu;
-  else if (v == vTotalWeightNoPupNoSF ) d = m_weight;
-  else if (v == vmc_channel_number    ) d = IsData() ? 0 : eventInfo->mcChannelNumber();
-  else if (v == vptAvg                ) d = (m_evtdef->LeadingJet().Pt()+m_evtdef->SubleadingJet().Pt())/2000.;
-  else if (v == vtruthptAvg           ) d = (LeadingTruthJet().Pt()+SubleadingTruthJet().Pt())/2000.;
-  else if (v == vptAvgOverTruthjet0Pt ) d = GetEventVariable(vptAvg)/GetEventVariable(vtruthjet0Pt);
-  else if (v == vDeltaPhill           ) d = m_evtdef->DeltaPhill();
-  else if (v == vWlepPassWSelection   ) d = m_evtdef->WlepPassWSelection();
-  else if (v == vPassTriggerEle       ) d = m_evtdef->PassTriggerEle();
-  else if (v == vPassTriggerMu        ) d = m_evtdef->PassTriggerMu();
-  else if (v == vPassTriggerMatch     ) d = m_evtdef->PassTriggerMatch();
-  else if (v == vRunNumber            ) d = eventInfo->runNumber();
-  else if (v == vEvtTrigSF            ) d = getTriggerSF_Winter2016WZAnalysis();
-  else if (v == vAntiIDSF_lep3        ) {
+  else if (v == vSample                ) d = m_CurrentSample;
+  else if (v == vtruthjet0Pt           ) d = LeadingTruthJet().Pt()/1000.;
+  else if (v == vtruthjet1Pt           ) d = SubleadingTruthJet().Pt()/1000.;
+  else if (v == vTotalWeight           ) d = 0; // Keep this 0! see implementation in Ntupler,PassEvent
+  else if (v == vTotalWeightNoSF       ) d = m_weight_pu;
+  else if (v == vTotalWeightNoPupNoSF  ) d = m_weight;
+  else if (v == vmc_channel_number     ) d = IsData() ? 0 : eventInfo->mcChannelNumber();
+  else if (v == vptAvg) d = (m_evtdef->LeadingJet().Pt()+m_evtdef->SubleadingJet().Pt())/2000.;
+  else if (v == vtruthptAvg            ) d = (LeadingTruthJet().Pt()+SubleadingTruthJet().Pt())/2000.;
+  else if (v == vptAvgOverTruthjet0Pt  ) d = GetEventVariable(vptAvg)/GetEventVariable(vtruthjet0Pt);
+  else if (v == vDeltaPhill            ) d = m_evtdef->DeltaPhill();
+  else if (v == vWlepPassWSelection    ) d = m_evtdef->WlepPassWSelection();
+  else if (v == vPassTriggerEle        ) d = m_evtdef->PassTriggerEle();
+  else if (v == vPassTriggerMu         ) d = m_evtdef->PassTriggerMu();
+  else if (v == vPassTriggerMatch      ) d = m_evtdef->PassTriggerMatch();
+  else if (v == vRunNumber             ) d = eventInfo->runNumber();
+  else if (v == vEvtTrigSF             ) d = getTriggerSF_Winter2016WZAnalysis();
+  else if (v == vAntiIDSF_lep3         ) {
     if (m_CurrentSample != kzz || !m_CalculateZZAntiid) d = 1.;
     else if(m_doRecoAntiID) d = CalculateZZAntiIDScaleFactor(GetMatchingRecoLepton(GetZZAntiIDParticle()));
     else if(m_doXCheckAntiID) d= CalculateZZAntiIDScaleFactor(GetZZAntiIDParticleFromReco());
@@ -363,24 +357,6 @@ double PSL::xAODWrapper::GetSignalLeptonVariable(PSL::LepVariable lepv,int iptor
     else if (lepv == lepMuonID          ) d = ContinuousMuonID(iptordered);
     else if (lepv == lepPassBlayer      ) d = 0;
     else if (lepv == lepEleEtaBE        ) d = 0;
-    else if (lepv == lepOrigin          ){
-      if (IsData()) d = -999;
-      else{
-	const xAOD::TrackParticle* track = getMuon(p.i_cont)->primaryTrackParticle();
-	const xAOD::TruthParticle *tp = xAOD::TruthHelpers::getTruthParticle(*track);
-	if (m_acc_truthType.isAvailable(*track)) d = TruthOrigin(*track);
-	else if (tp && m_acc_particleType.isAvailable(*tp)) d = m_acc_particleOrigin(*tp);    
-      }
-    }
-    else if (lepv == lepType            ){
-      if (IsData()) d = -999;
-      else{
-	const xAOD::TrackParticle* track = getMuon(p.i_cont)->primaryTrackParticle();
-	const xAOD::TruthParticle *tp = xAOD::TruthHelpers::getTruthParticle(*track);
-	if (m_acc_truthType.isAvailable(*track)) d  = TruthType(*track);
-	else if (tp && m_acc_particleType.isAvailable(*tp)) d = m_acc_particleType(*tp);
-      }
-    }
     else MSG_INFO("Error! LepVariable not implemented in xAODWrapper::GetSignalLeptonVariable: " << ConvertLepVarToStr(lepv));
   }
   else if (p.obj_type == ObjType::Electron) {
@@ -392,20 +368,6 @@ double PSL::xAODWrapper::GetSignalLeptonVariable(PSL::LepVariable lepv,int iptor
     else if (lepv == lepMuonID          ) d = 4;
     else if (lepv == lepPassBlayer      ) d = EleBlayer(p.i_cont);
     else if (lepv == lepEleEtaBE        ) d = (electrons) ? getElectron(p.i_cont)->caloCluster()->etaBE(2) : -999;
-    else if (lepv == lepOrigin          ){
-      if (IsData()) d = -999;
-      else{
-	const xAOD::Electron* ele = getElectron(p.i_cont);
-	d = TruthOrigin(*ele);
-      }
-    }
-    else if (lepv == lepType            ){
-      if (IsData()) d = -999;
-      else{
-        const xAOD::Electron* ele = getElectron(p.i_cont);
-        d = TruthType(*ele);
-      }
-    }
     else MSG_INFO("Error! LepVariable not implemented in xAODWrapper::GetSignalLeptonVariable: " << ConvertLepVarToStr(lepv));
   }
   if (!m_LepVariables.count(lepv)) {
@@ -870,7 +832,7 @@ EL::StatusCode PSL::xAODWrapper::initialize()
   /////////////////////////
 
   // Used for test of whether TriggerMenu stuff exists, just below:
-  const DataVector<xAOD::TriggerMenu>* tmp_triggerMenu; 
+  const DataVector<xAOD::TriggerMenu>* tmp_triggerMenu;
   if ( asg::ToolStore::contains<TrigConf::xAODConfigTool>("xAODConfigTool") ) {
     m_trigConfTool = asg::ToolStore::get<TrigConf::xAODConfigTool>("xAODConfigTool");
     m_trigDecTool = asg::ToolStore::get<Trig::TrigDecisionTool>("TrigDecisionTool");
@@ -1819,8 +1781,8 @@ double PSL::xAODWrapper::GetContainerMuonSF(int icontainer,xAOD::Muon::Quality q
 
   // reco
   if (skip_reco) {} // do nothing
-  else if (q == xAOD::Muon::Loose ) m_muonsfs[MuonSF_Loose ]->getEfficiencyScaleFactor(*mu,reco_sf).ignore();
-  else if (q == xAOD::Muon::Medium) m_muonsfs[MuonSF_Medium]->getEfficiencyScaleFactor(*mu,reco_sf).ignore();
+  else if (q == xAOD::Muon::Loose ) m_muonsfs[MuonSF_Loose ]->getEfficiencyScaleFactor(*mu,reco_sf);
+  else if (q == xAOD::Muon::Medium) m_muonsfs[MuonSF_Medium]->getEfficiencyScaleFactor(*mu,reco_sf);
   else {
     MSG_INFO("Tried to get a muon ID scale factor that does not exist! " 
              << ConvertMuonIDToStr(q)
@@ -1830,8 +1792,8 @@ double PSL::xAODWrapper::GetContainerMuonSF(int icontainer,xAOD::Muon::Quality q
   
   // iso
   if (skip_iso) {} // do nothing
-  else if (iso_wp == AnaIso::LooseTrackOnly) m_muonsfs[MuonSF_isolLooseTrackOnly]->getEfficiencyScaleFactor(*mu,iso_sf).ignore();
-  else if (iso_wp == AnaIso::GradientLoose ) m_muonsfs[MuonSF_isolGradientLoose ]->getEfficiencyScaleFactor(*mu,iso_sf).ignore();
+  else if (iso_wp == AnaIso::LooseTrackOnly) m_muonsfs[MuonSF_isolLooseTrackOnly]->getEfficiencyScaleFactor(*mu,iso_sf);
+  else if (iso_wp == AnaIso::GradientLoose ) m_muonsfs[MuonSF_isolGradientLoose ]->getEfficiencyScaleFactor(*mu,iso_sf);
   else {
     MSG_INFO("Tried to get a muon ID+iso scale factor that does not exist! " 
              << ConvertMuonIDToStr(q)
@@ -1843,7 +1805,7 @@ double PSL::xAODWrapper::GetContainerMuonSF(int icontainer,xAOD::Muon::Quality q
   // iso
   if (skip_ttva) {} // do nothing
   else {
-    m_muonsfs[MuonSF_TTVA]->getEfficiencyScaleFactor(*mu,ttva_sf).ignore();
+    m_muonsfs[MuonSF_TTVA]->getEfficiencyScaleFactor(*mu,ttva_sf);
   }
   
   return reco_sf * iso_sf * ttva_sf;
@@ -1862,16 +1824,16 @@ double PSL::xAODWrapper::GetContainerEleSF(int icontainer,ElectronID::ElectronID
   
   // reco
   if (skip_reco) {} // do nothing
-  else m_elesfs[ElectronSF_RecoTrk]->getEfficiencyScaleFactor(*ele,reco_sf).ignore();
+  else m_elesfs[ElectronSF_RecoTrk]->getEfficiencyScaleFactor(*ele,reco_sf);
   
   // id
   if (skip_id) {} // do nothing
   else if (e == ElectronID::None) {} // do nothing
 #ifndef BEFORE_SUSYTOOLS_000611
-  else if (e == ElectronID::LooseAndBLayerLLH && is_d0z0) m_elesfs[ElectronSF_LooseAndBLayerLLH_d0z0]->getEfficiencyScaleFactor(*ele,id_sf).ignore();
+  else if (e == ElectronID::LooseAndBLayerLLH && is_d0z0) m_elesfs[ElectronSF_LooseAndBLayerLLH_d0z0]->getEfficiencyScaleFactor(*ele,id_sf);
 #endif // BEFORE_SUSYTOOLS_000611
-  else if (e == ElectronID::MediumLLH && is_d0z0) m_elesfs[ElectronSF_MediumLLH_d0z0]->getEfficiencyScaleFactor(*ele,id_sf).ignore();
-  else if (e == ElectronID::TightLLH && is_d0z0) m_elesfs[ElectronSF_TightLLH_d0z0]->getEfficiencyScaleFactor(*ele,id_sf).ignore();
+  else if (e == ElectronID::MediumLLH && is_d0z0) m_elesfs[ElectronSF_MediumLLH_d0z0]->getEfficiencyScaleFactor(*ele,id_sf);
+  else if (e == ElectronID::TightLLH && is_d0z0) m_elesfs[ElectronSF_TightLLH_d0z0]->getEfficiencyScaleFactor(*ele,id_sf);
   else {
     MSG_INFO("Tried to get an electron ID scale factor that does not exist! "
              << ConvertElectronIDToStr(e) 
@@ -1882,9 +1844,9 @@ double PSL::xAODWrapper::GetContainerEleSF(int icontainer,ElectronID::ElectronID
   // isolation
   if (skip_iso) {} // do nothing
   else if (iso_wp == AnaIso::None) {} // do nothing
-  else if (e == ElectronID::TightLLH && is_d0z0 && iso_wp == AnaIso::Gradient) m_elesfs[ElectronIsoSF_TightLLH_d0z0_v8_isolGradient]->getEfficiencyScaleFactor(*ele,iso_sf).ignore();
-  else if (e == ElectronID::MediumLLH && is_d0z0 && iso_wp == AnaIso::GradientLoose) m_elesfs[ElectronIsoSF_MediumLLH_d0z0_v8_isolGradientLoose]->getEfficiencyScaleFactor(*ele,iso_sf).ignore();
-  else if (e == ElectronID::LooseAndBLayerLLH && is_d0z0 && iso_wp == AnaIso::LooseTrackOnly) m_elesfs[ElectronIsoSF_LooseAndBLayerLLH_d0z0_v8_isolLooseTrackOnly]->getEfficiencyScaleFactor(*ele,iso_sf).ignore();
+  else if (e == ElectronID::TightLLH && is_d0z0 && iso_wp == AnaIso::Gradient) m_elesfs[ElectronIsoSF_TightLLH_d0z0_v8_isolGradient]->getEfficiencyScaleFactor(*ele,iso_sf);
+  else if (e == ElectronID::MediumLLH && is_d0z0 && iso_wp == AnaIso::GradientLoose) m_elesfs[ElectronIsoSF_MediumLLH_d0z0_v8_isolGradientLoose]->getEfficiencyScaleFactor(*ele,iso_sf);
+  else if (e == ElectronID::LooseAndBLayerLLH && is_d0z0 && iso_wp == AnaIso::LooseTrackOnly) m_elesfs[ElectronIsoSF_LooseAndBLayerLLH_d0z0_v8_isolLooseTrackOnly]->getEfficiencyScaleFactor(*ele,iso_sf);
   else {
     MSG_INFO("Tried to get an electron ID+iso scale factor that does not exist! " 
              << ConvertElectronIDToStr(e) 
@@ -2465,14 +2427,14 @@ double PSL::xAODWrapper::CalculateZZAntiIDScaleFactor(Particle forthLepton) {
     float tmp_sf_mu_ttva = 1.;
     float tmp_eff_mu_ttva = 0.;
 
-    m_muonsfs[MuonSF_Loose ]->getEfficiencyScaleFactor(*tmp_muon_const,tmp_sf_mu_reco).ignore();
-    m_muonsfs[MuonSF_Loose_NOSYST ]->getRecoEfficiency(*tmp_muon_const,tmp_eff_mu_reco).ignore();
+    m_muonsfs[MuonSF_Loose ]->getEfficiencyScaleFactor(*tmp_muon_const,tmp_sf_mu_reco);
+    m_muonsfs[MuonSF_Loose_NOSYST ]->getRecoEfficiency(*tmp_muon_const,tmp_eff_mu_reco);
 
-    m_muonsfs[MuonSF_isolLooseTrackOnly ]->getEfficiencyScaleFactor(*tmp_muon_const,tmp_sf_mu_iso).ignore();
-    m_muonsfs[MuonSF_isolLooseTrackOnly_NOSYST ]->getRecoEfficiency(*tmp_muon_const,tmp_eff_mu_iso).ignore();
+    m_muonsfs[MuonSF_isolLooseTrackOnly ]->getEfficiencyScaleFactor(*tmp_muon_const,tmp_sf_mu_iso);
+    m_muonsfs[MuonSF_isolLooseTrackOnly_NOSYST ]->getRecoEfficiency(*tmp_muon_const,tmp_eff_mu_iso);
 
-    m_muonsfs[MuonSF_TTVA ]->getEfficiencyScaleFactor(*tmp_muon_const,tmp_sf_mu_ttva).ignore();
-    m_muonsfs[MuonSF_TTVA_NOSYST ]->getRecoEfficiency(*tmp_muon_const,tmp_eff_mu_ttva).ignore();
+    m_muonsfs[MuonSF_TTVA ]->getEfficiencyScaleFactor(*tmp_muon_const,tmp_sf_mu_ttva);
+    m_muonsfs[MuonSF_TTVA_NOSYST ]->getRecoEfficiency(*tmp_muon_const,tmp_eff_mu_ttva);
 
     //tmp_eff_mu = tmp_eff_mu_reco*tmp_eff_mu_iso*tmp_eff_mu_ttva;
     //tmp_sf_mu = tmp_sf_mu_reco*tmp_sf_mu_iso*tmp_sf_mu_ttva;
@@ -2545,7 +2507,7 @@ double PSL::xAODWrapper::CalculateZZAntiIDScaleFactor(Particle forthLepton) {
     const xAOD::Electron* tmp_ele_const = tmp_ele;
     MSG_DEBUG(Form("Ele pt, eta, clustereta, phi is %2.3f %2.3f %2.3f %2.3f",tmp_ele_const->pt(),tmp_ele_const->eta(),cluster->etaBE(2),tmp_ele_const->phi()));
     // Get the scale factors you need, do the calculation. This is a dummy calculation!
-    m_elesfs[PhilipAntiID]->getEfficiencyScaleFactor(*tmp_ele_const,reco_sf_ele).ignore();
+    m_elesfs[PhilipAntiID]->getEfficiencyScaleFactor(*tmp_ele_const,reco_sf_ele);
     // Need these or else you have a memory leak
     if (copyAux) delete copyAux;
     if (cont) delete cont;
@@ -2633,8 +2595,8 @@ std::pair<double,double> PSL::xAODWrapper::getMuonTriggerWeight(int icontainer){
   int tmp_rdmRN = m_prwTool->getRandomRunNumber( *eventInfo , true ); 
 #endif
   int rdmRN = (tmp_rdmRN == 0) ? 267639 : tmp_rdmRN; //this is the internal run of the tool if zero
-  m_muonTriggerSFTool->setRunNumber(rdmRN).ignore();
-  m_muonTriggerSFToolNOSYST->setRunNumber(rdmRN).ignore();
+  m_muonTriggerSFTool->setRunNumber(rdmRN);
+  m_muonTriggerSFToolNOSYST->setRunNumber(rdmRN);
 
   const std::string triggers = "HLT_mu20_iloose_L1MU15_OR_HLT_mu50"; // make this configurable/argument later
 
@@ -2651,13 +2613,13 @@ std::pair<double,double> PSL::xAODWrapper::getMuonTriggerWeight(int icontainer){
   double sf_weight = 1.; double mc_eff = 1.;
 
   //SFs can vary with systematics
-  m_muonTriggerSFTool->getTriggerScaleFactor(*muonCont,sf_weight,triggers).ignore();
+  m_muonTriggerSFTool->getTriggerScaleFactor(*muonCont,sf_weight,triggers);
 
   //MC efficiency shouldn't vary with systematics
   m_muonTriggerSFToolNOSYST->getTriggerEfficiency(*muon,
               mc_eff,
               triggers,
-              false).ignore();
+              false);
   /*
   //double mc_eff_syst = 1.; double data_eff_syst = 1.;
   //we actually don't need the data efficiency
@@ -2697,13 +2659,13 @@ std::pair<double,double> PSL::xAODWrapper::getElectronTriggerWeight(int icontain
   // if w electron then sf
   int windex_container = m_evtdef->leps.at(m_evtdef->Wlep_index).i_cont; // container index of w lepton
   if(icontainer == windex_container){
-    m_elesfs[ElectronSF_Trigger_TightLLH_isolGradient]->getEfficiencyScaleFactor(*ele,data_weight).ignore();
-    m_elesfs[ElectronSF_TriggerMC_TightLLH_isolGradient]->getEfficiencyScaleFactor(*ele,mc_weight).ignore();
+    m_elesfs[ElectronSF_Trigger_TightLLH_isolGradient]->getEfficiencyScaleFactor(*ele,data_weight);
+    m_elesfs[ElectronSF_TriggerMC_TightLLH_isolGradient]->getEfficiencyScaleFactor(*ele,mc_weight);
   }
   // else if z electron then sf
   else{
-    m_elesfs[ElectronSF_Trigger_MediumLLH_isolGradientLoose]->getEfficiencyScaleFactor(*ele,data_weight).ignore();
-    m_elesfs[ElectronSF_TriggerMC_MediumLLH_isolGradientLoose]->getEfficiencyScaleFactor(*ele,mc_weight).ignore();
+    m_elesfs[ElectronSF_Trigger_MediumLLH_isolGradientLoose]->getEfficiencyScaleFactor(*ele,data_weight);
+    m_elesfs[ElectronSF_TriggerMC_MediumLLH_isolGradientLoose]->getEfficiencyScaleFactor(*ele,mc_weight);
   }
   weights.first = data_weight;
   weights.second = mc_weight;
