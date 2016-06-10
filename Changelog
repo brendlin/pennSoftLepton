@@ -1,7 +1,3 @@
-2016-06-10 Joseph Reichert <Joseph.Reichert@cern.ch>
-	* Reverting recent changes in order to tag SMWZ
-	* going into pennSoftLepton-00-00-02
-
 2015-07-14 Kurt Brendlinger <kurt.brendlinger@cern.ch>
 	* Add LepVariable plots to PassEvent
 	* M       pennSoftLepton/Root/AlgBase.cxx

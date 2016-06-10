@@ -235,6 +235,11 @@ namespace PSL
     ,vXCheckAntiIDSF_lep3_flavor
     ,vXCheckAntiIDSF_lep3_origin
     ,vXCheckAntiIDSF_lep3_type
+    ,vnBaselineJet
+    ,vnSignalJet
+    ,vLt
+    ,vMeff
+    ,vMetOverMeff
     // Add_new_variables_here
     ,N_VARIABLES
   };
@@ -264,6 +269,8 @@ namespace PSL
     ,lepPassBlayer
     ,lepEleEtaBE
     ,lepMatchesTrigger
+    ,lepOrigin
+    ,lepType
     // Add_new_lepvariables_here
     ,N_LEPVARIABLES
   };
@@ -625,7 +632,9 @@ namespace PSL
      ,tHLT_e100_lhvloose
      ,tHLT_mu4
      ,tHLT_mu14
-     ,tHLT_mu18                  
+     ,tHLT_mu18 
+     //e-mu trigger
+     ,tHLT_e17_lhloose_mu14
      ,N_TRIGGERS
   };
 

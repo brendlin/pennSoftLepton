@@ -70,11 +70,16 @@ def main (options,args) :
             pyhelpers.ConfigureCxxAlg(susytools_alg,env,class_name='TruthObjDef')
             myjob.algsAdd(susytools_alg)
         else :
-            if options.susy :
+            if options.susy2016 :
+                print '##########################################'
+                print '# Using SUSYTools Object Selection, via PSL::XSUSYCutflow'
+                print '##########################################'
+                susytools_alg = ROOT.PSL.XSUSYCutflow()
+            elif options.susy :
                 print '##########################################'
                 print '# Using SUSYTools Object Selection, via PSL::XSUSYObjDefAlgV7'
                 print '##########################################'
-                susytools_alg = ROOT.PSL.XSUSYObjDefAlgV7()
+                susytools_alg = ROOT.PSL.XSUSYCutflow()
             else :
                 print '##########################################'
                 print '# Using SMWZ Object Selection, via PSL::XSUSYObjDefAlgPlusPlus'
@@ -182,15 +187,14 @@ def main (options,args) :
     # Input by samples
     #
     if options.samples :
-        pennsrm = '%s/../pennSoftLepton/config/MapSRM_%s.txt'%(os.getenv('ROOTCOREBIN'),options.tag)
+        pennsrm = '%s/../pennSoftLepton/config/MapSRM_mc15_%s.txt'%(os.getenv('ROOTCOREBIN'),options.tag)
         pyhelpers.GetFilesFromSamples(ROOT.SH,myhandler,DsInfoFromTxtFile
                                       ,pennsrm,options.samples,edm_alg)
 
         if 'data' in options.samples :
-            pennsrm_data = '%s/../pennSoftLepton/config/MapSRM_data_%s.txt'%(os.getenv('ROOTCOREBIN')
+            pennsrm_data = '%s/../pennSoftLepton/config/MapSRM_data15_%s.txt'%(os.getenv('ROOTCOREBIN')
                                                                             ,options.tag)
             pyhelpers.GetDataFiles(ROOT.SH,myhandler,pennsrm_data,edm_alg)
-
         edm_alg.PrintRunConfiguration()
 
     elif options.input :
@@ -333,6 +337,7 @@ if __name__ == "__main__":
     p.add_option('--tag',type  ='string'    ,default='dc14_ew01'   ,dest='tag',help='dataset tag' )
     p.add_option('--truth'  ,action='store_true',default=False  ,dest='truth',help='truth level analysis on truth DAODs' )
     p.add_option('--susy'  ,action='store_true',default=False  ,dest='susy',help='Use susy object selection (instead of WZ object selection)' )
+    p.add_option('--susy2016'  ,action='store_true',default=False  ,dest='susy2016',help='Use susy2016 object selection (instead of WZ object selection)' )
     p.add_option('--systematics'  ,action='store_true',default=False  ,dest='systematics',help='Run all systematic variations' )
 
     options,args = p.parse_args()

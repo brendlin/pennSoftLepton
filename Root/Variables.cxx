@@ -164,6 +164,11 @@ const std::vector<PSL::evtvar_props> PSL::GetAllEvtVariableProperties(){
     p.push_back(evtvar_props(vXCheckAntiIDSF_lep3_flavor,"XCheckAntiIDSF_lep3_flavor","XCheckAntiIDSF_lep3_flavor",  5,   0,    5));
     p.push_back(evtvar_props(vXCheckAntiIDSF_lep3_origin,"XCheckAntiIDSF_lep3_origin","XCheckAntiIDSF_lep3_origin", 20,   0,   20));
     p.push_back(evtvar_props(vXCheckAntiIDSF_lep3_type  ,"XCheckAntiIDSF_lep3_type"  ,"XCheckAntiIDSF_lep3_type"  , 20,   0,   20));
+    p.push_back(evtvar_props(vnBaselineJet              ,"nBaselineJets"             ,"nBaselineJets"             ,  10,    0,   10,true));
+    p.push_back(evtvar_props(vnSignalJet                ,"nSignalJets"               ,"nSignalJets"               ,  10,    0,   10,true));
+    p.push_back(evtvar_props(vLt                        ,"Lt"                        ,"L_{T} [GeV]"               , 500,    0,  500));
+    p.push_back(evtvar_props(vMeff                      ,"Meff"                      ,"M_{eff}^{L} [GeV]"         , 500,    0,  500));
+    p.push_back(evtvar_props(vMetOverMeff               ,"MetOverMeff"               ,"E_{T}^{miss}/M_{eff}"      , 100,    0,  5));
   } // Add_new_variables_here
   return p;
 }
@@ -195,6 +200,8 @@ const std::vector<PSL::lepvar_props> PSL::GetAllLepVariableProperties(){
     p_var.push_back(lepvar_props(lepPassBlayer      ,"lepPassBlayer"         ,"lepPassBlayer"         ,   2,    0,    2,true));
     p_var.push_back(lepvar_props(lepEleEtaBE        ,"lepEleEtaBE"           ,"#eta(BE)"              , 100, -2.5,  2.5));
     p_var.push_back(lepvar_props(lepMatchesTrigger  ,"lepMatchesTrigger"     ,"lepMatchesTrigger"     ,   2,    0,    2,true));
+    p_var.push_back(lepvar_props(lepOrigin          ,"lepOrigin"             ,"lepOrigin"             ,  20,    0,   20,true));
+    p_var.push_back(lepvar_props(lepType            ,"lepType"               ,"lepType"               ,  20,    0,   20,true));
   }
   return p_var;
 }
@@ -834,6 +841,7 @@ const std::vector<std::pair<PSL::Trigger2015,std::string> > PSL::GetTriggerPrope
     trig_pairs.push_back(std::make_pair(tHLT_mu4                                    ,"HLT_mu4"                  ));
     trig_pairs.push_back(std::make_pair(tHLT_mu14                                   ,"HLT_mu14"                 ));
     trig_pairs.push_back(std::make_pair(tHLT_mu18                                   ,"HLT_mu18"                 ));
+    trig_pairs.push_back(std::make_pair(tHLT_e17_lhloose_mu14                       ,"HLT_e17_lhloose_mu14"     ));
   }
   return trig_pairs;
 }
