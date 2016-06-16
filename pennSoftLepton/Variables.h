@@ -591,6 +591,8 @@ namespace PSL
      ,tHLT_mu20_imedium_mu8noL1
      ,tHLT_mu20_iloose_mu8noL1
      ,tHLT_mu18_mu8noL1
+     ,tHLT_mu20_mu8noL1
+     ,tHLT_mu22_mu8noL1
      // tri-muon
      ,tHLT_3mu6
      // Etmiss
@@ -620,7 +622,8 @@ namespace PSL
      ,tHLT_2e12_loose_mu10               
      ,tHLT_e24_lhtight_iloose            
      ,tHLT_e26_lhtight_iloose            
-     ,tHLT_mu24_iloose_L1MU15  
+     ,tHLT_mu24_iloose_L1MU15
+     ,tHLT_2e15_lhloose_L12EM13VH
      // lep-jet-MET ?
      // Supporting triggers!
      ,tHLT_e5_lhvloose

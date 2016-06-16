@@ -683,7 +683,7 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
   //
   // Muon Scale Factors!
   // Medium
-  m_muonsfs[MuonSF_Medium                  ] = new CP::MuonEfficiencyScaleFactors("MuonSF_Medium");
+  /* m_muonsfs[MuonSF_Medium                  ] = new CP::MuonEfficiencyScaleFactors("MuonSF_Medium");
   m_muonsfs[MuonSF_Medium                  ]->setProperty("WorkingPoint","Medium").isSuccess();
   if (!m_muonsfs[MuonSF_Medium             ]->initialize().isSuccess()) return EL::StatusCode::FAILURE;
   // Loose
@@ -714,7 +714,7 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
   m_muonsfs[MuonSF_TTVA_NOSYST] = new CP::MuonEfficiencyScaleFactors("MuonSF_TTVA_NOSYST");
   m_muonsfs[MuonSF_TTVA_NOSYST]->setProperty("WorkingPoint","TTVA").isSuccess();
   if (!m_muonsfs[MuonSF_TTVA_NOSYST]->initialize().isSuccess()) return EL::StatusCode::FAILURE;
-
+  */
   // Initialize trigger scale factors tools
   // Do this before setting systematics!
   m_muonTriggerSFTool = new CP::MuonTriggerScaleFactors("muTrigSF");
@@ -838,12 +838,17 @@ EL::StatusCode PSL::xAODWrapper::initialize()
       m_prwTool->setProperty( "DefaultChannel",410000).isSuccess();//when channel info not present in config file, use this channel instead
       MSG_INFO("Setting PRW default channel to " << 410000);
     }
-    else if (pileup_profile == "mc15b" || pileup_profile == "data") {
+    else if (pileup_profile == "mc15b") {
       // load this for data just to prevent tools from possibly crashing.
       prwConfFiles.push_back("$ROOTCOREBIN/../pennSoftLepton/data/merged_prw_mc15b.root");
       prwConfFiles.push_back("$ROOTCOREBIN/../pennSoftLepton/data/my.prw_410000_mc15b.root");
       m_prwTool->setProperty( "DefaultChannel",410000).isSuccess();//when channel info not present in config file, use this channel instead      
       MSG_INFO("Setting PRW default channel to " << 410000);
+    }
+    else if (pileup_profile == "mc15c" || pileup_profile == "data"){
+      prwConfFiles.push_back("dev/PileupReweighting/mc15c_v2_defaults.NotRecommended.prw.root");
+      m_prwTool->setProperty( "DefaultChannel",3).isSuccess();//when channel info not present in config file, use this channel instead
+      MSG_INFO("Setting PRW default channel to " << 3);
     }
     else {
       MSG_INFO("Error! Something went wrong. PileupProfile was not set correctly: " << pileup_profile);
@@ -1812,6 +1817,7 @@ bool PSL::xAODWrapper::isZgammaEvent(void){
 double PSL::xAODWrapper::GetContainerMuonSF(int icontainer,xAOD::Muon::Quality q,AnaIso::AnaIso iso_wp,bool skip_reco,bool skip_iso,bool skip_ttva){
   if (!muons) return 1;
   if (IsData()) return 1;
+  if (IsMC()) return 1;
   const xAOD::Muon* mu = getMuon(icontainer);  
   float reco_sf = 1.;
   float iso_sf = 1.;

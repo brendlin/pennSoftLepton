@@ -344,9 +344,8 @@ void PSL::XSUSYCutflow::loop(void){
   // abs(z0PV) < 1 mm AND abs(d0PV) < 0.2 mm . Be careful: these cuts should be applied after
   // overlap removal to avoid removing muons from heavy flavor decays.
   for(unsigned int i=0;i<m_EDM->muons->size();++i){
-    const xAOD::Muon* muon = m_EDM->getMuon(i);
+    const xAOD::Muon* muon = m_EDM->getMuon(i); 
     if (dec_passOR(*muon) && dec_baseline(*muon) && dec_cosmic(*muon)) {
-      //      dec_cosmic(*muon) = true;
       m_evtdef.m_passCosmicMuon = false;
       break;
     }
@@ -547,12 +546,12 @@ p.is_Bjet = m_SUSYObjDef->IsBJet(*jet,true,jet_bjet_mv1);*/
 
   // Fill trigger stuff
   m_EDM->FillTriggerBits();
-  if(m_EDM->PassTrigger(PSL::tHLT_2e12_lhloose_L12EM10VH)|| m_EDM->PassTrigger(PSL::tHLT_e17_lhloose_mu14)){  
+  if(m_EDM->PassTrigger(PSL::tHLT_2e15_lhloose_L12EM13VH)|| m_EDM->PassTrigger(PSL::tHLT_e17_lhloose_mu14) || m_EDM->PassTrigger(PSL::tHLT_2e17_lhloose)){  
     m_evtdef.m_pass_trig_ele = true;
   }
   else{ m_evtdef.m_pass_trig_ele = false; }
   //std::cout << "Ele Trigger: " << m_evtdef.m_pass_trig_ele << std::endl;
-  if(m_EDM->PassTrigger(PSL::tHLT_mu18_mu8noL1)|| m_EDM->PassTrigger(PSL::tHLT_e17_lhloose_mu14)){
+  if(m_EDM->PassTrigger(PSL::tHLT_mu20_mu8noL1)|| m_EDM->PassTrigger(PSL::tHLT_mu22_mu8noL1) || m_EDM->PassTrigger(PSL::tHLT_e17_lhloose_mu14)){
     m_evtdef.m_pass_trig_mu = true;
   }
   else{ m_evtdef.m_pass_trig_mu = false; }
@@ -570,7 +569,7 @@ p.is_Bjet = m_SUSYObjDef->IsBJet(*jet,true,jet_bjet_mv1);*/
 	bool isElectron_two = IsElectron(m_evtdef.leps.at(j));
 	if(isMuon_two){
 	  const xAOD::Muon* muon_two = m_EDM->getMuon(m_evtdef.leps.at(j).i_cont);
-	  if (m_SUSYObjDef->IsTrigMatched(muon_one, muon_two, (std::string)"HLT_mu18_mu8noL1")){
+	  if (m_SUSYObjDef->IsTrigMatched(muon_one, muon_two, (std::string)"HLT_mu20_mu8noL1") || m_SUSYObjDef->IsTrigMatched(muon_one, muon_two, (std::string)"HLT_mu22_mu8noL1")){ // dimuon
 	    m_evtdef.m_pass_trig_match = true;
 	    m_evtdef.leps.at(i).is_trigMatched = true;
 	    m_evtdef.leps.at(j).is_trigMatched = true;
@@ -579,7 +578,7 @@ p.is_Bjet = m_SUSYObjDef->IsBJet(*jet,true,jet_bjet_mv1);*/
         }
 	else if (isElectron_two){
 	    const xAOD::Electron* electron_two = m_EDM->getElectron(m_evtdef.leps.at(j).i_cont);
-	    if ( (m_SUSYObjDef->IsTrigMatched(muon_one, (std::string)"HLT_e17_lhloose_mu14")) && (m_SUSYObjDef->IsTrigMatched(electron_two, (std::string)"HLT_e17_lhloose_mu14")) ){
+	    if (m_SUSYObjDef->IsTrigMatched(muon_one, electron_two, (std::string)"HLT_e17_lhloose_mu14") ){ //emu
 	      m_evtdef.m_pass_trig_match = true;
 	      m_evtdef.leps.at(i).is_trigMatched = true;
 	      m_evtdef.leps.at(j).is_trigMatched = true;
@@ -592,8 +591,8 @@ p.is_Bjet = m_SUSYObjDef->IsBJet(*jet,true,jet_bjet_mv1);*/
 	bool isMuon_two = IsMuon(m_evtdef.leps.at(j));
 	bool isElectron_two = IsElectron(m_evtdef.leps.at(j));
 	if(isMuon_two){
-          const xAOD::Muon* muon_two = m_EDM->getMuon(m_evtdef.leps.at(j).i_cont);
-          if ((m_SUSYObjDef->IsTrigMatched(electron_one,(std::string)"HLT_e17_lhloose_mu14"))&&(m_SUSYObjDef->IsTrigMatched(muon_two, (std::string)"HLT_e17_lhloose_mu14"))){
+          const xAOD::Muon* muon_two = m_EDM->getMuon(m_evtdef.leps.at(j).i_cont); //emu
+          if (m_SUSYObjDef->IsTrigMatched(electron_one,muon_two, (std::string)"HLT_e17_lhloose_mu14")){
             m_evtdef.m_pass_trig_match = true;
             m_evtdef.leps.at(i).is_trigMatched = true;
             m_evtdef.leps.at(j).is_trigMatched = true;
@@ -602,7 +601,7 @@ p.is_Bjet = m_SUSYObjDef->IsBJet(*jet,true,jet_bjet_mv1);*/
         }
 	else if (isElectron_two){
 	  const xAOD::Electron* electron_two = m_EDM->getElectron(m_evtdef.leps.at(j).i_cont);
-	  if ((m_SUSYObjDef->IsTrigMatched(electron_one,(std::string)"HLT_2e12_lhloose_L12EM10VH"))&&(m_SUSYObjDef->IsTrigMatched(electron_two, (std::string)"HLT_2e12_lhloose_L12EM10VH"))){
+	  if ((m_SUSYObjDef->IsTrigMatched(electron_one,electron_two,(std::string)"HLT_2e15_lhloose_L12EM13VH"))||(m_SUSYObjDef->IsTrigMatched(electron_one, electron_two, (std::string)"HLT_2e17_lhloose"))){ //dielectron
 	    m_evtdef.m_pass_trig_match = true;
 	    m_evtdef.leps.at(i).is_trigMatched = true;
 	    m_evtdef.leps.at(j).is_trigMatched = true;

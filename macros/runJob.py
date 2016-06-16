@@ -212,9 +212,11 @@ def main (options,args) :
         for sample in myhandler :
             if options.mc15a :
                 sample.setMetaString("PileupProfile","mc15a")
-            else :
+            elif options.mc15b :
                 sample.setMetaString("PileupProfile","mc15b")
-            
+            else: 
+                sample.setMetaString("PileupProfile","mc15c")
+
             if options.isAtlfast :
                 sample.setMetaString("Simulation","atlfast")
             elif options.isData :
@@ -316,7 +318,8 @@ if __name__ == "__main__":
     p.add_option('-i','--input',type  ='string'     ,default=''   ,dest='input'  ,help='input directory (as ready by SH)')
     p.add_option('--isData'   ,action='store_true',default=False,dest='isData'   ,help='IsData'   )
     p.add_option('--isAtlfast',action='store_true',default=False,dest='isAtlfast',help='isAtlfast')
-    p.add_option('--mc15a'    ,action='store_true',default=False,dest='mc15a'    ,help='(for pileup reweighting) is it mc15a? Default is mc15b.')
+    p.add_option('--mc15a'    ,action='store_true',default=False,dest='mc15a'    ,help='(for pileup reweighting) is it mc15a? Default is mc15c.')
+    p.add_option('--mc15b'    ,action='store_true',default=False,dest='mc15b'    ,help='(for pileup reweighting) is it mc15a? Default is mc15c.')
 
     p.add_option('--samples'   ,type  ='string'     ,default=''   ,dest='samples',help='input samples (see Sample.h)')
     #

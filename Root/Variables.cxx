@@ -799,6 +799,8 @@ const std::vector<std::pair<PSL::Trigger2015,std::string> > PSL::GetTriggerPrope
     trig_pairs.push_back(std::make_pair(tHLT_mu20_imedium_mu8noL1                 ,"HLT_mu20_imedium_mu8noL1"                 ));
     trig_pairs.push_back(std::make_pair(tHLT_mu20_iloose_mu8noL1                  ,"HLT_mu20_iloose_mu8noL1"                  ));
     trig_pairs.push_back(std::make_pair(tHLT_mu18_mu8noL1                         ,"HLT_mu18_mu8noL1"                         ));
+    trig_pairs.push_back(std::make_pair(tHLT_mu20_mu8noL1                         ,"HLT_mu20_mu8noL1"                         ));
+    trig_pairs.push_back(std::make_pair(tHLT_mu22_mu8noL1                         ,"HLT_mu22_mu8noL1"                         ));
     // tri-muon
     trig_pairs.push_back(std::make_pair(tHLT_3mu6                                 ,"HLT_3mu6"                                 ));
     // Etmiss
@@ -830,6 +832,7 @@ const std::vector<std::pair<PSL::Trigger2015,std::string> > PSL::GetTriggerPrope
     trig_pairs.push_back(std::make_pair(tHLT_e24_lhtight_iloose                     ,"HLT_e24_lhtight_iloose"          ));
     trig_pairs.push_back(std::make_pair(tHLT_e26_lhtight_iloose                     ,"HLT_e26_lhtight_iloose"          ));
     trig_pairs.push_back(std::make_pair(tHLT_mu24_iloose_L1MU15                     ,"HLT_mu24_iloose_L1MU15"          ));
+    trig_pairs.push_back(std::make_pair(tHLT_2e15_lhloose_L12EM13VH                 ,"HLT_2e15_lhloose_L12EM13VH"               ));
 
     trig_pairs.push_back(std::make_pair(tHLT_e5_lhvloose                            ,"HLT_e5_lhvloose"          ));
     trig_pairs.push_back(std::make_pair(tHLT_e10_lhvloose_L1EM7                     ,"HLT_e10_lhvloose_L1EM7"   ));
