@@ -1,3 +1,10 @@
+2016-06-16 Elodie Resseguie <Elodie.Deborah.Resseguie@cern.ch>
+	* Modifications for base 2.4.9
+	* SFs for muons (triggers and efficiencies) not available so currently commented out - will need to revert
+	* SUSY 3L triggers added in trigger matching in XSUSYCutflow.cxx
+	* new triggers added in the enum
+	* new configuration file used for release 27 cutflow challenges for data and MC
+	
 2016-06-10 Joseph Reichert <Joseph.Reichert@cern.ch>
 	* First working version using 20.7 (2.4.10)
 	* going into pennSoftLepton-00-00-04
