@@ -575,7 +575,7 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
   n_processed = 0;
   m_sumw_thisjob = 0;
 
-  std::string lhBaseDir = "ElectronPhotonSelectorTools/offline/";
+  std::string lhBaseDir = "ElectronPhotonSelectorTools/offline/mc15_20160512/";
   std::map<PSL::ElectronID::ElectronID,std::string> lhconfs;
 #ifndef ISREL20
   lhconfs[ElectronID::TightLLH    ] = lhBaseDir+"dc14b_20150121/ElectronLikelihoodTightOfflineConfig2015.conf"    ;
@@ -588,11 +588,11 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
   lhconfs[ElectronID::LooseLLH    ] = lhBaseDir+"mc15_20150429/ElectronLikelihoodLooseOfflineConfig2015.conf"    ;
   lhconfs[ElectronID::VeryLooseLLH] = lhBaseDir+"mc15_20150429/ElectronLikelihoodVeryLooseOfflineConfig2015.conf";
 #else // SUSYTools-00-06-25 and later
-  lhconfs[ElectronID::TightLLH         ] = lhBaseDir+"mc15_20150712/ElectronLikelihoodTightOfflineConfig2015.conf"    ;
-  lhconfs[ElectronID::MediumLLH        ] = lhBaseDir+"mc15_20150712/ElectronLikelihoodMediumOfflineConfig2015.conf"   ;
-  lhconfs[ElectronID::LooseLLH         ] = lhBaseDir+"mc15_20150712/ElectronLikelihoodLooseOfflineConfig2015.conf"    ;
-  lhconfs[ElectronID::VeryLooseLLH     ] = lhBaseDir+"mc15_20150712/ElectronLikelihoodVeryLooseOfflineConfig2015.conf";
-  lhconfs[ElectronID::LooseAndBLayerLLH] = lhBaseDir+"mc15_20150712/ElectronLikelihoodLooseOfflineConfig2015_CutBL.conf";
+  lhconfs[ElectronID::TightLLH         ] = lhBaseDir+"ElectronLikelihoodTightOfflineConfig2016_Smooth.conf"    ;
+  lhconfs[ElectronID::MediumLLH        ] = lhBaseDir+"ElectronLikelihoodMediumOfflineConfig2016_Smooth.conf"   ;
+  lhconfs[ElectronID::LooseLLH         ] = lhBaseDir+"ElectronLikelihoodLooseOfflineConfig2016_Smooth.conf"    ;
+  lhconfs[ElectronID::VeryLooseLLH     ] = lhBaseDir+"ElectronLikelihoodVeryLooseOfflineConfig2016_Smooth.conf";
+  lhconfs[ElectronID::LooseAndBLayerLLH] = lhBaseDir+"ElectronLikelihoodLooseOfflineConfig2016_Smooth.conf";
 #endif
   
   m_lhtools[ElectronID::TightLLH         ] = new AsgElectronLikelihoodTool("xAODWrapper_TightLLH");
@@ -612,27 +612,27 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
   // Electron Scale factors!
   //
   std::map<PSL::ElectronSF,std::string> sf_pairs;
-  sf_pairs[PhilipAntiID                                     ] = "efficiencySF.offline.LooseAndBLayerLLH_d0z0";
-  sf_pairs[ElectronSF_RecoTrk                               ] = "efficiencySF.offline.RecoTrk"                              ;
+  sf_pairs[PhilipAntiID                                     ] = "offline/efficiencySF.offline.LooseAndBLayerLLH_d0z0_v11";
+  sf_pairs[ElectronSF_RecoTrk                               ] = "offline/efficiencySF.offline.RecoTrk"                              ;
 #ifndef BEFORE_SUSYTOOLS_000709
-  sf_pairs[ElectronSF_LooseAndBLayerLLH                     ] = "efficiencySF.offline.LooseAndBLayerLLH"                    ;
-  sf_pairs[ElectronSF_LooseAndBLayerLLH_d0z0                ] = "efficiencySF.offline.LooseAndBLayerLLH_d0z0"               ;
-  sf_pairs[ElectronSF_TightLLH_d0z0                         ] = "efficiencySF.offline.TightLLH_d0z0"                        ;
-  sf_pairs[ElectronSF_MediumLLH_d0z0                        ] = "efficiencySF.offline.MediumLLH_d0z0"                       ;
-  sf_pairs[ElectronIsoSF_MediumLLH_d0z0_v8_isolGradientLoose] = "efficiencySF.Isolation.MediumLLH_d0z0_v8_isolGradientLoose";
-  sf_pairs[ElectronIsoSF_TightLLH_d0z0_v8_isolGradient      ] = "efficiencySF.Isolation.TightLLH_d0z0_v8_isolGradient"      ;
-  sf_pairs[ElectronIsoSF_LooseAndBLayerLLH_d0z0_v8_isolLooseTrackOnly] = "efficiencySF.Isolation.LooseAndBLayerLLH_d0z0_v8_isolLooseTrackOnly";
-  sf_pairs[ElectronSF_Trigger_MediumLLH_isolGradientLoose]    = "efficiencySF.e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose.MediumLLH_d0z0_v8_isolGradient"; // smwz z-electron (data), Gradient for now
-  sf_pairs[ElectronSF_TriggerMC_MediumLLH_isolGradientLoose]  = "efficiency.e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose.MediumLLH_d0z0_v8_isolGradient"; // smwz z-electron (mc), Gradient for now
+  sf_pairs[ElectronSF_LooseAndBLayerLLH                     ] = "offline/efficiencySF.offline.LooseAndBLayerLLH_v11"                    ;
+  sf_pairs[ElectronSF_LooseAndBLayerLLH_d0z0                ] = "offline/efficiencySF.offline.LooseAndBLayerLLH_d0z0_v11"               ;
+  sf_pairs[ElectronSF_TightLLH_d0z0                         ] = "offline/efficiencySF.offline.TightLLH_d0z0_v11"                        ;
+  sf_pairs[ElectronSF_MediumLLH_d0z0                        ] = "offline/efficiencySF.offline.MediumLLH_d0z0_v11"                       ;
+  sf_pairs[ElectronIsoSF_MediumLLH_d0z0_v8_isolGradientLoose] = "isolation/efficiencySF.Isolation.MediumLLH_d0z0_v11_isolGradientLoose";
+  sf_pairs[ElectronIsoSF_TightLLH_d0z0_v8_isolGradient      ] = "isolation/efficiencySF.Isolation.TightLLH_d0z0_v11_isolGradient"      ;
+  sf_pairs[ElectronIsoSF_LooseAndBLayerLLH_d0z0_v8_isolLooseTrackOnly] = "isolation/efficiencySF.Isolation.LooseAndBLayerLLH_d0z0_v11_isolLooseTrackOnly";
+  sf_pairs[ElectronSF_Trigger_MediumLLH_isolGradientLoose]    = "trigger/efficiencySF.DI_E_2015_e12_lhloose_L1EM10VH_2016_e15_lhvloose_nod0_L1EM13VH.MediumLLH_d0z0_v11_isolGradient"; 
+  sf_pairs[ElectronSF_TriggerMC_MediumLLH_isolGradientLoose]  = "trigger/efficiency.DI_E_2015_e12_lhloose_L1EM10VH_2016_e15_lhvloose_nod0_L1EM13VH.MediumLLH_d0z0_v11_isolGradient"; // smwz z-electron (mc), Gradient for now
 #ifdef BEFORE_ANALYSISBASE_2p3p41 // some operating points just recently became available
-  sf_pairs[ElectronSF_Trigger_TightLLH_isolGradient]          = "efficiencySF.e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose.MediumLLH_d0z0_v8_isolGradient"; // Wrong but the only option before 2p3p41
-  sf_pairs[ElectronSF_TriggerMC_TightLLH_isolGradient]        = "efficiency.e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose.MediumLLH_d0z0_v8_isolGradient"; // Wrong but the only option before 2p3p41
+  //sf_pairs[ElectronSF_Trigger_TightLLH_isolGradient]          = "efficiencySF.e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose.MediumLLH_d0z0_v8_isolGradient"; // Wrong but the only option before 2p3p41
+  //sf_pairs[ElectronSF_TriggerMC_TightLLH_isolGradient]        = "efficiency.e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose.MediumLLH_d0z0_v8_isolGradient"; // Wrong but the only option before 2p3p41
 #else
-  sf_pairs[ElectronSF_Trigger_TightLLH_isolGradient]          = "efficiencySF.e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose.TightLLH_d0z0_v8_isolGradient"; // Correct for Moriond
-  sf_pairs[ElectronSF_TriggerMC_TightLLH_isolGradient]        = "efficiency.e24_lhmedium_L1EM20VH_OR_e60_lhmedium_OR_e120_lhloose.TightLLH_d0z0_v8_isolGradient"; // Correct for Moriond
+  sf_pairs[ElectronSF_Trigger_TightLLH_isolGradient]          = "trigger/efficiencySF.DI_E_2015_e12_lhloose_L1EM10VH_2016_e15_lhvloose_nod0_L1EM13VH.TightLLH_d0z0_v11_isolGradient"; // Correct for Moriond
+  sf_pairs[ElectronSF_TriggerMC_TightLLH_isolGradient]        = "trigger/efficiency.DI_E_2015_e12_lhloose_L1EM10VH_2016_e15_lhvloose_nod0_L1EM13VH.TightLLH_d0z0_v11_isolGradient"; // Correct for Moriond
 #endif // BEFORE_ANALYSISBASE_2p3p41
 #endif // BEFORE_SUSYTOOLS_000709
-
+  
 #ifdef BEFORE_SUSYTOOLS_000611
   std::string eff_version = "2015.13TeV.rel19.GEO21.v01";
 #elif defined(BEFORE_SUSYTOOLS_000709)
@@ -640,13 +640,13 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
 #elif defined(BEFORE_ANALYSISBASE_2p3p41)
   std::string eff_version = "2015.13TeV.rel20p0.25ns.v02";
 #else
-  std::string eff_version = "2015.13TeV.rel20p0.25ns.v04";
+  std::string eff_version = "2015_2016.13TeV.rel20.7.25ns.v01";
 #endif
 
   PATCore::ParticleDataType::DataType data_type(PATCore::ParticleDataType::Data);
   if (wk()->metaData()->castString("Simulation") == "atlfast") data_type = PATCore::ParticleDataType::Fast;
   if (wk()->metaData()->castString("Simulation") == "fullsim") data_type = PATCore::ParticleDataType::Full;
-
+  
   for (auto it=sf_pairs.begin();it != sf_pairs.end();++it) {
     MSG_INFO("Setting up Electron SF " << it->second);
     std::string tool_name = it->second;
@@ -666,8 +666,9 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
 
     m_elesfs[it->first] = new AsgElectronEfficiencyCorrectionTool(tool_name);
     std::vector<std::string> tmp_list;
-    TString s = Form("ElectronEfficiencyCorrection/%s.%s.root",(it->second).c_str(),eff_version.c_str());
-    if ( (it->first) == PhilipAntiID ) s = Form("pennSoftLepton/%s.%s.root",(it->second).c_str(),eff_version.c_str());
+    TString s = Form("ElectronEfficiencyCorrection/2015_2016/rel20.7/ICHEP_June2016_v1/%s.%s.root",(it->second).c_str(),eff_version.c_str());
+    if ( (it->first == ElectronSF_Trigger_MediumLLH_isolGradientLoose ) || (it->first == ElectronSF_TriggerMC_MediumLLH_isolGradientLoose) || (it->first == ElectronSF_Trigger_TightLLH_isolGradient) || (it->first == ElectronSF_TriggerMC_TightLLH_isolGradient )) s = Form("ElectronEfficiencyCorrection/2015_2016/rel20.7/ICHEP_June2016_v1/%s.root",(it->second).c_str());
+    //s = Form("pennSoftLepton/%s.%s.root",(it->second).c_str(),eff_version.c_str());
     tmp_list.push_back(std::string(s));
     m_elesfs[it->first]->msg().setLevel(MSG::ERROR);
     m_elesfs[it->first]->setProperty("CorrectionFileNameList",tmp_list).isSuccess();
@@ -679,48 +680,110 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
     }
     if (!m_elesfs[it->first]->initialize().isSuccess()) return EL::StatusCode::FAILURE;
   }
+  
+  /////////////////////////                                                                                                                                       
+  /// PRW tool was made new in histInitialize, but we need metadata in order to initialize it.                                                                    
+  /////////////////////////                                                                                                                                       
+  // Make the tool here, but configure it once the first file has been loaded                                                                                                                        
+  CP::PileupReweightingTool* prwTool = new CP::PileupReweightingTool( "PrwTool" );
+  if(/*m_prwConfFiles.empty() &&*/ m_prwLcalcFiles.empty()){
+    MSG_WARNING( "No configuration or iLumiCalc files provided for pileup reweighting! Will not configure PRW tool." );
+  } else {
+    std::vector<std::string> prwConfFiles;
+    std::string pileup_profile = wk()->metaData()->castString("PileupProfile");
+    if (pileup_profile == "mc15a") {
+      //prwConfFiles.push_back("dev/PileupReweighting/mc15a_defaults.NotRecommended.prw.root"); //put this as back-up but it's not recommended                    
+      prwConfFiles.push_back("$ROOTCOREBIN/../pennSoftLepton/data/merged_prw.root");
+      prwTool->setProperty( "DefaultChannel",410000).isSuccess();//when channel info not present in config file, use this channel instead                       
+      MSG_INFO("Setting PRW default channel to " << 410000);
+    }
+    else if (pileup_profile == "mc15b") {
+      // load this for data just to prevent tools from possibly crashing.                                                                                         
+      prwConfFiles.push_back("$ROOTCOREBIN/../pennSoftLepton/data/merged_prw_mc15b.root");
+      prwConfFiles.push_back("$ROOTCOREBIN/../pennSoftLepton/data/my.prw_410000_mc15b.root");
+      prwTool->setProperty( "DefaultChannel",410000).isSuccess();//when channel info not present in config file, use this channel instead                       
+      MSG_INFO("Setting PRW default channel to " << 410000);
+    }
+    else if (pileup_profile == "mc15c" || pileup_profile == "data"){
+      //prwConfFiles.push_back("dev/PileupReweighting/mc15c_v2_defaults.NotRecommended.prw.root");                 
+      prwConfFiles.push_back("dev/SUSYTools/merged_prw_mc15c.root");
+      prwTool->setProperty( "DefaultChannel",410000).isSuccess();//when channel info not present in config file, use this channel instead                       
+      MSG_INFO("Setting PRW default channel to " << 410000);
+    }
+    else {
+      MSG_INFO("Error! Something went wrong. PileupProfile was not set correctly: " << pileup_profile);
+      return EL::StatusCode::FAILURE;
+    }
+
+    //int default_channel = wk()->metaData()->castInteger("DefaultChannel",m_prwDefaultChannel);                                                                  
+
+    std::vector<std::string> prwLcalcFiles;
+    prwLcalcFiles.push_back("$ROOTCOREBIN/../"+m_prwLcalcFiles);
+    prwTool->setProperty( "DataScaleFactor", 1./m_pu_rescaling ).isSuccess();
+    prwTool->setProperty( "ConfigFiles", prwConfFiles ).isSuccess();
+    prwTool->setProperty( "LumiCalcFiles", prwLcalcFiles ).isSuccess();
+    prwTool->setProperty( "DataScaleFactorUP",   1.0/1.0 ).isSuccess();
+    prwTool->setProperty( "DataScaleFactorDOWN",  1.0/1.23 ).isSuccess();
+    if (!prwTool->initialize().isSuccess()) {
+      MSG_INFO("Please do ln -s /home/mjoana/merged_prw.root $ROOTCOREBIN/../pennSoftLepton/data/. (mc15a)");
+      MSG_INFO("Please do ln -s /home/mjoana/merged_prw_mc15b.root $ROOTCOREBIN/../pennSoftLepton/data/. (mc15b)");
+      return EL::StatusCode::FAILURE;
+    }
+    MSG_INFO( "PileupReweightingTool initialized with rescaling of 1./" << m_pu_rescaling );
+  }
+  ///////////////////////// 
+  /////////////////////////
 
   //
   // Muon Scale Factors!
   // Medium
-  /* m_muonsfs[MuonSF_Medium                  ] = new CP::MuonEfficiencyScaleFactors("MuonSF_Medium");
+  m_prwTool = prwTool;
+  m_muonsfs[MuonSF_Medium                  ] = new CP::MuonEfficiencyScaleFactors("MuonSF_Medium");
   m_muonsfs[MuonSF_Medium                  ]->setProperty("WorkingPoint","Medium").isSuccess();
+  m_muonsfs[MuonSF_Medium                  ]->setProperty("PileupReweightingTool", m_prwTool).isSuccess();
   if (!m_muonsfs[MuonSF_Medium             ]->initialize().isSuccess()) return EL::StatusCode::FAILURE;
   // Loose
   m_muonsfs[MuonSF_Loose                   ] = new CP::MuonEfficiencyScaleFactors("MuonSF_Loose");
   m_muonsfs[MuonSF_Loose                   ]->setProperty("WorkingPoint","Loose").isSuccess();
+  m_muonsfs[MuonSF_Loose                   ]->setProperty("PileupReweightingTool", m_prwTool).isSuccess();
   if (!m_muonsfs[MuonSF_Loose              ]->initialize().isSuccess()) return EL::StatusCode::FAILURE;
   // Loose NOSYST
   m_muonsfs[MuonSF_Loose_NOSYST            ] = new CP::MuonEfficiencyScaleFactors("MuonSF_Loose_NOSYST");
   m_muonsfs[MuonSF_Loose_NOSYST            ]->setProperty("WorkingPoint","Loose").isSuccess();
+  m_muonsfs[MuonSF_Loose_NOSYST            ]->setProperty("PileupReweightingTool", m_prwTool).isSuccess();
   if (!m_muonsfs[MuonSF_Loose_NOSYST       ]->initialize().isSuccess()) return EL::StatusCode::FAILURE;
   // isolation scale factor - GradientLoose
   m_muonsfs[MuonSF_isolGradientLoose] = new CP::MuonEfficiencyScaleFactors("MuonSF_isolGradientLoose");
   m_muonsfs[MuonSF_isolGradientLoose]->setProperty("WorkingPoint","GradientLooseIso").isSuccess();
+  m_muonsfs[MuonSF_isolGradientLoose]->setProperty("PileupReweightingTool", m_prwTool).isSuccess();
   if (!m_muonsfs[MuonSF_isolGradientLoose]->initialize().isSuccess()) return EL::StatusCode::FAILURE;
   // isolation scale factor - LooseTrackOnly
   m_muonsfs[MuonSF_isolLooseTrackOnly] = new CP::MuonEfficiencyScaleFactors("MuonSF_isolLooseTrackOnly");
   m_muonsfs[MuonSF_isolLooseTrackOnly]->setProperty("WorkingPoint","LooseTrackOnlyIso").isSuccess();
+  m_muonsfs[MuonSF_isolLooseTrackOnly]->setProperty("PileupReweightingTool", m_prwTool).isSuccess();
   if (!m_muonsfs[MuonSF_isolLooseTrackOnly]->initialize().isSuccess()) return EL::StatusCode::FAILURE;
   // isolation scale factor - LooseTrackOnly - NOSYST
   m_muonsfs[MuonSF_isolLooseTrackOnly_NOSYST] = new CP::MuonEfficiencyScaleFactors("MuonSF_isolLooseTrackOnly_NOSYST");
   m_muonsfs[MuonSF_isolLooseTrackOnly_NOSYST]->setProperty("WorkingPoint","LooseTrackOnlyIso").isSuccess();
+  m_muonsfs[MuonSF_isolLooseTrackOnly_NOSYST]->setProperty("PileupReweightingTool", m_prwTool).isSuccess();
   if (!m_muonsfs[MuonSF_isolLooseTrackOnly_NOSYST]->initialize().isSuccess()) return EL::StatusCode::FAILURE;
   // TTVA scale factors
   m_muonsfs[MuonSF_TTVA] = new CP::MuonEfficiencyScaleFactors("MuonSF_TTVA");
   m_muonsfs[MuonSF_TTVA]->setProperty("WorkingPoint","TTVA").isSuccess();
+  m_muonsfs[MuonSF_TTVA]->setProperty("PileupReweightingTool", m_prwTool).isSuccess();
   if (!m_muonsfs[MuonSF_TTVA]->initialize().isSuccess()) return EL::StatusCode::FAILURE;
   // TTVA scale factors - NOSYST
   m_muonsfs[MuonSF_TTVA_NOSYST] = new CP::MuonEfficiencyScaleFactors("MuonSF_TTVA_NOSYST");
   m_muonsfs[MuonSF_TTVA_NOSYST]->setProperty("WorkingPoint","TTVA").isSuccess();
+  m_muonsfs[MuonSF_TTVA_NOSYST]->setProperty("PileupReweightingTool", m_prwTool).isSuccess();
   if (!m_muonsfs[MuonSF_TTVA_NOSYST]->initialize().isSuccess()) return EL::StatusCode::FAILURE;
-  */
+  
   // Initialize trigger scale factors tools
   // Do this before setting systematics!
   m_muonTriggerSFTool = new CP::MuonTriggerScaleFactors("muTrigSF");
   m_muonTriggerSFTool->setProperty("MuonQuality","Medium").ignore();
   //m_muonTriggerSFTool->setProperty("filename","muon_trigger_eff_nov17.root");
-  //m_muonTriggerSFTool->setProperty("Isolation","").ignore();
+  m_muonTriggerSFTool->setProperty("Isolation","").ignore();
   if( m_muonTriggerSFTool->initialize().isFailure() ){
     MSG_INFO("Failed to initialize muon trigger scale factors tool!");
     return EL::StatusCode::FAILURE;
@@ -730,11 +793,14 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
   // Do this before setting systematics!
   m_muonTriggerSFToolNOSYST = new CP::MuonTriggerScaleFactors("muTrigSF_NOSYST");
   m_muonTriggerSFToolNOSYST->setProperty("MuonQuality","Medium").ignore();
+  //  m_muonTriggerSFToolNOSYST->setProperty("PileupReweightingTool", m_prwTool).isSuccess();
   if( m_muonTriggerSFToolNOSYST->initialize().isFailure() ){
     MSG_INFO("Failed to initialize muon trigger (non-systematics) scale factors tool!");
     return EL::StatusCode::FAILURE;
   }
-
+  
+  //m_prwTool = new CP::PileupReweightingTool( "PrwTool" ); 
+  
   m_grl = new GoodRunsListSelectionTool("GoodRunsListSelectionTool");
   std::vector<std::string> mygrls;
   MSG_INFO("$ROOTCOREBIN/../"+m_grlfile);
@@ -754,10 +820,7 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
   m_grl->setProperty( "GoodRunsListVec", mygrls).ignore();
   m_grl->setProperty("PassThrough", false).ignore();
   if (!m_grl->initialize().isSuccess()) return EL::StatusCode::FAILURE;
-
-  // Make the tool here, but configure it once the first file has been loaded
-  m_prwTool = new CP::PileupReweightingTool( "PrwTool" );
-
+  
 #ifdef BEFORE_SUSYTOOLS_000611
   m_isotools[PSL::AnaIso::VeryLooseTrackOnly] = new CP::IsolationSelectionTool("VeryLooseTrackOnly");
   m_isotools[PSL::AnaIso::VeryLoose         ] = new CP::IsolationSelectionTool("VeryLoose"         );
@@ -777,7 +840,7 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
 #endif // BEFORE_SUSYTOOLS_000611
     if (!it->second->initialize().isSuccess()) return EL::StatusCode::FAILURE;
   }
-
+  
   MSG_INFO("histInitialize - initializing internal tools done.");
   return EL::StatusCode::SUCCESS;
 }
@@ -815,65 +878,7 @@ EL::StatusCode PSL::xAODWrapper::initialize()
   // input events.
   MSG_DEBUG("initialize");
   m_event = wk()->xaodEvent();
-
-  /////////////////////////
-  /// PRW tool was made new in histInitialize, but we need metadata in order to initialize it.
-  /////////////////////////
-  if(/*m_prwConfFiles.empty() &&*/ m_prwLcalcFiles.empty()){
-    MSG_WARNING( "No configuration or iLumiCalc files provided for pileup reweighting! Will not configure PRW tool." );
-  } else {
-    std::vector<std::string> prwConfFiles;
-    //
-    // FROM NOW ON THE PRW CONF FILES WILL BE HARDCODED
-    //
-    // std::vector<std::string> m_prwConfFiles_vector;
-    // PSL::StringTok(m_prwConfFiles_vector,m_prwConfFiles,",");
-    // for(uint i = 0; i<m_prwConfFiles_vector.size();i++){
-    //   prwConfFiles.push_back("$ROOTCOREBIN/../"+m_prwConfFiles_vector[i]);
-    // }
-    std::string pileup_profile = wk()->metaData()->castString("PileupProfile");
-    if (pileup_profile == "mc15a") {
-      //prwConfFiles.push_back("dev/PileupReweighting/mc15a_defaults.NotRecommended.prw.root"); //put this as back-up but it's not recommended
-      prwConfFiles.push_back("$ROOTCOREBIN/../pennSoftLepton/data/merged_prw.root");
-      m_prwTool->setProperty( "DefaultChannel",410000).isSuccess();//when channel info not present in config file, use this channel instead
-      MSG_INFO("Setting PRW default channel to " << 410000);
-    }
-    else if (pileup_profile == "mc15b") {
-      // load this for data just to prevent tools from possibly crashing.
-      prwConfFiles.push_back("$ROOTCOREBIN/../pennSoftLepton/data/merged_prw_mc15b.root");
-      prwConfFiles.push_back("$ROOTCOREBIN/../pennSoftLepton/data/my.prw_410000_mc15b.root");
-      m_prwTool->setProperty( "DefaultChannel",410000).isSuccess();//when channel info not present in config file, use this channel instead      
-      MSG_INFO("Setting PRW default channel to " << 410000);
-    }
-    else if (pileup_profile == "mc15c" || pileup_profile == "data"){
-      prwConfFiles.push_back("dev/PileupReweighting/mc15c_v2_defaults.NotRecommended.prw.root");
-      m_prwTool->setProperty( "DefaultChannel",3).isSuccess();//when channel info not present in config file, use this channel instead
-      MSG_INFO("Setting PRW default channel to " << 3);
-    }
-    else {
-      MSG_INFO("Error! Something went wrong. PileupProfile was not set correctly: " << pileup_profile);
-      return EL::StatusCode::FAILURE;
-    }
-
-    //int default_channel = wk()->metaData()->castInteger("DefaultChannel",m_prwDefaultChannel);
-    
-    std::vector<std::string> prwLcalcFiles;
-    prwLcalcFiles.push_back("$ROOTCOREBIN/../"+m_prwLcalcFiles);
-    m_prwTool->setProperty( "DataScaleFactor", 1./m_pu_rescaling ).isSuccess();
-    m_prwTool->setProperty( "ConfigFiles", prwConfFiles ).isSuccess();
-    m_prwTool->setProperty( "LumiCalcFiles", prwLcalcFiles ).isSuccess();
-    m_prwTool->setProperty( "DataScaleFactorUP",   1.0/1.0 ).isSuccess();
-    m_prwTool->setProperty( "DataScaleFactorDOWN",  1.0/1.23 ).isSuccess();
-    if (!m_prwTool->initialize().isSuccess()) {
-      MSG_INFO("Please do ln -s /home/mjoana/merged_prw.root $ROOTCOREBIN/../pennSoftLepton/data/. (mc15a)");
-      MSG_INFO("Please do ln -s /home/mjoana/merged_prw_mc15b.root $ROOTCOREBIN/../pennSoftLepton/data/. (mc15b)");
-      return EL::StatusCode::FAILURE;
-    }
-    MSG_INFO( "PileupReweightingTool initialized with rescaling of 1./" << m_pu_rescaling );
-  }
-  /////////////////////////
-  /////////////////////////
-
+  
   // Used for test of whether TriggerMenu stuff exists, just below:
   const DataVector<xAOD::TriggerMenu>* tmp_triggerMenu; 
   if ( asg::ToolStore::contains<TrigConf::xAODConfigTool>("xAODConfigTool") ) {
@@ -1122,7 +1127,7 @@ EL::StatusCode PSL::xAODWrapper::finalize()
   if (m_trigDecTool ){delete m_trigDecTool ; m_trigDecTool  = 0;}
   if (m_trigConfTool){delete m_trigConfTool; m_trigConfTool = 0;}
   if (m_grl         ){delete m_grl         ; m_grl          = 0;}
-  if (m_prwTool     ){delete m_prwTool     ; m_prwTool      = 0;}
+  //if (m_prwTool     ){delete m_prwTool     ; m_prwTool      = 0;}
   if (m_muonTriggerSFTool){delete m_muonTriggerSFTool; m_muonTriggerSFTool = 0;}
   if (m_muonTriggerSFToolNOSYST){delete m_muonTriggerSFToolNOSYST; m_muonTriggerSFToolNOSYST = 0;}
   for (auto it=m_lhtools.begin();it != m_lhtools.end();++it){
@@ -1817,7 +1822,7 @@ bool PSL::xAODWrapper::isZgammaEvent(void){
 double PSL::xAODWrapper::GetContainerMuonSF(int icontainer,xAOD::Muon::Quality q,AnaIso::AnaIso iso_wp,bool skip_reco,bool skip_iso,bool skip_ttva){
   if (!muons) return 1;
   if (IsData()) return 1;
-  if (IsMC()) return 1;
+  //  if (IsMC()) return 1;
   const xAOD::Muon* mu = getMuon(icontainer);  
   float reco_sf = 1.;
   float iso_sf = 1.;
@@ -2572,6 +2577,7 @@ double PSL::xAODWrapper::getTriggerSF_Winter2016WZAnalysis(){
   if (IsData()) return 1;
   if (!electrons) return 1;
   if (!muons) return 1;
+  if (IsMC()) return 1;
   /*
   //cross-checking tool result, to be commented out
   int tmp_rdmRN = m_prwTool->getRandomRunNumber( *eventInfo );
@@ -2656,6 +2662,11 @@ std::pair<double,double> PSL::xAODWrapper::getMuonTriggerWeight(int icontainer){
   std::pair<double,double> weights; // first = SF; second = MC
   double sf_weight = 1.; double mc_eff = 1.;
 
+  // need to delete
+  weights.first = sf_weight;
+  weights.second = mc_eff;
+  return weights;
+
   //SFs can vary with systematics
   m_muonTriggerSFTool->getTriggerScaleFactor(*muonCont,sf_weight,triggers).ignore();
 
@@ -2685,8 +2696,8 @@ std::pair<double,double> PSL::xAODWrapper::getMuonTriggerWeight(int icontainer){
               true);
 
   MSG_ERROR("Individual muon SF " << sf_weight << " MC eff no syst " << mc_eff << " data eff no syst " << data_eff << " mc eff varied " << mc_eff_syst << " data eff varied " << data_eff_syst );
+  
   */
-
   // Need these or else you have a memory leak
   if (muonContAux) delete muonContAux;
   if (muonCont) delete muonCont;

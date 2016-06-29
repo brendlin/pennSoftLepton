@@ -29,7 +29,7 @@ def buildSRM(inputFile,outputFile,derivation):
         if len(f.split('.')) < 2 : continue
         runNumber = ''
         if 'data' in f:
-            runNumber = f.split('data15_13TeV.')[1].split('.')[0]
+            runNumber = f.split('data16_13TeV.')[1].split('.')[0]
         else:
             runNumber = f.split('mc15_13TeV.')[1].split('.')[0]
         atlfast = re.findall('a[0-9][0-9][0-9]',f)
@@ -38,14 +38,15 @@ def buildSRM(inputFile,outputFile,derivation):
 
         isdata = ('data' in f)
         sim_tag = ''
-        if len(atlfast) : sim_tag = atlfast[0].replace('_','')+'*'
         if len(fullsim) : sim_tag = fullsim[0].replace('_','')+'*'
+        if len(atlfast) : sim_tag = atlfast[0].replace('_','')+'*'
+
 
         mc15_tag = 'mc15'
 
         if len(recosim) :
             mytag = int(recosim[0].replace('r',''))
-            if (mytag > 7266) : mc15_tag = 'mc15b'
+            if (mytag > 7266) : mc15_tag = 'mc15c'
 
         cmd = 'dq2-ls -fpL UPENN_LOCALGROUPDISK '+f
         ls_output = os.popen(cmd).readlines()
@@ -67,9 +68,9 @@ def buildSRM(inputFile,outputFile,derivation):
                 n_local = int(i.split()[-1])
             if ('srm' in i) and ('PFN' not in i) :
                 srm_files += [i]
-        if ds_name and (int(bool(len(atlfast))) + int(bool(len(fullsim))) + int(isdata) > 1) :
-            print 'Error! dataset %s assigned more than one of (fullsim,atlfast,data)! Exiting.'
-            sys.exit()
+        #if ds_name and (int(bool(len(atlfast))) + int(bool(len(fullsim))) + int(isdata) > 1) :
+        #    print 'Error! dataset %s assigned more than one of (fullsim,atlfast,data)! Exiting.'
+        #    sys.exit()
         if ds_name and (not len(atlfast)) and (not len(fullsim)) and (not isdata) :
             print 'Error! dataset %s was not assigned to fullsim or atlfast or data! Exiting.'
             sys.exit()            

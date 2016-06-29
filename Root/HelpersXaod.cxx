@@ -20,7 +20,7 @@ std::vector<double> PSL::GetDerivationWeightInfo(TFile* file,std::string derivat
   // if (svc == 0) MSG_INFO("Job not configured for xAOD support");
   // svc->event();
   //TEvent* m_event = svc->event();
-  xAOD::TEvent* m_event = new xAOD::TEvent(xAOD::TEvent::kBranchAccess);
+  xAOD::TEvent* m_event = new xAOD::TEvent(xAOD::TEvent::kAthenaAccess); //kBranchAccess
   if (!m_event->readFrom(file).isSuccess()) {
     MSG_INFO("failed to read from xAOD");
     return ret;
@@ -42,7 +42,7 @@ std::vector<double> PSL::GetDerivationWeightInfo(TFile* file,std::string derivat
     return ret;
   }
 
-  const xAOD::CutBookkeeperContainer* incompleteCBC = nullptr;
+  /*const xAOD::CutBookkeeperContainer* incompleteCBC = nullptr;
   if(!m_event->retrieveMetaInput(incompleteCBC, "IncompleteCutBookkeepers").isSuccess()){
     Error("initializeEvent()","Failed to retrieve IncompleteCutBookkeepers from MetaData! Exiting.");
     return ret;
@@ -50,7 +50,8 @@ std::vector<double> PSL::GetDerivationWeightInfo(TFile* file,std::string derivat
   if ( incompleteCBC->size() != 0 ) {
     Error("initializeEvent()","Found incomplete Bookkeepers! Check file for corruption.");
     return ret;
-  }
+  }*/
+
   // Now, let's find the actual information
   const xAOD::CutBookkeeperContainer* completeCBC = 0;
   if(!m_event->retrieveMetaInput(completeCBC, "CutBookkeepers").isSuccess()){

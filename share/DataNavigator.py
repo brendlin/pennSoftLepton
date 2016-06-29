@@ -33,6 +33,10 @@ def main (options,args) :
     if options.pvttag :
         fulltag += '_'+options.pvttag
 
+    data_cyle = 'data16_13TeV'
+    if options.data15:
+        data_cyle='data15_13TeV'
+
     #some sample lists
     samplesPenn_name    = 'PennSRM_DataForReference%s.txt'%(fulltag)
     gridSubmission_name = 'GridData%s.txt'%(fulltag)
@@ -54,7 +58,8 @@ def main (options,args) :
         dataStreams.append(st)
     
     grlFiles = []
-    ls_out = commands.getoutput('ls $ROOTCOREBIN/../pennSoftLepton/data/data15_13TeV*.xml')
+    #ls_out = commands.getoutput('ls $ROOTCOREBIN../pennSoftLepton/data/%s*.xml'%(data_cycle))
+    ls_out = commands.getoutput('ls ../data/%s*.xml'%(data_cyle))
     if not options.grl:
         for grl in ls_out.split('\n') :
             grlFiles.append(grl)
@@ -92,7 +97,10 @@ def main (options,args) :
             offderivs = ''
             for rtag in rtags:
                 for ptag in ptags:
-                    cmd = 'dq2-ls data15_13TeV.00'+run+'.physics_'+stream+'.merge.DAOD_'+options.derivation+'.*'+rtag+'*'+ptag+'*/ | sort -r'
+                    if run >= 296939 and run <= 300287:
+                        cmd = 'dq2-ls ' + data_cyle+'periodA.physics_'+stream+'.merge.DAOD_'+options.derivation+'.*'+rtag+'*'+ptag+'*/ | sort -r'
+                    else:
+                        cmd = 'dq2-ls ' + data_cyle+'.00'+run+'.physics_'+stream+'.merge.DAOD_'+options.derivation+'.*'+rtag+'*'+ptag+'*/ | sort -r'
                     print cmd
                     offderivs = commands.getoutput(cmd)
                     if offderivs != "" : break
@@ -133,8 +141,11 @@ def main (options,args) :
             else:
                 pvtderivs = ''
                 for username in coolPennPeople:
-                    for rtag in rtags:                    
-                        pvtderivs = commands.getoutput('dq2-ls user.'+username+'.data15_13TeV.00'+run+'.physics_'+stream+'.*DxAOD.'+options.derivation+'.*'+rtag+'*'+options.pvttag+'_EXT0/ | sort -r')
+                    for rtag in rtags:
+                        if run >= 296939 and run <= 300287:
+                            pvtderivs = commands.getoutput('dq2-ls user.'+username+'.'+data_cyle+'.periodA.physics_'+stream+'.*DxAOD.'+options.derivation+'.*'+rtag+'*'+options.pvttag+'_EXT0/ | sort -r')
+                        else:
+                            pvtderivs = commands.getoutput('dq2-ls user.'+username+'.'+data_cyle+'.00'+run+'.physics_'+stream+'.*DxAOD.'+options.derivation+'.*'+rtag+'*'+options.pvttag+'_EXT0/ | sort -r')
                         if pvtderivs != "" : break
                     if pvtderivs != "" : break
 
@@ -173,7 +184,10 @@ def main (options,args) :
                     # check for MERGE first:
                     offaods = ''
                     for rtag in rtags:
-                        cmd = 'dq2-ls data15_13TeV.00'+run+'.physics_'+stream+'*merge.AOD*'+rtag+'* | sort -r'
+                        if run >= 296939 and run <= 300287:
+                            cmd = 'dq2-ls '+data_cyle+'periodA.physics_'+stream+'*.merge.AOD*'+rtag+'* | sort -r'
+                        else:
+                            cmd = 'dq2-ls '+data_cyle+'.00'+run+'.physics_'+stream+'*merge.AOD*'+rtag+'* | sort -r'
                         print cmd
                         offaods = commands.getoutput(cmd)
                         if offaods != "" : break
@@ -214,7 +228,7 @@ def main (options,args) :
         srm_file_map_name = 'MapSRM_data%s.txt'%(fulltag)
         srm_file_map = open(srm_file_map_name,'w')
         print '\nMaking Penn SRM map of datasets and sumw with name: %s\n'%(srm_file_map_name)
-        buildSRM(samplesPenn,srm_file_map)
+        buildSRM(samplesPenn,srm_file_map, 'data')
         srm_file_map.close()
         samplesPenn.close()
 
@@ -229,5 +243,6 @@ if __name__ == "__main__":
     p.add_option('--grl',type  ='string',default='',dest='grl',help='GRL xml file')
     p.add_option('--buildSRMmap',action='store_true',default=False  ,dest='buildSRMmap',help='build SRM map from samples at Penn (takes a loooooong time)' )
     p.add_option('--dryrun'     ,action='store_true',default=False  ,dest='dryrun',help='do a dry run (do not submit rules)' )
+    p.add_option('--data15', action='store_true', default=False, dest='data15',help='choose data from 2015')
     options,args = p.parse_args()
     main(options,args)

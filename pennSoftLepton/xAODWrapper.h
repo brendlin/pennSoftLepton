@@ -350,7 +350,8 @@ namespace PSL
     TrigConf::xAODConfigTool* m_trigConfTool; //!
     Trig::TrigDecisionTool* m_trigDecTool; //!
     GoodRunsListSelectionTool* m_grl; //!
-    CP::PileupReweightingTool* m_prwTool; //!
+    //CP::PileupReweightingTool* m_prwTool; //!
+    ToolHandle<CP::IPileupReweightingTool> m_prwTool;//!
     //
     std::map<PSL::ElectronID::ElectronID,AsgElectronLikelihoodTool*> m_lhtools; //!
     std::map<PSL::ElectronSF,AsgElectronEfficiencyCorrectionTool*> m_elesfs; //!

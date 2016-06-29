@@ -186,7 +186,7 @@ def ReadDatasetInfo(path, env):
             DSGroupSiml = 'unspecified'
             UniqueMarkerAtlfastFullsimMC15aMC15b = 'unspecified'
             if len(DSGroup.split('-')) > 1 :
-                DSGroupSiml = {'a':'atlfast','s':'fullsim','d':'data','amc15b':'atlfast','smc15b':'fullsim'}.get(DSGroup.split('-')[1])
+                DSGroupSiml = {'a':'atlfast','s':'fullsim','d':'data','amc15c':'atlfast','smc15c':'fullsim'}.get(DSGroup.split('-')[1])
                 UniqueMarkerAtlfastFullsimMC15aMC15b = DSGroup.split('-')[1]
             Sample_list[DSGroupName] = dict()
             Sample_list[DSGroupName]['Sample'] = Sample
@@ -730,7 +730,8 @@ def GetFilesFromSamples(sh,myhandler,xsec_list_from_txtfile,pennsrm,samples,edm_
                     continue
                 if not (str(run) == f[:6]) :
                     continue
-                current_file_sim_tag = {'a':'atlfast','s':'fullsim','d':'data','amc15b':'atlfast','smc15b':'fullsim'}.get(f.split()[1])
+                #current_file_sim_tag = {'a':'atlfast','s':'fullsim','d':'data','amc15b':'atlfast','smc15b':'fullsim'}.get(f.split()[1])
+                current_file_sim_tag = {'a':'atlfast','s':'fullsim','d':'data','amc15c':'atlfast','smc15c':'fullsim'}.get(f.split()[1])
                 current_file_unique_marker = f.split()[1]
                 #
                 # If the user specify the simulation type, then honor that
@@ -747,8 +748,8 @@ def GetFilesFromSamples(sh,myhandler,xsec_list_from_txtfile,pennsrm,samples,edm_
                         print 'Please specify one of the following in your conf file:'
                         print 'Sample.%s: %s-s (fullsim, mc15a)'%(sample,run_info_dict['DatasetGroupName'])
                         print 'Sample.%s: %s-a (atlfast, mc15a)'%(sample,run_info_dict['DatasetGroupName'])
-                        print 'Sample.%s: %s-smc15b (fullsim, mc15b)'%(sample,run_info_dict['DatasetGroupName'])
-                        print 'Sample.%s: %s-amc15b (atlfast, mc15b)'%(sample,run_info_dict['DatasetGroupName'])
+                        print 'Sample.%s: %s-smc15c (fullsim, mc15c)'%(sample,run_info_dict['DatasetGroupName'])
+                        print 'Sample.%s: %s-amc15c (atlfast, mc15c)'%(sample,run_info_dict['DatasetGroupName'])
                         import sys
                         sys.exit()
 
@@ -757,7 +758,7 @@ def GetFilesFromSamples(sh,myhandler,xsec_list_from_txtfile,pennsrm,samples,edm_
                 chosen_unique_marker = current_file_unique_marker
                 chosen_sim_tag = current_file_sim_tag
                 #DefaultChannel = {'a':0,'s':0,'d':0,'amc15b':410000,'smc15b':410000}.get(f.split()[1])
-                PileupProfile = {'a':'mc15a','s':'mc15a','d':'data','amc15b':'mc15b','smc15b':'mc15b'}.get(f.split()[1])
+                PileupProfile = {'a':'mc15a','s':'mc15a','d':'data','amc15c':'mc15c','smc15c':'mc15c'}.get(f.split()[1])
 
                 sample_exists = True
                 sumw += float(f.split()[3]) # sumw

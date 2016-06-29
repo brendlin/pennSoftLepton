@@ -23,13 +23,13 @@ def GetInHMS(seconds):
 def AddToMap(srm_files,runNumber,sim_tag,derivation) :
 
     if 'a' in sim_tag :
-        if 'mc15b' in sim_tag :
-            sim_tag = 'amc15b' # atlfast
+        if 'mc15c' in sim_tag :
+            sim_tag = 'amc15c' # atlfast
         else :
             sim_tag = 'a' # atlfast
     elif 's' in sim_tag :
-        if 'mc15b' in sim_tag :
-            sim_tag = 'smc15b' # fullsim
+        if 'mc15c' in sim_tag :
+            sim_tag = 'smc15c' # fullsim
         else :
             sim_tag = 's' # fullsim
     else :

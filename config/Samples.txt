@@ -729,6 +729,8 @@
 410025  -----   -----   PowhegPythiaEvtGen    SingleTopSchan_noAllHad_top                  mc15_SingleTopSchan_Powheg_noAllHad
 410026  -----   -----   PowhegPythiaEvtGen    SingleTopSchan_noAllHad_antitop              mc15_SingleTopSchan_Powheg_noAllHad
 
+410050	-----	-----	PowhegPythiaEvtGen    tZ_4fl_tchan_noAllHad			   mc15_SingleTopZt_Powheg_evgen
+
 424100  -----   -----   Pythia8B              Jpsimu4mu4                                   mc15_jpsi
 423200  -----   -----   Pythia8B              Jpsie3e3                                     mc15_jpsi
 423201  -----   -----   Pythia8B              Jpsie3e8                                     mc15_jpsi_3_8
@@ -753,6 +755,12 @@
 341463  -----   -----   PowhegPythia8         ZH125_Zllgam                                 mc15_higgs125_Zllgam
 341195  -----   -----   PowhegPythia8         ggH125_mumu                                  mc15_higgs125_mm
 341206  -----   -----   PowhegPythia8         VBFH125_mumu                                 mc15_higgs125_mm
+341178	-----	-----	PowhegPythia8	      ggH125_ee					   mc15_higgs125_ee
+342189	-----	-----	PowhegPythia8	      VBFH125_ee				   mc15_higgs125_ee
+342284	-----	-----	PowhegPythia8	      WH125_inc					   mc15_higgs125_inc
+342285	-----	-----	PowhegPythia8	      ZH125_inc					   mc15_higgs125_inc
+
+341270	-----	-----	Herwig		      tH125_inc_semil				   mc15_higgs125_inc_semil
 
 301535  -----   -----   Sherpa_CT10           Zeegamma_Up3J_10gamma35                      mc15_Zgamma_Sherpa
 301899  -----   -----   Sherpa_CT10           Zeegamma_Up3J_35gamma70                      mc15_Zgamma_Sherpa
