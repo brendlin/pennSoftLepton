@@ -12,8 +12,7 @@ version_emmanuel = True
 
 variables = []
 if version_emmanuel :
-    variables = ['PtW','MTW','M3l','Mll','met_Et','NJets','NJetsLtEta2p5','PtllZ','YZminusYlW','MtWZ','DeltaPhiZWSyst','MWZ','NPV']
-#     variables = ['Mll']
+    variables = ['PtW','MTW','M3l','Mll','met_Et','NJets','NJetsLtEta2p5','PtllZ','PtllZ_Rebinned','YZminusYlW','MtWZ','DeltaPhiZWSyst','MWZ','NPV','jetPt','jetRapidity']
 else :
     variables = list(ROOT.PSL.GetAllVariableStrings())
     for i in ['lepPt','lepEta','lepCharge'] :
@@ -44,7 +43,7 @@ MaxDeltaPhi3LMET MaxDeltaPhilJet MaxDeltaPhi3LJet MinDeltaPhi3LJet     \
 DeltaPhi3LJet DeltaPhi3LMET DeltaPhiMETJet Mll_Upsilon truthjet0Pt     \
 truthjet1Pt nVetoLeptons ptAvg truthptAvg ptAvgOverTruthjet0Pt         \
 DeltaPhill DeltaPhiLeadZWLep DeltaPhiZLeps DeltaPhiZWLep DeltaPhiZMet  \
-DeltaPhiZWSyst Pt3lPlusMet RunNumber                                   \
+Pt3lPlusMet RunNumber \
 Mll_ss EvtTrigSF \
 AntiIDSF_lep3 AntiIDSF_lep3_pt AntiIDSF_lep3_eta AntiIDSF_lep3_phi AntiIDSF_lep3_flavor \
 '
