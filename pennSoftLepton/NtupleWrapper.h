@@ -55,8 +55,9 @@ namespace PSL
     TLorentzVector GetContainerEleTLV(int icontainer);
     TLorentzVector GetContainerMuonTLV(int icontainer);
     TLorentzVector GetSignalLeptonTLV(int iptordered);
+    TLorentzVector GetContainerJetTLV(int icontainer);
     double GetEventVariable(PSL::Variable v);
-    int get_EventNumber(void){return 1;};
+    unsigned long long int get_EventNumber(void){return m_eventnumber;};
     bool PassTrigger(Trigger2015 t);
     bool PassTrigger(void){return true;}; // yeah I wouldn't use this.
     int get_el_n(void){return 1;};
@@ -120,6 +121,7 @@ namespace PSL
     std::vector< std::vector<float>* > m_LepIsoHolder; //!
     std::vector< std::vector<float>* > m_MuonSFHolder; //!
     std::vector< std::vector<float>* > m_EleSFHolder; //!
+    unsigned long long int m_eventnumber; //!
 
     bool hasBranch(TTree* tree,std::string br);
     
@@ -143,8 +145,8 @@ namespace PSL
     std::vector<PSL::ElectronSF> m_missing_elesf; //!
     std::vector<PSL::MuonSF> m_missing_muonsf; //!
 
-    double GetContainerMuonSF_IDIso  (int icont,xAOD::Muon::Quality q,AnaIso::AnaIso iso_wp);
-    double GetContainerEleSF_RecoIDIso(int icont,ElectronID::ElectronID e,bool is_d0z0,AnaIso::AnaIso iso_wp);
+    double GetContainerMuonSF_IDIsoTTVA(int icont,xAOD::Muon::Quality q,AnaIso::AnaIso iso_wp);
+    double GetContainerEleSF_RecoIDIso (int icont,ElectronID::ElectronID e,bool is_d0z0,AnaIso::AnaIso iso_wp);
     //double GetEleSF_IDIsoTrigger();
 
     double GetContainerEleSF_RecoIDIso(int icont,ElectronSF sf){
@@ -156,18 +158,18 @@ namespace PSL
       return 1;
     }
 
-    double GetContainerMuonSF_IDIso(int icont,MuonSF sf){
-      if (sf == MuFullSF_Medium_d0z0_isolGradientLoose) return GetContainerMuonSF_IDIso(icont,xAOD::Muon::Medium,AnaIso::GradientLoose );
-      if (sf == MuFullSF_Loose_d0z0_isolLooseTrackOnly) return GetContainerMuonSF_IDIso(icont,xAOD::Muon::Loose ,AnaIso::LooseTrackOnly);
+    double GetContainerMuonSF_IDIsoTTVA(int icont,MuonSF sf){
+      if (sf == MuFullSF_Medium_d0z0_isolGradientLoose) return GetContainerMuonSF_IDIsoTTVA(icont,xAOD::Muon::Medium,AnaIso::GradientLoose );
+      if (sf == MuFullSF_Loose_d0z0_isolLooseTrackOnly) return GetContainerMuonSF_IDIsoTTVA(icont,xAOD::Muon::Loose ,AnaIso::LooseTrackOnly);
       MSG_ERROR("No support for operating point.");
       exit(1);
       return 1;
     }
 
     double GetSignalEleSF_RecoIDIso(int iptordered,ElectronSF sf);
-    double GetSignalMuonSF_IDIso(int iptordered,MuonSF sf);
+    double GetSignalMuonSF_IDIsoTTVA(int iptordered,MuonSF sf);
     double GetSignalEleSF_RecoIDIso(int iptordered,ElectronID::ElectronID e,bool is_d0z0,AnaIso::AnaIso iso_wp);
-    double GetSignalMuonSF_IDIso(int iptordered,xAOD::Muon::Quality q,AnaIso::AnaIso iso_wp);
+    double GetSignalMuonSF_IDIsoTTVA(int iptordered,xAOD::Muon::Quality q,AnaIso::AnaIso iso_wp);
 
   public:    
     ClassDef(NtupleWrapper,1);

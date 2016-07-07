@@ -49,6 +49,8 @@ EL::StatusCode PSL::NtupleWrapper::changeInput (bool firstFile){
   tree->SetBranchStatus ("*", 0);
 
   MSG_DEBUG("Setting branch statuses");
+  SetBranchStatusAddress(tree,"EventNumber",&m_eventnumber);
+
   // Variable
   m_missing_variables.clear();
   for (unsigned int i=0;i<N_VARIABLES;++i){
@@ -257,6 +259,13 @@ double PSL::NtupleWrapper::GetEventVariable(PSL::Variable v){
 //     if (v == vDeltaPhiZLeps         ) return 0; // fix!
 //     if (v == vDeltaPhiZWLep         ) return 0; // fix!
 //     if (v == vDeltaPhiZMet          ) return 0; // fix!
+    if (v == vRunNumber             ) return m_EventVariableHolder_int[v];
+    if (v == vEvtTrigSF             ) return m_EventVariableHolder[v];
+    if (v == vAntiIDSF_lep3       ) return m_EventVariableHolder[v];
+    if (v == vAntiIDSF_lep3_pt    ) return m_EventVariableHolder[v];
+    if (v == vAntiIDSF_lep3_eta   ) return m_EventVariableHolder[v];
+    if (v == vAntiIDSF_lep3_phi   ) return m_EventVariableHolder[v];
+    if (v == vAntiIDSF_lep3_flavor) return m_EventVariableHolder_int[v];
     return m_evtdef->GetEventVariable(v);
   }
   //NO if (tree_evtdef.valid) return tree_evtdef.GetEventVariableInt(v);
@@ -301,11 +310,20 @@ TLorentzVector PSL::NtupleWrapper::GetContainerLeptonTLV(int icontainer){
 TLorentzVector PSL::NtupleWrapper::GetContainerEleTLV(int icontainer){
   AssertContainerLeptonIsElectron(icontainer);
   TLorentzVector lep;
-  lep.SetPtEtaPhiM(m_LepVariableHolder[lepPt]->at(icontainer)
+  lep.SetPtEtaPhiM(1000.*m_LepVariableHolder[lepPt]->at(icontainer)
                    ,m_LepVariableHolder[lepEta]->at(icontainer)
                    ,m_LepVariableHolder[lepPhi]->at(icontainer)
                    ,(m_LepVariableHolder[lepFlavor]->at(icontainer) == (int)ObjType::Electron) ? 0.000511 : 0.105658 );
   return lep;
+}
+//-----------------------------------------------------------------------------
+TLorentzVector PSL::NtupleWrapper::GetContainerJetTLV(int icontainer){
+  TLorentzVector jettlv;
+  jettlv.SetPtEtaPhiE(1000.*m_JetVariableHolder[jetPt]->at(icontainer),
+                      m_JetVariableHolder[jetEta]->at(icontainer),
+                      m_JetVariableHolder[jetPhi]->at(icontainer),
+                      1000.*m_JetVariableHolder[jetE]->at(icontainer));
+  return jettlv;
 }
 //-----------------------------------------------------------------------------
 bool PSL::NtupleWrapper::AssertContainerLeptonIsElectron(int icontainer,bool fatal){
@@ -337,7 +355,7 @@ bool PSL::NtupleWrapper::AssertContainerLeptonIsMuon(int icontainer,bool fatal){
 TLorentzVector PSL::NtupleWrapper::GetContainerMuonTLV(int icontainer){
   AssertContainerLeptonIsMuon(icontainer);
   TLorentzVector lep;
-  lep.SetPtEtaPhiM(m_LepVariableHolder[lepPt]->at(icontainer)
+  lep.SetPtEtaPhiM(1000.*m_LepVariableHolder[lepPt]->at(icontainer)
                    ,m_LepVariableHolder[lepEta]->at(icontainer)
                    ,m_LepVariableHolder[lepPhi]->at(icontainer)
                    ,(m_LepVariableHolder[lepFlavor]->at(icontainer) == (int)ObjType::Electron) ? 0.000511 : 0.105658 );
@@ -607,7 +625,7 @@ template <class T> bool PSL::NtupleWrapper::SetBranchStatusAddress(TTree* tree,c
 }
 
 //-----------------------------------------------------------------------------
-double PSL::NtupleWrapper::GetContainerMuonSF_IDIso(int icont,xAOD::Muon::Quality q,AnaIso::AnaIso iso_wp){
+double PSL::NtupleWrapper::GetContainerMuonSF_IDIsoTTVA(int icont,xAOD::Muon::Quality q,AnaIso::AnaIso iso_wp){
   if (IsData()) return 1;
   if      (q == xAOD::Muon::Loose  && iso_wp == AnaIso::LooseTrackOnly) {
     if (!MuonSFExists(MuFullSF_Loose_d0z0_isolLooseTrackOnly)) { MSG_INFO("Error! MuFullSF_Loose_d0z0_isolLooseTrackOnly is missing! Exiting."); exit(1); }
@@ -656,12 +674,12 @@ double PSL::NtupleWrapper::GetSignalEleSF_RecoIDIso(int iptordered,ElectronSF sf
 }
 
 //-----------------------------------------------------------------------------
-double PSL::NtupleWrapper::GetSignalMuonSF_IDIso(int iptordered,MuonSF sf){
+double PSL::NtupleWrapper::GetSignalMuonSF_IDIsoTTVA(int iptordered,MuonSF sf){
   if (IsData()) return 1;
   int icontainer = iptordered;
   if (m_evtdef) icontainer = m_evtdef->PtOrderedLepton(iptordered).i_cont;
   AssertContainerLeptonIsMuon(icontainer);
-  return GetContainerMuonSF_IDIso(icontainer,sf);
+  return GetContainerMuonSF_IDIsoTTVA(icontainer,sf);
 }
 
 //-----------------------------------------------------------------------------
@@ -674,12 +692,12 @@ double PSL::NtupleWrapper::GetSignalEleSF_RecoIDIso(int iptordered,ElectronID::E
 }
 
 //-----------------------------------------------------------------------------
-double PSL::NtupleWrapper::GetSignalMuonSF_IDIso(int iptordered,xAOD::Muon::Quality q,AnaIso::AnaIso iso_wp){
+double PSL::NtupleWrapper::GetSignalMuonSF_IDIsoTTVA(int iptordered,xAOD::Muon::Quality q,AnaIso::AnaIso iso_wp){
   if (IsData()) return 1;
   int icontainer = iptordered;
   if (m_evtdef) icontainer = m_evtdef->PtOrderedLepton(iptordered).i_cont;
   AssertContainerLeptonIsMuon(icontainer);
-  return GetContainerMuonSF_IDIso(icontainer,q,iso_wp);
+  return GetContainerMuonSF_IDIsoTTVA(icontainer,q,iso_wp);
 }
 
 //-----------------------------------------------------------------------------
@@ -728,15 +746,9 @@ void PSL::NtupleWrapper::CopyEventDefinitionFromEDM(PSL::EventDefinition& evtdef
   tree_evtdef.chan = static_cast<PSL::LeptonChannel::LeptonChannel>(m_EventVariableHolder_int[vChanFlavor]);
   //tree_evtdef.chan_antiid    = static_cast<PSL::LeptonChannel>(0);
   for (int i=0;i<m_EventVariableHolder_int[vnSignalLeptons];++i){
-    TLorentzVector leptlv;
-    leptlv.SetPtEtaPhiM(m_LepVariableHolder[lepPt]->at(i)*1000.,
-                        m_LepVariableHolder[lepEta]->at(i),
-                        m_LepVariableHolder[lepPhi]->at(i),
-                        (m_LepVariableHolder[lepFlavor]->at(i) == (int)ObjType::Electron) ? 0.000511 : 0.105658 );
-    
     float sf = 1.;
     if (LepVariableExists(lepSFRecoIdIso)) sf = GetContainerLeptonVariable(lepSFRecoIdIso,i);
-    tree_evtdef.leps.push_back(Particle(leptlv
+    tree_evtdef.leps.push_back(Particle(GetContainerLeptonTLV(i)
                                         ,static_cast<PSL::ObjType::ObjType>(GetContainerLeptonVariable(lepFlavor,i))
                                         ,i // i_cont
                                         ,GetContainerLeptonVariable(lepCharge,i)
@@ -751,12 +763,7 @@ void PSL::NtupleWrapper::CopyEventDefinitionFromEDM(PSL::EventDefinition& evtdef
 
   // NEED TO ADD JETS!
   for (int i=0;i<m_EventVariableHolder_int[vNJets];++i){
-    TLorentzVector jettlv;
-    jettlv.SetPtEtaPhiE(m_JetVariableHolder[jetPt]->at(i)*1000.,
-                        m_JetVariableHolder[jetEta]->at(i),
-                        m_JetVariableHolder[jetPhi]->at(i),
-                        m_JetVariableHolder[jetE]->at(i));
-    tree_evtdef.jets.push_back(Particle(jettlv
+    tree_evtdef.jets.push_back(Particle(GetContainerJetTLV(i)
                                         ,PSL::ObjType::Jet
                                         ,i // i_cont
                                         ,0
