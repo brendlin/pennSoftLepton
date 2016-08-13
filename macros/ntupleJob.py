@@ -67,6 +67,8 @@ def main (options,args) :
 
     PassEventClasses = []
     for inst in env.GetValue('PassEvent.Instances','').split() :
+        if options.instances and inst not in options.instances :
+            continue
         # inst is the instance "sr" or "top" or whatever
         PassEventClasses.append(ROOT.PSL.PassEvent())
         PassEventClasses[-1].SetName(inst)
@@ -91,6 +93,8 @@ def main (options,args) :
     #
     FakeFactorToolClasses = []
     for inst in env.GetValue('FakeFactorTool.Instances','').split() :
+        if options.instances and inst not in options.instances :
+            continue
         if options.systematics : 
             if not list(a in inst for a in ['ltt','tlt','ttl']).count(True) :
                 continue
@@ -115,6 +119,12 @@ def main (options,args) :
                 FakeFactorToolClasses.append(ROOT.PSL.FakeFactorTool())
                 FakeFactorToolClasses[-1].SetName(inst)
                 pyhelpers.ConfigureCxxAlg(FakeFactorToolClasses[-1],env)
+                #
+                # For systematics we turn basically turn all variables off except for a few
+                #
+                FakeFactorToolClasses[-1].set_Variables('GRL')
+                FakeFactorToolClasses[-1].set_LepVariables('lepFlavor')
+                FakeFactorToolClasses[-1].set_LepIndices('lepW_index')
                 if (syst != 'nominal') :
                     FakeFactorToolClasses[-1].SetName('%s_%s'%(inst,syst))
                     FakeFactorToolClasses[-1].set_nvariation(systematics.index(syst))

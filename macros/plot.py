@@ -1,4 +1,4 @@
-#!/bin/usr/env python
+#!/usr/bin/env python
 
 ##
 ## This macro takes a file produced using pennSoftLepton using PassEvent functions.

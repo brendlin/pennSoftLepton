@@ -31,10 +31,18 @@ def DrawHistos(name,variable,xlabel,bkg_hists=[],sig_hists=[],data_hist=None,dos
     import ROOT
     import pennSoftLepton.PlotFunctions as plotfunc
     import pennSoftLepton.TAxisFunctions as taxisfunc
+    
+    #
+    # Clean up name
+    #
+    canname = name.replace('[','_').replace(']','').replace('_index','')
+    canname = canname.replace('[','_').replace(']','_').replace('(','_').replace(')','_').replace('/','_over_')
+    canname = canname.replace('>','gt').replace('<','lt').replace('-','minus').replace(' ','_').replace('&&','and')
+    canname = canname.lstrip('_').rstrip('_')
+
     #
     # stack, before adding SUSY histograms
     #
-    canname = name.replace('[','_').replace(']','').replace('_index','')
     if not ratio :
         can = ROOT.TCanvas(canname,canname,500,500)
         if log : can.SetLogy()
@@ -186,6 +194,10 @@ def GetVariableHistsFromTrees(trees,keys,variable,weight,n,low,high,normalize=Fa
     for k in keys :
         name = '%s_%s'%(variable,k)
         name = name.replace('[','_').replace(']','_').replace('(','_').replace(')','_').replace('/','_over_')
+        name = name.replace('>','gt').replace('<','lt').replace('-','minus').replace(' ','_').replace('&&','and')
+        name = name.lstrip('_')
+        print name
+
         while ROOT.gDirectory.Get(name) :
             #print 'changing name'
             name = name+'x'
@@ -442,9 +454,13 @@ def GetPassEventBkgHistos(variable,key,processes,filename,normalize=False,rebin=
     #
     # Loop over processes
     #
-    # print '## %s, %s'%(key,variable)
+    print '## %s, %s'%(key,variable)
     for s in processes.split(',') :
         if not s : continue
+        variable_label = variable
+        if '[' in variable :
+            variable_label = variable.split('[')[0]
+            variable = variable.replace('[','_').rstrip(']')
         name = 'PassEvent_%s/PassEvent_%s_%s_%s'%(key,key,s,variable)
         h = pyhelpers.GetRootObj(the_file,name,fatal=True).Clone()
         if not h :

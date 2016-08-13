@@ -44,8 +44,8 @@ cd Numerator
 ntupleJob.py --config FakeFactorZjet.conf --bkgs wz,data --out CheckSR --instances FFTool_ttt
 cd CheckSR
 hadd -f all.root hist*.root
-ln -s ../../UserInput.py .
-plot.py -f all.root --config UserInput.py -p wz,data -k FFTool_ttt_allNum
+cp $ROOTCOREBIN/../pennSoftLepton/macros/ExamplePlotTreesConfig.py .
+plot.py -f all.root --config ExamplePlotTreesConfig.py -p wz,data -k FFTool_ttt_allNum
 
 ## Getting the ttbar ZCR Scale Factor
 ## Getting the ttbar ZCR Scale Factor
