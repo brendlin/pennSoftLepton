@@ -11,8 +11,9 @@
 ##  python pennSoftLepton/macros/runJob.py --samples qqww,vvv,tother,ttv,tz,singletop,tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --tag mc15_25ns_stdm3_v5 --config pennSoftLepton/config/NtupleSkim_3L_NumeratorNtuplesMuon.conf --dconfig DefaultConfiguration_mc15.conf --out /disk/userdata00/atlas_data2/kurb/2015/XRun2Susy_AB2345/NumeratorSelection_mc15b --ntuple --condor --max 200000
 ##
 ## The output of runJob.py ... --ntuple is a set of D3PD-style ntuples, ready for
-## fakes analysis.
-##
+## fakes analysis. In the following instructions, you should
+## - put the "Numerator" ntuples in a "Numerator" directory
+## - put the "Denominator" ntuples in a "Denominator" directory
 
 ##
 ## Here are the (very scattered) commands for doing the fakes analysis
