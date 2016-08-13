@@ -157,18 +157,12 @@ def main (options,args) :
         break
 
     #
-    # Retrieve output
+    # Print a summary
     #
-    for i in myhandler :
-        fname = '%s/hist-%s.root'%(outputname,i.name())
+    print 'Output files:'
+    for s in samples:
+        fname = '%s/hist-%s.root'%(outputname,s)
         print fname
-        f = ROOT.TFile(fname,'update')
-        for j in PassEventClasses :
-            j.ReconnectHistograms(f)
-            #print j.GetName()
-            pyhelpers.PrintCutflow(j.GetName(),j.hist_PassN)
-            #pyhelpers.PrintCutflow(j.GetName(),j.hist_PassW)
-        f.Close()
 
     return
 
@@ -190,7 +184,7 @@ if __name__ == "__main__":
 
     p.add_option('--finish',action='store_true',default=False,dest='finish',help='Wrap up algos')
     p.add_option('--systematics'  ,action='store_true',default=False  ,dest='systematics',help='Run all systematic variations' )
-    
+    p.add_option('--instances'   ,type  ='string'    ,default=''   ,dest='instances',help='Instances of PassEvent classes that you want to run' )
 
     options,args = p.parse_args()
 

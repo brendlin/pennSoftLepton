@@ -40,6 +40,7 @@
 ## Running the cutflow:
 ##
 ## Edit FakeFactorZjet.conf - signal region
+cd Numerator
 ntupleJob.py --config FakeFactorZjet.conf --bkgs wz,data --out CheckSR --instances FFTool_ttt
 cd CheckSR
 hadd -f all.root hist*.root
