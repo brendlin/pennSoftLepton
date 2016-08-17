@@ -62,7 +62,8 @@ def main (options,args) :
         ROOT.xAOD.TReturnCode.enableFailure()
         ROOT.xAOD.Init().isSuccess() # other options: isSuccess, isFailure, isRecoverable
         # branch access is a requirement for the trigger tools.
-        myjob.options().setString (ROOT.EL.Job.optXaodAccessMode, ROOT.EL.Job.optXaodAccessMode_branch)
+        myjob.options().setString (ROOT.EL.Job.optXaodAccessMode, ROOT.EL.Job.optXaodAccessMode_athena)
+        #myjob.options().setString (ROOT.EL.Job.optXaodAccessMode, ROOT.EL.Job.optXaodAccessMode_branch)
         #myjob.options().setString (ROOT.EL.Job.optXaodAccessMode, ROOT.EL.Job.optXaodAccessMode_class)
         if options.truth:
             susytools_alg = ROOT.PSL.TruthObjDef()
@@ -342,6 +343,7 @@ if __name__ == "__main__":
     p.add_option('--susy'  ,action='store_true',default=False  ,dest='susy',help='Use susy object selection (instead of WZ object selection)' )
     p.add_option('--susy2016'  ,action='store_true',default=False  ,dest='susy2016',help='Use susy2016 object selection (instead of WZ object selection)' )
     p.add_option('--systematics'  ,action='store_true',default=False  ,dest='systematics',help='Run all systematic variations' )
+    p.add_option('--year',type='int',default=2016, dest='year', help='year of data set')
 
     options,args = p.parse_args()
     if options.grid :

@@ -624,6 +624,8 @@ namespace PSL
      ,tHLT_e26_lhtight_iloose            
      ,tHLT_mu24_iloose_L1MU15
      ,tHLT_2e15_lhloose_L12EM13VH
+     ,tHLT_e17_lhloose_nod0_mu14
+     ,tHLT_2e15_lhvloose_nod0_L12EM13VH
      // lep-jet-MET ?
      // Supporting triggers!
      ,tHLT_e5_lhvloose
