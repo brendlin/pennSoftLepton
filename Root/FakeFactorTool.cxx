@@ -394,9 +394,9 @@ void PSL::FakeFactorTool::loopZjetRegion(void){
           !m_EDM->GetSignalLeptonVariable(lepMatchesTrigger,SFOS_lep1index) &&
           !m_EDM->GetSignalLeptonVariable(lepMatchesTrigger,SFOS_lep2index)) return;
     }
-    if (!lep_pass_ZSel[SFOS_lep1index]) return;
-    if (!lep_pass_ZSel[SFOS_lep2index]) return;
-    if (!lep_pass_WSel[index_wcand]) return;
+    if (!lep_pass_WSel[index_wcand]) return;    // Tight
+    if (!lep_pass_ZSel[SFOS_lep1index]) return; // Tight
+    if (!lep_pass_ZSel[SFOS_lep2index]) return; // Tight
     //if  (m_EDM->GetSignalLeptonVariable(lepPt,index_wcand) < 30.) return;
     index_numobj = index_wcand;
   }
@@ -404,10 +404,12 @@ void PSL::FakeFactorTool::loopZjetRegion(void){
     if (m_EDM->LepVariableExists(lepMatchesTrigger) &&
         !m_EDM->GetSignalLeptonVariable(lepMatchesTrigger,index_wcand) &&
         !m_EDM->GetSignalLeptonVariable(lepMatchesTrigger,SFOS_lep2index)) return;
-    if (!lep_pass_Antiid[SFOS_lep1index]) return;
-    if (!lep_pass_ZSel[SFOS_lep2index]) return;
-    if (!lep_pass_WSel[index_wcand]) return;
-    // Below: require an additional SFOS pair to be consistent with a Z boson in some cases
+    if (!lep_pass_WSel[index_wcand]) return;      // Tight
+    if (!lep_pass_Antiid[SFOS_lep1index]) return; // Loose
+    if (!lep_pass_ZSel[SFOS_lep2index]) return;   // Tight
+    // Below: require an additional SFOS pair to be consistent with a Z boson in 
+    // the Z control region (do_zjet) cases. This is equivalent to requiring that the events be
+    // in the eee and uuu channels. (We check the flavor of the Z pair with the flavor of the W boson)
     if (do_zjet 
         && m_EDM->GetSignalLeptonVariable(lepFlavor,SFOS_lep1index) != m_EDM->GetSignalLeptonVariable(lepFlavor,index_wcand)
         && !m_includeZdesert ) return;
@@ -418,10 +420,12 @@ void PSL::FakeFactorTool::loopZjetRegion(void){
     if (m_EDM->LepVariableExists(lepMatchesTrigger) &&
         !m_EDM->GetSignalLeptonVariable(lepMatchesTrigger,index_wcand) &&
         !m_EDM->GetSignalLeptonVariable(lepMatchesTrigger,SFOS_lep1index)) return;
-    if (!lep_pass_ZSel[SFOS_lep1index]) return;
-    if (!lep_pass_Antiid[SFOS_lep2index]) return;
-    if (!lep_pass_WSel[index_wcand]) return;
-    // Below: require an additional SFOS pair to be consistent with a Z boson in some cases
+    if (!lep_pass_WSel[index_wcand]) return;      // Tight
+    if (!lep_pass_ZSel[SFOS_lep1index]) return;   // Tight
+    if (!lep_pass_Antiid[SFOS_lep2index]) return; // Loose
+    // Below: require an additional SFOS pair to be consistent with a Z boson in 
+    // the Z control region (do_zjet) cases. This is equivalent to requiring that the events be
+    // in the eee and uuu channels. (We check the flavor of the Z pair with the flavor of the W boson)
     if (do_zjet 
         && m_EDM->GetSignalLeptonVariable(lepFlavor,SFOS_lep1index) != m_EDM->GetSignalLeptonVariable(lepFlavor,index_wcand)
         && !m_includeZdesert ) return;
@@ -432,9 +436,9 @@ void PSL::FakeFactorTool::loopZjetRegion(void){
     if (m_EDM->LepVariableExists(lepMatchesTrigger) &&
         !m_EDM->GetSignalLeptonVariable(lepMatchesTrigger,SFOS_lep1index) &&
         !m_EDM->GetSignalLeptonVariable(lepMatchesTrigger,SFOS_lep2index)) return;
-    if (!lep_pass_ZSel[SFOS_lep1index]) return;
-    if (!lep_pass_ZSel[SFOS_lep2index]) return;
-    if (!lep_pass_Antiid[index_wcand]) return;
+    if (!lep_pass_Antiid[index_wcand]) return;  // Loose
+    if (!lep_pass_ZSel[SFOS_lep1index]) return; // Tight
+    if (!lep_pass_ZSel[SFOS_lep2index]) return; // Tight
     index_fake = index_wcand;
     // bit of a hack
     if (do_SR && m_EDM->GetSignalLeptonVariable(lepPt,index_fake) < 20. 
