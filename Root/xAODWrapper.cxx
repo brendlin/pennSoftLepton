@@ -575,25 +575,65 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
   n_processed = 0;
   m_sumw_thisjob = 0;
 
+  /////////////////////////                                 
+  /// PRW tool was made new in histInitialize, but we need metadata in order to initialize it.               
+  /////////////////////////                                       
+  // Make the tool here, but configure it once the first file has been loaded                                       
+                                                                                                 
+  CP::PileupReweightingTool* prwTool = new CP::PileupReweightingTool( "PrwTool" );
+  if(/*m_prwConfFiles.empty() &&*/ m_prwLcalcFiles.empty()){
+    MSG_WARNING( "No configuration or iLumiCalc files provided for pileup reweighting! Will not configure PRW tool." );
+  } else {
+    std::vector<std::string> prwConfFiles;
+    std::string pileup_profile = wk()->metaData()->castString("PileupProfile");
+    if (pileup_profile == "mc15a") {
+      //prwConfFiles.push_back("dev/PileupReweighting/mc15a_defaults.NotRecommended.prw.root"); //put this as back-up but it's not recommended
+      prwConfFiles.push_back("$ROOTCOREBIN/../pennSoftLepton/data/merged_prw.root");
+      prwTool->setProperty( "DefaultChannel",410000).isSuccess();//when channel info not present in config file, use this channel instead
+      MSG_INFO("Setting PRW default channel to " << 410000);
+    }
+    else if (pileup_profile == "mc15b") {
+      // load this for data just to prevent tools from possibly crashing.                         
+      prwConfFiles.push_back("$ROOTCOREBIN/../pennSoftLepton/data/merged_prw_mc15b.root");
+      prwConfFiles.push_back("$ROOTCOREBIN/../pennSoftLepton/data/my.prw_410000_mc15b.root");
+      prwTool->setProperty( "DefaultChannel",410000).isSuccess();//when channel info not present in config file, use this channel instead 
+      MSG_INFO("Setting PRW default channel to " << 410000);
+    }
+    else if (pileup_profile == "mc15c" || pileup_profile == "data"){
+      //prwConfFiles.push_back("dev/PileupReweighting/mc15c_v2_defaults.NotRecommended.prw.root"); 
+      prwConfFiles.push_back("dev/SUSYTools/merged_prw_mc15c.root");
+      prwTool->setProperty( "DefaultChannel",410000).isSuccess();//when channel info not present in config file, use this channel instead  
+      MSG_INFO("Setting PRW default channel to " << 410000);
+    }
+    else { 
+      MSG_INFO("Error! Something went wrong. PileupProfile was not set correctly: " << pileup_profile);                                          
+      return EL::StatusCode::FAILURE;
+    }     
+    //int default_channel = wk()->metaData()->castInteger("DefaultChannel",m_prwDefaultChannel);                
+    std::vector<std::string> prwLcalcFiles;                                               
+    prwLcalcFiles.push_back("$ROOTCOREBIN/../"+m_prwLcalcFiles);                               
+    prwTool->setProperty( "DataScaleFactor", 1./m_pu_rescaling ).isSuccess();                   
+    prwTool->setProperty( "ConfigFiles", prwConfFiles ).isSuccess();                           
+    prwTool->setProperty( "LumiCalcFiles", prwLcalcFiles ).isSuccess();    
+    prwTool->setProperty( "DataScaleFactorUP",   1.0/1.0 ).isSuccess();                    
+    prwTool->setProperty( "DataScaleFactorDOWN",  1.0/1.23 ).isSuccess();    
+    if (!prwTool->initialize().isSuccess()) {               
+      MSG_INFO("Please do ln -s /home/mjoana/merged_prw.root $ROOTCOREBIN/../pennSoftLepton/data/. (mc15a)");                       
+      MSG_INFO("Please do ln -s /home/mjoana/merged_prw_mc15b.root $ROOTCOREBIN/../pennSoftLepton/data/. (mc15b)");       
+      return EL::StatusCode::FAILURE;                                                 
+    }                                                                                            
+    MSG_INFO( "PileupReweightingTool initialized with rescaling of 1./" << m_pu_rescaling );                 
+  }                                                     
+  /////////////////////////                                                         
+  ///////////////////////// 
+
   std::string lhBaseDir = "ElectronPhotonSelectorTools/offline/mc15_20160512/";
   std::map<PSL::ElectronID::ElectronID,std::string> lhconfs;
-#ifndef ISREL20
-  lhconfs[ElectronID::TightLLH    ] = lhBaseDir+"dc14b_20150121/ElectronLikelihoodTightOfflineConfig2015.conf"    ;
-  lhconfs[ElectronID::MediumLLH   ] = lhBaseDir+"dc14b_20150121/ElectronLikelihoodMediumOfflineConfig2015.conf"   ;
-  lhconfs[ElectronID::LooseLLH    ] = lhBaseDir+"dc14b_20150121/ElectronLikelihoodLooseOfflineConfig2015.conf"    ;
-  lhconfs[ElectronID::VeryLooseLLH] = lhBaseDir+"dc14b_20150121/ElectronLikelihoodVeryLooseOfflineConfig2015.conf";
-#elif defined(BEFORE_SUSYTOOLS_000624)
-  lhconfs[ElectronID::TightLLH    ] = lhBaseDir+"mc15_20150429/ElectronLikelihoodTightOfflineConfig2015.conf"    ;
-  lhconfs[ElectronID::MediumLLH   ] = lhBaseDir+"mc15_20150429/ElectronLikelihoodMediumOfflineConfig2015.conf"   ;
-  lhconfs[ElectronID::LooseLLH    ] = lhBaseDir+"mc15_20150429/ElectronLikelihoodLooseOfflineConfig2015.conf"    ;
-  lhconfs[ElectronID::VeryLooseLLH] = lhBaseDir+"mc15_20150429/ElectronLikelihoodVeryLooseOfflineConfig2015.conf";
-#else // SUSYTools-00-06-25 and later
   lhconfs[ElectronID::TightLLH         ] = lhBaseDir+"ElectronLikelihoodTightOfflineConfig2016_Smooth.conf"    ;
   lhconfs[ElectronID::MediumLLH        ] = lhBaseDir+"ElectronLikelihoodMediumOfflineConfig2016_Smooth.conf"   ;
   lhconfs[ElectronID::LooseLLH         ] = lhBaseDir+"ElectronLikelihoodLooseOfflineConfig2016_Smooth.conf"    ;
   lhconfs[ElectronID::VeryLooseLLH     ] = lhBaseDir+"ElectronLikelihoodVeryLooseOfflineConfig2016_Smooth.conf";
-  lhconfs[ElectronID::LooseAndBLayerLLH] = lhBaseDir+"ElectronLikelihoodLooseOfflineConfig2016_Smooth.conf";
-#endif
+  lhconfs[ElectronID::LooseAndBLayerLLH] = lhBaseDir+"ElectronLikelihoodLooseOfflineConfig2016_CutBL_Smooth.conf";
   
   m_lhtools[ElectronID::TightLLH         ] = new AsgElectronLikelihoodTool("xAODWrapper_TightLLH");
   m_lhtools[ElectronID::MediumLLH        ] = new AsgElectronLikelihoodTool("xAODWrapper_MediumLLH");
@@ -646,7 +686,8 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
   PATCore::ParticleDataType::DataType data_type(PATCore::ParticleDataType::Data);
   if (wk()->metaData()->castString("Simulation") == "atlfast") data_type = PATCore::ParticleDataType::Fast;
   if (wk()->metaData()->castString("Simulation") == "fullsim") data_type = PATCore::ParticleDataType::Full;
-  
+  if (!((wk()->metaData()->castString("IsData")).empty())) data_type = PATCore::ParticleDataType::Data;
+
   for (auto it=sf_pairs.begin();it != sf_pairs.end();++it) {
     MSG_INFO("Setting up Electron SF " << it->second);
     std::string tool_name = it->second;
@@ -666,13 +707,17 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
 
     m_elesfs[it->first] = new AsgElectronEfficiencyCorrectionTool(tool_name);
     std::vector<std::string> tmp_list;
-    TString s = Form("ElectronEfficiencyCorrection/2015_2016/rel20.7/ICHEP_June2016_v1/%s.%s.root",(it->second).c_str(),eff_version.c_str());
-    if ( (it->first == ElectronSF_Trigger_MediumLLH_isolGradientLoose ) || (it->first == ElectronSF_TriggerMC_MediumLLH_isolGradientLoose) || (it->first == ElectronSF_Trigger_TightLLH_isolGradient) || (it->first == ElectronSF_TriggerMC_TightLLH_isolGradient )) s = Form("ElectronEfficiencyCorrection/2015_2016/rel20.7/ICHEP_June2016_v1/%s.root",(it->second).c_str());
+    //TString s = Form("ElectronEfficiencyCorrection/2015_2016/rel20.7/ICHEP_June2016_v1/%s.%s.root",(it->second).c_str(),eff_version.c_str());
+    TString s = Form("ElectronEfficiencyCorrection/2015_2016/rel20.7/ICHEP_June2016_v3/%s.root",(it->second).c_str());
+    if ( (it->first == ElectronSF_Trigger_MediumLLH_isolGradientLoose ) || (it->first == ElectronSF_TriggerMC_MediumLLH_isolGradientLoose) || (it->first == ElectronSF_Trigger_TightLLH_isolGradient) || (it->first == ElectronSF_TriggerMC_TightLLH_isolGradient )) s = Form("ElectronEfficiencyCorrection/2015_2016/rel20.7/ICHEP_June2016_v3/%s.root",(it->second).c_str());
     //s = Form("pennSoftLepton/%s.%s.root",(it->second).c_str(),eff_version.c_str());
     tmp_list.push_back(std::string(s));
     m_elesfs[it->first]->msg().setLevel(MSG::ERROR);
     m_elesfs[it->first]->setProperty("CorrectionFileNameList",tmp_list).isSuccess();
-    m_elesfs[it->first]->setProperty("ForceDataType",(int) data_type).isSuccess();
+    if (data_type != PATCore::ParticleDataType::Data){
+      m_elesfs[it->first]->setProperty("ForceDataType",(int) data_type).isSuccess();
+    }
+  
     if (m_EgammaToys) {
       m_elesfs[it->first]->setProperty("CorrelationModel", "COMBMCTOYS").isSuccess();
       m_elesfs[it->first]->setProperty("NumberOfToys", 40).isSuccess();
@@ -685,9 +730,9 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
   /// PRW tool was made new in histInitialize, but we need metadata in order to initialize it.                                                                    
   /////////////////////////                                                                                                                                       
   // Make the tool here, but configure it once the first file has been loaded                                                                                                                        
-  CP::PileupReweightingTool* prwTool = new CP::PileupReweightingTool( "PrwTool" );
-  if(/*m_prwConfFiles.empty() &&*/ m_prwLcalcFiles.empty()){
-    MSG_WARNING( "No configuration or iLumiCalc files provided for pileup reweighting! Will not configure PRW tool." );
+  //  CP::PileupReweightingTool* prwTool = new CP::PileupReweightingTool( "PrwTool" );
+  // if(/*m_prwConfFiles.empty() &&*/ m_prwLcalcFiles.empty()){
+  /*  MSG_WARNING( "No configuration or iLumiCalc files provided for pileup reweighting! Will not configure PRW tool." );
   } else {
     std::vector<std::string> prwConfFiles;
     std::string pileup_profile = wk()->metaData()->castString("PileupProfile");
@@ -733,7 +778,7 @@ EL::StatusCode PSL::xAODWrapper::histInitialize()
   }
   ///////////////////////// 
   /////////////////////////
-
+  */
   //
   // Muon Scale Factors!
   // Medium
@@ -961,15 +1006,14 @@ EL::StatusCode PSL::xAODWrapper::execute()
     m_xsec = 1.;
     m_kfac = 1.;
     m_feff = 1.;
-
     m_CurrentSample = kunlabeled;
-    if(!eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION)){ // not simulation == data
+    if(!eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION) || !((wk()->metaData()->castString("IsData")).empty())){ // not simulation == data
       MSG_INFO("Setting sample to data.");
       m_CurrentSample = kdata;
     }
     else {
       mc_channel_number = eventInfo->mcChannelNumber();
-      if (!m_run_sample_map.count(mc_channel_number)) {
+      if (!m_run_sample_map.count(mc_channel_number) || (wk()->metaData()->castString("Simulation") == "atlfast") || (wk()->metaData()->castString("Simulation") == "fullsim")) {
         MSG_INFO("Warning! Run " << mc_channel_number << " cannot be converted to sample!");
         if (!m_allowUnlabeledSamples) return EL::StatusCode::FAILURE;
       }
@@ -1055,6 +1099,7 @@ EL::StatusCode PSL::xAODWrapper::execute()
     m_sample_stats[mc_channel_number]->GetXaxis()->SetBinLabel(6,bin_label);
     wk()->addOutput(m_sample_stats[mc_channel_number]);
   }
+  m_prwTool->apply( *eventInfo );
 
 #ifdef BEFORE_SUSYTOOLS_000611
   // getLumiBlockMu not available before SUSYTools 06-11
