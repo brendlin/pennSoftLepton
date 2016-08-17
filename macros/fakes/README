@@ -56,13 +56,13 @@ cd Denominator
 ntupleJob.py --config FakeFactorZjet.conf --bkgs qqww,vvv,tother,ttv,tz,singletop,tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out TtbarParallelZCR --instances FFTool_z_ttvalid_ltt,FFTool_z_ttvalid_tlt,FFTool_z_ttvalid_ttl
 cd TtbarParallelZCR
 hadd -f all.root hist*.root
-ln -s ../../UserInput_ttbarZCR.py .
 ttbarcrptzcr.py
+cp $ROOTCOREBIN/../pennSoftLepton/macros/ExamplePlotTreesConfig.py .
 # EDIT PyAnalysisPlotting.py to incorporate all 3 regions!
 # Joey ask me about this if you need it
-plot.py -f all.root --config UserInput_ttbarZCR.py -p qqww,ttv,singletop,zz,wz,tw,ttbar,zjet,zgam,data -k FFTool_z_ttvalid_ltt_euuDen
-plot.py -f all.root --config UserInput_ttbarZCR.py -p qqww,ttv,singletop,zz,wz,tw,ttbar,zjet,zgam,data -k FFTool_z_ttvalid_ltt_ueeDen
-plot.py -f all.root --config UserInput_ttbarZCR.py -p qqww,ttv,singletop,zz,wz,tw,ttbar,zjet,zgam,data -k FFTool_z_ttvalid_ltt_allDen --save
+plot.py -f all.root --config ExamplePlotTreesConfig.py -p qqww,ttv,singletop,zz,wz,tw,ttbar,zjet,zgam,data -k FFTool_z_ttvalid_ltt_euuDen
+plot.py -f all.root --config ExamplePlotTreesConfig.py -p qqww,ttv,singletop,zz,wz,tw,ttbar,zjet,zgam,data -k FFTool_z_ttvalid_ltt_ueeDen
+plot.py -f all.root --config ExamplePlotTreesConfig.py -p qqww,ttv,singletop,zz,wz,tw,ttbar,zjet,zgam,data -k FFTool_z_ttvalid_ltt_allDen --save
 
 
 ## Plotting ZCR Result

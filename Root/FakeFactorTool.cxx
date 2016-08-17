@@ -100,6 +100,7 @@ void PSL::FakeFactorTool::loopZjetRegion(void){
       if (MatchSample(kzz,m_EDM->m_CurrentSample) && !SavedFakeFactorFile.empty()) use_ff = true;
       if (MatchSample(kttbar,m_EDM->m_CurrentSample) && !SavedFakeFactorFile.empty()) use_ff = true;
       if (MatchSample(ktw,m_EDM->m_CurrentSample) && !SavedFakeFactorFile.empty()) use_ff = true;
+      if (MatchSample(kqqww,m_EDM->m_CurrentSample) && !SavedFakeFactorFile.empty()) use_ff = true;
     }
     // zjet: If MC and doing closure, then send to data-driven
     else if (m_mcclosure){
@@ -342,7 +343,7 @@ void PSL::FakeFactorTool::loopZjetRegion(void){
   }
 
   // ttbar truth assignment.
-  if ((MatchSample(kttbar,m_EDM->m_CurrentSample) || MatchSample(ktw, m_EDM->m_CurrentSample))
+  if ((MatchSample(kttbar,m_EDM->m_CurrentSample) || MatchSample(ktw, m_EDM->m_CurrentSample) || MatchSample(kqqww, m_EDM->m_CurrentSample))
       && std::string(GetName()) == "FFTool_ttt") {
     if (type_fake_fortopestimate < 0) {
       if (chan == LeptonChannel::eee) type_fake_fortopestimate = 1;
@@ -445,12 +446,10 @@ void PSL::FakeFactorTool::loopZjetRegion(void){
   if (do_wminus && m_EDM->GetSignalLeptonVariable(lepCharge,index_wcand) ==  1) return;
 
   // reweight ttbar in data-driven FF
-  if ((MatchSample(kttbar,m_EDM->m_CurrentSample) || MatchSample(ktw, m_EDM->m_CurrentSample)) &&
-      std::string(GetName()).find("FFTool_z_data") != std::string::npos){
-    //if (m_EDM->GetSignalLeptonVariable(lepFlavor,index_fake) == (int)ObjType::Muon    ) weight *= 1.02;
-    //if (m_EDM->GetSignalLeptonVariable(lepFlavor,index_fake) == (int)ObjType::Electron) weight *= 1.04;
-    if (m_EDM->GetSignalLeptonVariable(lepFlavor,index_fake) == (int)ObjType::Muon    ) weight *= 1.02;
-    if (m_EDM->GetSignalLeptonVariable(lepFlavor,index_fake) == (int)ObjType::Electron) weight *= 1.06;
+  if ((MatchSample(kttbar,m_EDM->m_CurrentSample) || MatchSample(ktw, m_EDM->m_CurrentSample) || MatchSample(kqqww, m_EDM->m_CurrentSample)) &&
+      (std::string(GetName()).find("FFTool_z_data") != std::string::npos || std::string(GetName()).find("FFTool_z_est_tt") != std::string::npos)){
+    if (m_EDM->GetSignalLeptonVariable(lepFlavor,index_fake) == (int)ObjType::Muon    ) weight *= 1.03;
+    if (m_EDM->GetSignalLeptonVariable(lepFlavor,index_fake) == (int)ObjType::Electron) weight *= 1.05;
   }
 
   //MSG_INFO("here. lep1 " << SFOS_lep1index << " lep2 " << SFOS_lep2index << " wcand " << index_wcand);

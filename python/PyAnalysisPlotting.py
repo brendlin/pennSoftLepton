@@ -462,9 +462,10 @@ def GetPassEventBkgHistos(variable,key,processes,filename,normalize=False,rebin=
             variable_label = variable.split('[')[0]
             variable = variable.replace('[','_').rstrip(']')
         name = 'PassEvent_%s/PassEvent_%s_%s_%s'%(key,key,s,variable)
-        h = pyhelpers.GetRootObj(the_file,name,fatal=True).Clone()
+        h = pyhelpers.GetRootObj(the_file,name,fatal=False)
         if not h :
-            print '%s does not exist'%(name)
+            print 'WARNING: %s does not exist'%(name)
+            continue
         else :
             ROOT.PSL.SetBinLabels(variable,h)
             h.GetXaxis().SetRange(0,h.GetNbinsX())
@@ -534,9 +535,10 @@ def GetPassEventSigHistos(variable,key,filenames,normalize=False,rebin=[]) :
         # Get SUSY histogram
         #
         name = 'PassEvent_%s/PassEvent_%s_%s_%s'%(options.key,options.key,'susy',variable)
-        h = GetRootObj(file,name,fatal=True).Clone()
+        h = GetRootObj(file,name,fatal=False)
         if not h :
-            print '%s does not exist'%(name)
+            print 'WARNING: %s does not exist'%(name)
+            continue
         else :
             ROOT.PSL.SetBinLabels(variable,h)
             if rebin :

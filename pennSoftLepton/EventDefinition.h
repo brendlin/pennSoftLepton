@@ -45,11 +45,11 @@ namespace PSL
       is_trigMatched = false;
     }
     ~Particle(){};
-    double M() {if (tlv.Pt()) return tlv.M(); return -999;}
-    double Pt() { return tlv.Pt();}
-    double Phi() { if (tlv.Pt()) return tlv.Phi(); return -999;}
-    double Eta() { if (tlv.Pt()) return tlv.Eta(); return -999;}
-    double E() {if (tlv.Pt()) return tlv.E(); return -999;}
+    double M()   const { if (tlv.Pt()) return tlv.M()  ; return -999;}
+    double Pt()  const { return tlv.Pt();}
+    double Phi() const { if (tlv.Pt()) return tlv.Phi(); return -999;}
+    double Eta() const { if (tlv.Pt()) return tlv.Eta(); return -999;}
+    double E()   const { if (tlv.Pt()) return tlv.E()  ; return -999;}
   };
   bool DescendingPt(const Particle& l1,const Particle& l2);
   bool IsElectron(const Particle& l);

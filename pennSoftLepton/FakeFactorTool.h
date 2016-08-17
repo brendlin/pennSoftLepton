@@ -138,6 +138,7 @@ namespace PSL
     void set_MtCut                 (double d){MtCut     = d;};
     void set_MzCutLow              (double d){MzCutLow  = d;};
     void set_MzCutHigh             (double d){MzCutHigh = d;};
+    void set_IncludeZdesert        (bool b){m_includeZdesert = b;};
     //
     void set_SubRegion(std::string s){
       if (s == "ttt")     { do_ttt = true ; do_ltt = false; do_tlt = false; do_ttl = false; }

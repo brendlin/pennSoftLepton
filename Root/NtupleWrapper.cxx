@@ -303,7 +303,7 @@ TLorentzVector PSL::NtupleWrapper::GetContainerLeptonTLV(int icontainer){
   lep.SetPtEtaPhiM(1000.*m_LepVariableHolder[lepPt]->at(icontainer)
                    ,m_LepVariableHolder[lepEta]->at(icontainer)
                    ,m_LepVariableHolder[lepPhi]->at(icontainer)
-                   ,(m_LepVariableHolder[lepFlavor]->at(icontainer) == (int)ObjType::Electron) ? 0.511 : 105.658 );
+                   ,(m_LepVariableHolder[lepFlavor]->at(icontainer) == (int)ObjType::Electron) ? 0.000511 : 0.105658 );
   return lep;
 }
 //-----------------------------------------------------------------------------
