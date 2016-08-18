@@ -62,9 +62,9 @@ def main (options,args) :
         ROOT.xAOD.TReturnCode.enableFailure()
         ROOT.xAOD.Init().isSuccess() # other options: isSuccess, isFailure, isRecoverable
         # branch access is a requirement for the trigger tools.
-        myjob.options().setString (ROOT.EL.Job.optXaodAccessMode, ROOT.EL.Job.optXaodAccessMode_athena)
+        #myjob.options().setString (ROOT.EL.Job.optXaodAccessMode, ROOT.EL.Job.optXaodAccessMode_athena)
         #myjob.options().setString (ROOT.EL.Job.optXaodAccessMode, ROOT.EL.Job.optXaodAccessMode_branch)
-        #myjob.options().setString (ROOT.EL.Job.optXaodAccessMode, ROOT.EL.Job.optXaodAccessMode_class)
+        myjob.options().setString (ROOT.EL.Job.optXaodAccessMode, ROOT.EL.Job.optXaodAccessMode_class)
         if options.truth:
             susytools_alg = ROOT.PSL.TruthObjDef()
             susytools_alg.SetName('truth_alg')
