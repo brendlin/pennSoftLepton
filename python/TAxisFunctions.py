@@ -20,27 +20,40 @@
 ## If a text or legend has been added to the plot it will force the plot content to appear BELOW
 ## the text.
 ##
-def AutoFixAxes(can) :
-    from ROOT import TFrame
-    import math
+def AutoFixAxes(can,symmetrize=False) :
     if can.GetPrimitive('pad_top') :
         AutoFixAxes(can.GetPrimitive('pad_top'))
+        AutoFixAxes(can.GetPrimitive('pad_bot'))
         return
-    FixXaxisRanges(can)
-    #FixYaxisRanges(can)
+    FixXaxisRanges(can)    
+    AutoFixYaxis(can)
+    return
+
+def AutoFixYaxis(can) :
+    #
+    # Makes space for text as well!
+    #
+    from ROOT import TFrame
+    import math
     maxy_frac = 1
     #
     # Now we make space for any text we drew on the canvas, and
     # also the Legend
     #
+    plots_exist = False
     tframe_height = 1-can.GetTopMargin()-can.GetBottomMargin()
     for i in can.GetListOfPrimitives() :
         if type(i) == type(TFrame()) :
             continue
         if hasattr(i,'GetY1NDC') :
             maxy_frac = min(maxy_frac,i.GetY1NDC())
+            plots_exist = True
         if hasattr(i,'GetY') :
             maxy_frac = min(maxy_frac,i.GetY())
+            plots_exist = True
+    if not plots_exist :
+        print 'Your plot %s has nothing in it. Doing nothing.'%(can.GetName())
+        return
     (miny,maxy) = GetYaxisRanges(can,check_all=True)
     # print 'AutoFixAxes0',miny,maxy
     if miny == 0 and maxy == 0 :
@@ -61,6 +74,8 @@ def AutoFixAxes(can) :
         # round y axis to nice round numbers
         (miny,maxy) = NearestNiceNumber(miny,maxy)
     # print 'AutoFixAxes',miny,maxy
+#     if symmetrize :
+#         (miny,maxy) = -max(math.fabs(miny),math.fabs(maxy)),max(math.fabs(miny),math.fabs(maxy))
     SetYaxisRanges(can,miny,maxy)
     return
 
@@ -127,21 +142,18 @@ def SetYaxisRanges(can,ymin,ymax) :
             i.SetMaximum(ymax)
             if not yaxis :
                 yaxis = i.GetHistogram().GetYaxis()
-            #break
         if issubclass(type(i),TH1) :
             # print 'SetYaxisRanges',ymin,ymax
             i.SetMinimum(ymin)
             i.SetMaximum(ymax)
             if not yaxis: 
                 yaxis = i.GetYaxis()
-            #break
         if issubclass(type(i),THStack) :
             # print 'SetYaxisRanges',ymin,ymax
             i.SetMinimum(ymin)
             i.SetMaximum(ymax)
             if not yaxis :
                 yaxis = i.GetHistogram().GetYaxis()
-            #break
     if not yaxis :
         print 'Warning: SetYaxisRange had no effect. Check that your canvas has plots in it.'
         return
@@ -150,6 +162,15 @@ def SetYaxisRanges(can,ymin,ymax) :
     can.Modified()
     can.Update()
     return
+
+def SetNdivisions(can,a,b,c) :
+    for i in can.GetListOfPrimitives() :
+        if hasattr(i,'GetXaxis') :
+            i.GetXaxis().SetNdivisions(a,b,c)
+    can.Modified()
+    can.Update()
+    return
+    
 
 ##
 ## Returns the y-range of the first plotted histogram.
@@ -176,6 +197,8 @@ def GetYaxisRanges(can,check_all=False) :
                 return ymin,ymax
         if issubclass(type(i),TH1) :
             for bin in range(i.GetNbinsX()) :
+                if bin < i.GetXaxis().GetFirst() : continue # X-axis SetRange should be done first
+                if bin > i.GetXaxis().GetLast() : continue # X-axis SetRange should be done first
                 y = i.GetBinContent(bin+1)
                 ye = i.GetBinError(bin+1)
                 ymin = min(ymin,y-ye)
@@ -203,23 +226,27 @@ def FixXaxisRanges(can) :
 ## Set the x-axis ranges of a canvas
 ##
 def SetXaxisRanges(can,xmin,xmax) :
+    if can.GetPrimitive('pad_top') :
+        SetXaxisRanges(can.GetPrimitive('pad_top'),xmin,xmax)
+        SetXaxisRanges(can.GetPrimitive('pad_bot'),xmin,xmax)
+        return
     from ROOT import TGraph,TH1,THStack
     xaxis = 0
     for i in can.GetListOfPrimitives() :
         if issubclass(type(i),TGraph) :
             xaxis = i.GetHistogram().GetXaxis()
-            break
+            xaxis.SetRangeUser(xmin,xmax)
         if issubclass(type(i),TH1) :
             xaxis = i.GetXaxis()
-            break
+            xaxis.SetRangeUser(xmin,xmax)
         if issubclass(type(i),THStack) :
             xaxis = i.GetXaxis()
-            break
+            xaxis.SetRangeUser(xmin,xmax)
     
     if not xaxis :
         print 'Warning: SetXaxisRange had no effect. Check that your canvas has plots in it.'
         return
-    xaxis.SetLimits(xmin,xmax)
+
     can.Modified()
     can.Update()
     return
@@ -246,3 +273,20 @@ def GetXaxisRanges(can,check_all=False) :
             xmin = min(xmin,xaxis.GetXmin())
             xmax = max(xmax,xaxis.GetXmax())
     return xmin,xmax
+
+##
+## Puts the overflow into the last bin
+##
+def PutOverflowIntoLastBin(hist,high) :
+    import math
+    print hist.GetName(),high
+    if high == None :
+        high = hist.GetXaxis().GetBinLowEdge(hist.GetNbinsX()+1)
+    last_bin = hist.GetXaxis().FindBin(high)-1
+    for i in range(hist.GetNbinsX()+1) :
+        if hist.GetXaxis().GetBinLowEdge(i+1) >= high :
+            hist.SetBinContent(last_bin,hist.GetBinContent(i+1)+hist.GetBinContent(last_bin))
+            hist.SetBinError(last_bin,math.sqrt(hist.GetBinError(i+1)**2 + hist.GetBinError(last_bin)**2))
+            hist.SetBinContent(i+1,0)
+            hist.SetBinError(i+1,0)
+    return
