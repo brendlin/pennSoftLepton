@@ -104,13 +104,14 @@ plotfakefactor.py -f all.root --config UserInput_ZFFR.py -p zz,wz,ttbar,zjet,zga
 # execute the following command.
 hadd -f FakeFactors_wid.root wid_official_elec/FakeFactors.root wid_official_muon/FakeFactors.root
 
+# Then move your fake factor file to the the pennSoftLepton/data directory.
 # This is the end of the prescription to obtain Z+jet fake factors.
 
 
 
 ## Getting the ttbar ZCR Scale Factor
-# For this we use the z_ttvalid instance. This procedure is used to obtain the scale factors used to
-# normalize ttbar in the ZCR.
+# This procedure is used to obtain the scale factors used to normalize ttbar in the ZCR (for
+# subtracting ttbar from the FF procedure). For this we use the z_ttvalid instance. 
 
 cd Denominator
 ntupleJob.py --config FakeFactorZjet.conf --bkgs qqww,vvv,tother,ttv,tz,singletop,tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out TtbarParallelZCR --instances FFTool_z_ttvalid_ltt,FFTool_z_ttvalid_tlt,FFTool_z_ttvalid_ttl
