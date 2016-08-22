@@ -821,9 +821,11 @@ def GetTEnvFromConfs(confname,defaultconf) :
 
     if not os.path.exists(defaultconf) :
         print 'Cannot find default configuration file, %s. Exiting.'%(defaultconf)
+        import sys; sys.exit();
         return
     if not os.path.exists(confname) :
         print 'Cannot find configuration file, %s. Exiting.'%(confname)
+        import sys; sys.exit();
         return
     env = ROOT.TEnv(confname)        
     print 'Using conf name %s'%(confname)

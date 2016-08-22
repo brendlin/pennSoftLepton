@@ -300,29 +300,29 @@ TLorentzVector PSL::NtupleWrapper::GetSignalLeptonTLV(int iptordered){
 TLorentzVector PSL::NtupleWrapper::GetContainerLeptonTLV(int icontainer){
   // MEV!!!
   TLorentzVector lep;
-  lep.SetPtEtaPhiM(1000.*m_LepVariableHolder[lepPt]->at(icontainer)
+  lep.SetPtEtaPhiM(1000.*m_LepVariableHolder[lepPt]->at(icontainer) // GeV --> MeV
                    ,m_LepVariableHolder[lepEta]->at(icontainer)
                    ,m_LepVariableHolder[lepPhi]->at(icontainer)
-                   ,(m_LepVariableHolder[lepFlavor]->at(icontainer) == (int)ObjType::Electron) ? 0.000511 : 0.105658 );
+                   ,(m_LepVariableHolder[lepFlavor]->at(icontainer) == (int)ObjType::Electron) ? 0.511 : 105.658 ); // MeV
   return lep;
 }
 //-----------------------------------------------------------------------------
 TLorentzVector PSL::NtupleWrapper::GetContainerEleTLV(int icontainer){
   AssertContainerLeptonIsElectron(icontainer);
   TLorentzVector lep;
-  lep.SetPtEtaPhiM(1000.*m_LepVariableHolder[lepPt]->at(icontainer)
+  lep.SetPtEtaPhiM(1000.*m_LepVariableHolder[lepPt]->at(icontainer) // GeV --> MeV
                    ,m_LepVariableHolder[lepEta]->at(icontainer)
                    ,m_LepVariableHolder[lepPhi]->at(icontainer)
-                   ,(m_LepVariableHolder[lepFlavor]->at(icontainer) == (int)ObjType::Electron) ? 0.000511 : 0.105658 );
+                   ,(m_LepVariableHolder[lepFlavor]->at(icontainer) == (int)ObjType::Electron) ? 0.511 : 105.658 ); // MeV
   return lep;
 }
 //-----------------------------------------------------------------------------
 TLorentzVector PSL::NtupleWrapper::GetContainerJetTLV(int icontainer){
   TLorentzVector jettlv;
-  jettlv.SetPtEtaPhiE(1000.*m_JetVariableHolder[jetPt]->at(icontainer),
+  jettlv.SetPtEtaPhiE(1000.*m_JetVariableHolder[jetPt]->at(icontainer), // GeV --> MeV
                       m_JetVariableHolder[jetEta]->at(icontainer),
                       m_JetVariableHolder[jetPhi]->at(icontainer),
-                      1000.*m_JetVariableHolder[jetE]->at(icontainer));
+                      1000.*m_JetVariableHolder[jetE]->at(icontainer)); // GeV --> MeV
   return jettlv;
 }
 //-----------------------------------------------------------------------------
@@ -355,10 +355,10 @@ bool PSL::NtupleWrapper::AssertContainerLeptonIsMuon(int icontainer,bool fatal){
 TLorentzVector PSL::NtupleWrapper::GetContainerMuonTLV(int icontainer){
   AssertContainerLeptonIsMuon(icontainer);
   TLorentzVector lep;
-  lep.SetPtEtaPhiM(1000.*m_LepVariableHolder[lepPt]->at(icontainer)
+  lep.SetPtEtaPhiM(1000.*m_LepVariableHolder[lepPt]->at(icontainer) // GeV --> MeV
                    ,m_LepVariableHolder[lepEta]->at(icontainer)
                    ,m_LepVariableHolder[lepPhi]->at(icontainer)
-                   ,(m_LepVariableHolder[lepFlavor]->at(icontainer) == (int)ObjType::Electron) ? 0.000511 : 0.105658 );
+                   ,(m_LepVariableHolder[lepFlavor]->at(icontainer) == (int)ObjType::Electron) ? 0.511 : 105.658 ); // MeV
   return lep;
 }
 

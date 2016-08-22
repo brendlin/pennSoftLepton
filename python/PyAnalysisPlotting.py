@@ -206,7 +206,14 @@ def GetVariableHistsFromTrees(trees,keys,variable,weight,n,low,high,normalize=Fa
         arg1,arg2,arg3 = '%s>>%s(%s,%s,%s)'%(variable,name,n,low,high),weight,'egoff'
         #arg1,arg2,arg3 = '%s>>%s'%(variable,name),weight,'egoff'
         print 'tree.Draw(\'%s\',\'%s\',\'%s\')'%(arg1,arg2,arg3)
+        ROOT.gErrorIgnoreLevel = ROOT.kFatal
         trees[k].Draw(arg1,arg2,arg3)
+
+        # if Draw did not work, then exit.
+        if not issubclass(type(ROOT.gDirectory.Get(name)),ROOT.TH1) :
+            print 'ERROR TTree::Draw failed. Exiting.'
+            import sys
+            sys.exit()
 
         if rebin and type(rebin) == type([]) :
             tmp = ROOT.gDirectory.Get(name)
@@ -258,6 +265,7 @@ def Get2dVariableHistsFromTrees(trees,keys,variable1,variable2,weight,n1,low1,hi
 #             name = name+'_unrebinned'
         arg1,arg2,arg3 = '%s:%s>>%s(%s,%s,%s,%s,%s,%s)'%(variable2,variable1,name,n1,low1,high1,n2,low2,high2),weight,'egoff'
         print 'tree.Draw(\'%s\',\'%s\',\'%s\')'%(arg1,arg2,arg3)
+        ROOT.gErrorIgnoreLevel = ROOT.kFatal
         trees[k].Draw(arg1,arg2,arg3)
 
 #         if rebin and type(rebin) == type([]) :
@@ -323,7 +331,10 @@ class TreePlottingOptParser :
         if self.options.susy and not '.root' in self.options.susy :
             dir = self.options.susy
             self.options.susy = ','.join('%s/%s'%(dir,a) for a in os.listdir(self.options.susy))
-        print self.options.susy
+
+        if not self.options.file :
+            print 'No file specified. Exiting.'
+            sys.exit()
 
         self.options.bkgs = self.options.bkgs.split(',')
         for b in range(len(self.options.bkgs)) :
@@ -436,7 +447,7 @@ class PassEventPlottingOptParser :
 #
 # This takes a single file, which is the hadded result of all PassEvent sub-jobs.
 #
-def GetPassEventBkgHistos(variable,key,processes,filename,normalize=False,rebin=[]) :
+def GetPassEventBkgHistos(variable,key,processes,filename,normalize=False,rebin=[],n=0,low=None,high=None,globalError=0) :
     import ROOT
     import pennSoftLepton.PyHelpers as pyhelpers
     import PlotFunctions as plotfunc
@@ -466,30 +477,53 @@ def GetPassEventBkgHistos(variable,key,processes,filename,normalize=False,rebin=
         if not h :
             print 'WARNING: %s does not exist'%(name)
             continue
-        else :
-            ROOT.PSL.SetBinLabels(variable,h)
-            h.GetXaxis().SetRange(0,h.GetNbinsX())
-            if rebin :
-                if type(rebin) == type([]) :
-                    name = h.GetName()+'_rebinned'
-                    h.Rebin(len(rebin)-1,name,array('d',rebin))
-                    h = ROOT.gDirectory.Get(name)
-                else :
-                    h.Rebin(rebin)
 
-            # pm = u"\u00B1"
-            # print '%s: %2.2f %s %2.2f'%(s,h.Integral(0,h.GetNbinsX()+1),pm,math.sqrt(sum(list(h.GetSumw2()))))
+        print variable_label
+        ROOT.PSL.SetBinLabels(variable_label,h)
 
-            if normalize :
-                h.Scale(1/float(h.Integral()))
-            if rebin and type(rebin) == type([]) :
-                plotfunc.ConvertToDifferential(h)
-                
-            h.SetTitle(s)
-            h.SetLineWidth(2)
-            h.SetLineColor(1)
-            h.SetDirectory(0)
-            hists.append(h)
+        #
+        # Rebinning stuff
+        #
+        if n > 0 and (low != None) and (high != None) :
+            desired_width = (high-low)/float(n)
+            axis = h.GetXaxis()
+            nbinsx = h.GetNbinsX()
+            current_width = (axis.GetBinLowEdge(nbinsx+1)-axis.GetBinLowEdge(1))/float(nbinsx)
+            rebin_factor = desired_width/current_width
+            if math.fabs(rebin_factor - round(rebin_factor,0)) > 0.00001 :
+                print 'desired bin width:',n,low,high,desired_width
+                print 'current bin width:',nbinsx,axis.GetBinLowEdge(1),axis.GetBinLowEdge(nbinsx+1),current_width
+                print 'difference:',math.fabs(rebin_factor - int(rebin_factor))
+                print 'not consistent. Exiting.'
+                import sys
+                sys.exit()
+            h.Rebin(int(round(rebin_factor,0)))
+
+        #
+        # More rebinning stuff
+        #
+        if rebin :
+            if type(rebin) == type([]) :
+                name = h.GetName()+'_rebinned'
+                h.Rebin(len(rebin)-1,name,array('d',rebin))
+                h = ROOT.gDirectory.Get(name)
+            else :
+                h.Rebin(rebin)
+
+        # print out the event yield and error
+        pm = u"\u00B1"
+        print '%s: %2.2f %s %2.2f'%(s,h.Integral(0,h.GetNbinsX()+1),pm,math.sqrt(sum(list(h.GetSumw2()))))
+
+        if normalize :
+            h.Scale(1/float(h.Integral()))
+        # if rebin and type(rebin) == type([]) :
+        #     plotfunc.ConvertToDifferential(h)
+
+        h.SetTitle(s)
+        h.SetLineWidth(2)
+        h.SetLineColor(1)
+        h.SetDirectory(0)
+        hists.append(h)
 
     the_file.Close()
     return hists

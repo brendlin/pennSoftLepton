@@ -39,8 +39,11 @@
 ## - ttbarsr.py (ignore for now)
 
 ## Running the cutflow:
-##
-## Edit FakeFactorZjet.conf - signal region
+# The cutflow is the WZ signal selection. Note that some cuts are applied at the
+# ntuple level; only the remaining cuts are applied here. This conf file uses
+# the FakeFactorTool to apply the remaining selection, and is essentially a sanity check
+# for the FakeFactorTool code (at least the numerator part)
+
 cd Numerator
 ntupleJob.py --config FakeFactorZjet.conf --bkgs wz,data --out CheckSR --instances FFTool_ttt
 cd CheckSR
@@ -48,10 +51,61 @@ hadd -f all.root hist*.root
 cp $ROOTCOREBIN/../pennSoftLepton/macros/ExamplePlotTreesConfig.py .
 plot.py -f all.root --config ExamplePlotTreesConfig.py -p wz,data -k FFTool_ttt_allNum
 
+## Calculating the Fake Factor in the region MTW < 30, MET < 40 
+# The Fake Factors are derived using a Z+jet-enriched region with MTW<30 GeV and MET<40 GeV.
+# This set of commands runs the code to obtain the fake factors, and to save them in root files for
+# use in later steps. Note that in 2015, the selection to obtain muon FFs and electron FFs was
+# different. Namely, the Z electrons were loosened to LooseAndBLayerLLH (instead of MediumLH) to
+# obtain muon FFs, for more statistics. With the 2016 dataset, probably you have enough stats that
+# you don't need to loosen the Z electron ID to obtain muon FFs.
+# It might be useful to double-check that the conf files only have the expected differences between
+# them:
+#  - svn diff FakeFactorZjet_zid.conf FakeFactorZjet_wid.conf
+#  - diff FakeFactorZjet_zid.conf FakeFactorZjet_zid_muon.conf
+#  - diff FakeFactorZjet_wid.conf FakeFactorZjet_wid_muon.conf
+
+# Electrons - for the w-identification
+cd Denominator && ntupleJob.py --config FakeFactorZjet_wid.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out wid_official_elec --instances FFTool_ltt,FFTool_forsyst_ltt,FFTool_forsyst_tlt,FFTool_forsyst_ttl
+cd Numerator   && ntupleJob.py --config FakeFactorZjet_wid.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out wid_official_elec --instances FFTool_ttt,FFTool_forsyst_wid_ttt
+
+# Electrons - for the z-identification
+cd Denominator && ntupleJob.py --config FakeFactorZjet_zid.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out zid_official_elec --instances FFTool_ltt,FFTool_forsyst_ltt,FFTool_forsyst_tlt,FFTool_forsyst_ttl
+cd Numerator   && ntupleJob.py --config FakeFactorZjet_zid.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out zid_official_elec --instances FFTool_ttt,FFTool_forsyst_zid_ttt
+
+# Muons - for the w-identification
+cd Denominator   && ntupleJob.py --config FakeFactorZjet_wid_muon.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out wid_official_muon --instances FFTool_ltt,FFTool_forsyst_ltt,FFTool_forsyst_tlt,FFTool_forsyst_ttl
+cd Numerator     && ntupleJob.py --config FakeFactorZjet_wid_muon.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out wid_official_muon --instances FFTool_ttt,FFTool_forsyst_wid_ttt
+
+# Muons - for the z-identification
+cd Denominator   && ntupleJob.py --config FakeFactorZjet_zid_muon.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out zid_official_muon --instances FFTool_ltt,FFTool_forsyst_ltt,FFTool_forsyst_tlt,FFTool_forsyst_ttl
+cd Numerator     && ntupleJob.py --config FakeFactorZjet_zid_muon.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out zid_official_muon --instances FFTool_ttt,FFTool_forsyst_zid_ttt
+
+# making the working areas, and hadding the files
+mkdir wid_official_elec zid_official_elec wid_official_muon zid_official_muon
+hadd -f zid_official_elec/all.root Denominator/zid_official_elec/hist*.root Numerator/zid_official_elec/hist*.root
+hadd -f wid_official_elec/all.root Denominator/wid_official_elec/hist*.root Numerator/wid_official_elec/hist*.root
+hadd -f zid_official_muon/all.root Denominator/zid_official_muon/hist*.root Numerator/zid_official_muon/hist*.root
+hadd -f wid_official_muon/all.root Denominator/wid_official_muon/hist*.root Numerator/wid_official_muon/hist*.root
+
+cd zid_official_elec && ln -s ../UserInput_ZFFR.py . && cd -;
+cd wid_official_elec && ln -s ../UserInput_ZFFR.py . && cd -;
+cd zid_official_muon && ln -s ../UserInput_ZFFR.py . && cd -;
+cd wid_official_muon && ln -s ../UserInput_ZFFR.py . && cd -;
+
+plotfakefactor.py -f all.root --config UserInput_ZFFR.py -p zz,wz,ttbar,zjet,zgam,data
+plotfakefactor.py -f all.root --config UserInput_ZFFR.py -p zz,wz,ttbar,zjet,zgam,data --e --systematics
+plotfakefactor.py -f all.root --config UserInput_ZFFR.py -p zz,wz,ttbar,zjet,zgam,data --mu --systematics
+
+# To make the file required for the next step (applying the FFs), with electron and muon fake factors,
+# execute the following command.
+hadd -f FakeFactors_wid.root wid_official_elec/FakeFactors.root wid_official_muon/FakeFactors.root
+
+# This is the end of the prescription to obtain Z+jet fake factors.
+
 ## Getting the ttbar ZCR Scale Factor
-## Getting the ttbar ZCR Scale Factor
-## Getting the ttbar ZCR Scale Factor
-## For this we use the z_ttvalid tag.
+# For this we use the z_ttvalid instance. This procedure is used to obtain the scale factors used to
+# normalize ttbar in the ZCR.
+
 cd Denominator
 ntupleJob.py --config FakeFactorZjet.conf --bkgs qqww,vvv,tother,ttv,tz,singletop,tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out TtbarParallelZCR --instances FFTool_z_ttvalid_ltt,FFTool_z_ttvalid_tlt,FFTool_z_ttvalid_ttl
 cd TtbarParallelZCR
@@ -64,28 +118,32 @@ plot.py -f all.root --config ExamplePlotTreesConfig.py -p qqww,ttv,singletop,zz,
 plot.py -f all.root --config ExamplePlotTreesConfig.py -p qqww,ttv,singletop,zz,wz,tw,ttbar,zjet,zgam,data -k FFTool_z_ttvalid_ltt_ueeDen
 plot.py -f all.root --config ExamplePlotTreesConfig.py -p qqww,ttv,singletop,zz,wz,tw,ttbar,zjet,zgam,data -k FFTool_z_ttvalid_ltt_allDen --save
 
-
-## Plotting ZCR Result
-## Plotting ZCR Result
-## Plotting ZCR Result
-#
+## Getting the Z+jet estimate (the ZCR result multiplied by the fake factor)
+# Here we take the fake factor root file from the previous steps, and use it to get the Z+jet estimate
+# in the signal region.
 # Edit FakeFactorZjet.conf:
-#  - Link Any new fake factor files in pennSoftLepton/data
-#  - Add new fake factor file names to FakeFactorZjet.conf
-# if necessary CHANGE THE hard-coded TTBAR SCALE FACTORS!!!!
+#  - Link or add your new fake factor files into the pennSoftLepton/data directory
+#  - Add the new fake factor file names to FakeFactorZjet.conf (it should be clear where they go)
+#  - if necessary CHANGE THE hard-coded TTBAR SCALE FACTORS that you obtained above.
 
 cd Denominator;
 ntupleJob.py --config FakeFactorZjet.conf --bkgs qqww,vvv,tother,ttv,tz,singletop,tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --instances FFTool_z_data_ltt,FFTool_z_data_tlt,FFTool_z_data_ttl --out ZCR
-ntupleJob.py --config FakeFactorZjet.conf --bkgs qqww,vvv,tother,ttv,tz,singletop,tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --instances FFTool_z_data_ltt,FFTool_z_data_tlt,FFTool_z_data_ttl --out ZCR_Systematics --systematics
 cd ZCR
 hadd -f all.root hist*.root
 plotdatadriven.py -f all.root 
 ln -s ../../UserIntput_ZCR.py .
 plot.py -f all.root --config UserInput_ZCR.py -p qqww,vvv,tother,ttv,tz,singletop,tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,zjetdd -k FFTool_z_data_ltt_allNum
 
+# For obtaining the systematic uncertainties:
+cd Denominator;
+ntupleJob.py --config FakeFactorZjet.conf --bkgs qqww,vvv,tother,ttv,tz,singletop,tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --instances FFTool_z_data_ltt,FFTool_z_data_tlt,FFTool_z_data_ttl --out ZCR_Systematics --systematics
+cd ZCR_Systematics
+plotdatadriven.py -f all.root
+# ^ need to clean this up a bit / make it more user-friendly
+
 ## Making/Plotting ZCR Validation Plots
-## Making/Plotting ZCR Validation Plots
-## Making/Plotting ZCR Validation Plots
+# The above was used to obtain the Z+jet estimate. The following can also be used to make additional
+# plots, even in the regions that we do not use for the estimate.
 
 ntupleJob.py --config FakeFactorZjet.conf --bkgs qqww,vvv,tother,ttv,tz,singletop,tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --instances FFTool_z_valid_ltt,FFTool_z_valid_tlt,FFTool_z_valid_ttl --out ZValidation
 cd ZValidation
@@ -108,8 +166,9 @@ plot.py -f all.root --config UserInput_ZCR.py -p ttv,zz,wz,tw,ttbar,zjet,zgam,da
 
 
 ## Making/Plotting TTBAR SR SCALE FACTOR
-## Making/Plotting TTBAR SR SCALE FACTOR
-## Making/Plotting TTBAR SR SCALE FACTOR
+# The ttbar estimate is estimated using a control region exactly the same as the signal region (three
+# tight leptons), except that a DFOS pair is requested instead of a SFOS pair. This is the procedure
+# to make that selection.
 
 # Edit FakeFactorZjet.conf
 cd Numerator
@@ -155,47 +214,6 @@ cd wm_TtbarSR_Efake/ && hadd -f all.root hist*.root && cd ../
 # check the hacks in the tool. Specifically the tests in the SR FF to see that the fake lepton is indeed fake. (Look for FFTool_forsyst_Xid_ttt mentions.)
 # for the ZID you need to lower the W lepton pt to 15 GeV (from 20 GeV)
 # Joey ask me what I mean by this stuff.
-
-## NEW FF PRESCRIPTION NEW FF PRESCRIPTION NEW FF PRESCRIPTION
-# test conf files
-svn diff FakeFactorZjet_zid.conf FakeFactorZjet_wid.conf
-diff FakeFactorZjet_zid.conf FakeFactorZjet_zid_muon.conf
-diff FakeFactorZjet_wid.conf FakeFactorZjet_wid_muon.conf
-
-# Electrons
-cd Denominator && ntupleJob.py --config FakeFactorZjet_wid.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out wid_official_elec --instances FFTool_ltt,FFTool_forsyst_ltt,FFTool_forsyst_tlt,FFTool_forsyst_ttl
-cd Numerator   && ntupleJob.py --config FakeFactorZjet_wid.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out wid_official_elec --instances FFTool_ttt,FFTool_forsyst_wid_ttt
-
-cd Denominator && ntupleJob.py --config FakeFactorZjet_zid.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out zid_official_elec --instances FFTool_ltt,FFTool_forsyst_ltt,FFTool_forsyst_tlt,FFTool_forsyst_ttl
-cd Numerator   && ntupleJob.py --config FakeFactorZjet_zid.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out zid_official_elec --instances FFTool_ttt,FFTool_forsyst_zid_ttt
-
-# Muons
-cd Denominator   && ntupleJob.py --config FakeFactorZjet_wid_muon.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out wid_official_muon --instances FFTool_ltt,FFTool_forsyst_ltt,FFTool_forsyst_tlt,FFTool_forsyst_ttl
-cd Numerator     && ntupleJob.py --config FakeFactorZjet_wid_muon.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out wid_official_muon --instances FFTool_ttt,FFTool_forsyst_wid_ttt
-
-cd Denominator   && ntupleJob.py --config FakeFactorZjet_zid_muon.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out zid_official_muon --instances FFTool_ltt,FFTool_forsyst_ltt,FFTool_forsyst_tlt,FFTool_forsyst_ttl
-cd Numerator     && ntupleJob.py --config FakeFactorZjet_zid_muon.conf --bkgs tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out zid_official_muon --instances FFTool_ttt,FFTool_forsyst_zid_ttt
-
-mkdir wid_official_elec zid_official_elec wid_official_muon zid_official_muon
-hadd -f zid_official_elec/all.root Denominator/zid_official_elec/hist*.root Numerator/zid_official_elec/hist*.root
-hadd -f wid_official_elec/all.root Denominator/wid_official_elec/hist*.root Numerator/wid_official_elec/hist*.root
-hadd -f zid_official_muon/all.root Denominator/zid_official_muon/hist*.root Numerator/zid_official_muon/hist*.root
-hadd -f wid_official_muon/all.root Denominator/wid_official_muon/hist*.root Numerator/wid_official_muon/hist*.root
-
-cd zid_official_elec && ln -s ../UserInput_ZFFR.py . && cd -;
-cd wid_official_elec && ln -s ../UserInput_ZFFR.py . && cd -;
-cd zid_official_muon && ln -s ../UserInput_ZFFR.py . && cd -;
-cd wid_official_muon && ln -s ../UserInput_ZFFR.py . && cd -;
-
-plotfakefactor.py -f all.root --config UserInput_ZFFR.py -p zz,wz,ttbar,zjet,zgam,data
-plotfakefactor.py -f all.root --config UserInput_ZFFR.py -p zz,wz,ttbar,zjet,zgam,data --e --systematics
-plotfakefactor.py -f all.root --config UserInput_ZFFR.py -p zz,wz,ttbar,zjet,zgam,data --mu --systematics
-
-hadd -f FakeFactors_wid.root wid_official_elec/FakeFactors.root wid_official_muon/FakeFactors.root
-
-## END NEW FF PRESCRIPTION
-## END NEW FF PRESCRIPTION
-## END NEW FF PRESCRIPTION
 
 
 ## DISTRIBUTIONS FOR EMMANUEL/JOANA

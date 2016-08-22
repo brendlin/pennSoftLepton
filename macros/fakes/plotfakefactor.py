@@ -83,12 +83,13 @@ def main(options,args) :
     hists_EleDen = dict()
 
     mu_options = options.file,options.normalize,rebin_mu
+    e_options  = options.file,options.normalize,rebin_e
 
     for p in options.processes.split(',') :
         hists_MuNum [p] = anaplot.GetPassEventBkgHistos(v,options.key+'_ttt_MuNum' ,p,*mu_options)[0]
-        hists_MuDen [p] = anaplot.GetPassEventBkgHistos(v,options.key+'_ltt_MuDen' ,p,options.file,normalize=options.normalize,rebin=rebin_mu)[0]
-        hists_EleNum[p] = anaplot.GetPassEventBkgHistos(v,options.key+'_ttt_EleNum',p,options.file,normalize=options.normalize,rebin=rebin_e)[0]
-        hists_EleDen[p] = anaplot.GetPassEventBkgHistos(v,options.key+'_ltt_EleDen',p,options.file,normalize=options.normalize,rebin=rebin_e)[0]
+        hists_MuDen [p] = anaplot.GetPassEventBkgHistos(v,options.key+'_ltt_MuDen' ,p,*mu_options)[0]
+        hists_EleNum[p] = anaplot.GetPassEventBkgHistos(v,options.key+'_ttt_EleNum',p,*e_options)[0]
+        hists_EleDen[p] = anaplot.GetPassEventBkgHistos(v,options.key+'_ltt_EleDen',p,*e_options)[0]
 
     z_w = ''
     tmp = ROOT.TFile(options.file)
@@ -102,36 +103,36 @@ def main(options,args) :
     if z_w and options.syst :
         do_z = (z_w == 'zid')
         # try to get SR FF
-        hists_MuNum ['zjet_sr']   = anaplot.GetPassEventBkgHistos('lepPt_antilep0_index'   ,'FFTool_forsyst_%s_ttt_MuNum'%(z_w) ,'zjet',options.file,normalize=options.normalize,rebin=rebin_mu)[0]
-        if True: hists_MuDen ['zjet_sr']   = anaplot.GetPassEventBkgHistos('lepPt_lepW_index'       ,'FFTool_forsyst_ltt_MuDen','zjet',options.file,normalize=options.normalize,rebin=rebin_mu)[0]
-        if do_z: hists_MuDen ['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepleadZ_index'   ,'FFTool_forsyst_tlt_MuDen','zjet',options.file,normalize=options.normalize,rebin=rebin_mu)[0])
-        if do_z: hists_MuDen ['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepsubleadZ_index','FFTool_forsyst_ttl_MuDen','zjet',options.file,normalize=options.normalize,rebin=rebin_mu)[0])
+        hists_MuNum ['zjet_sr']   = anaplot.GetPassEventBkgHistos('lepPt_antilep0_index'   ,'FFTool_forsyst_%s_ttt_MuNum'%(z_w) ,'zjet',*mu_options)[0]
+        if True: hists_MuDen ['zjet_sr']   = anaplot.GetPassEventBkgHistos('lepPt_lepW_index'       ,'FFTool_forsyst_ltt_MuDen','zjet',*mu_options)[0]
+        if do_z: hists_MuDen ['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepleadZ_index'   ,'FFTool_forsyst_tlt_MuDen','zjet',*mu_options)[0])
+        if do_z: hists_MuDen ['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepsubleadZ_index','FFTool_forsyst_ttl_MuDen','zjet',*mu_options)[0])
 
-        hists_MuNum ['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_antilep0_index'   ,'FFTool_forsyst_%s_ttt_MuNum'%(z_w) ,'zgam',options.file,normalize=options.normalize,rebin=rebin_mu)[0])
-        if True: hists_MuDen ['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepW_index'       ,'FFTool_forsyst_ltt_MuDen','zgam',options.file,normalize=options.normalize,rebin=rebin_mu)[0])
-        if do_z: hists_MuDen ['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepleadZ_index'   ,'FFTool_forsyst_tlt_MuDen','zgam',options.file,normalize=options.normalize,rebin=rebin_mu)[0])
-        if do_z: hists_MuDen ['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepsubleadZ_index','FFTool_forsyst_ttl_MuDen','zgam',options.file,normalize=options.normalize,rebin=rebin_mu)[0])
+        hists_MuNum ['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_antilep0_index'   ,'FFTool_forsyst_%s_ttt_MuNum'%(z_w) ,'zgam',*mu_options)[0])
+        if True: hists_MuDen ['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepW_index'       ,'FFTool_forsyst_ltt_MuDen','zgam',*mu_options)[0])
+        if do_z: hists_MuDen ['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepleadZ_index'   ,'FFTool_forsyst_tlt_MuDen','zgam',*mu_options)[0])
+        if do_z: hists_MuDen ['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepsubleadZ_index','FFTool_forsyst_ttl_MuDen','zgam',*mu_options)[0])
 
-        hists_EleNum['zjet_sr']   = anaplot.GetPassEventBkgHistos('lepPt_antilep0_index'   ,'FFTool_forsyst_%s_ttt_EleNum'%(z_w),'zjet',options.file,normalize=options.normalize,rebin=rebin_e)[0]
-        if True: hists_EleDen['zjet_sr']   = anaplot.GetPassEventBkgHistos('lepPt_lepW_index'       ,'FFTool_forsyst_ltt_EleDen','zjet',options.file,normalize=options.normalize,rebin=rebin_e)[0]
-        if do_z: hists_EleDen['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepleadZ_index'   ,'FFTool_forsyst_tlt_EleDen','zjet',options.file,normalize=options.normalize,rebin=rebin_e)[0])
-        if do_z: hists_EleDen['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepsubleadZ_index','FFTool_forsyst_ttl_EleDen','zjet',options.file,normalize=options.normalize,rebin=rebin_e)[0])
+        hists_EleNum['zjet_sr']   = anaplot.GetPassEventBkgHistos('lepPt_antilep0_index'   ,'FFTool_forsyst_%s_ttt_EleNum'%(z_w),'zjet',*e_options)[0]
+        if True: hists_EleDen['zjet_sr']   = anaplot.GetPassEventBkgHistos('lepPt_lepW_index'       ,'FFTool_forsyst_ltt_EleDen','zjet',*e_options)[0]
+        if do_z: hists_EleDen['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepleadZ_index'   ,'FFTool_forsyst_tlt_EleDen','zjet',*e_options)[0])
+        if do_z: hists_EleDen['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepsubleadZ_index','FFTool_forsyst_ttl_EleDen','zjet',*e_options)[0])
 
-        hists_EleNum['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_antilep0_index'   ,'FFTool_forsyst_%s_ttt_EleNum'%(z_w),'zgam',options.file,normalize=options.normalize,rebin=rebin_e)[0])
-        if True: hists_EleDen['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepW_index'       ,'FFTool_forsyst_ltt_EleDen','zgam',options.file,normalize=options.normalize,rebin=rebin_e)[0])
-        if do_z: hists_EleDen['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepleadZ_index'   ,'FFTool_forsyst_tlt_EleDen','zgam',options.file,normalize=options.normalize,rebin=rebin_e)[0])
-        if do_z: hists_EleDen['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepsubleadZ_index','FFTool_forsyst_ttl_EleDen','zgam',options.file,normalize=options.normalize,rebin=rebin_e)[0])
+        hists_EleNum['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_antilep0_index'   ,'FFTool_forsyst_%s_ttt_EleNum'%(z_w),'zgam',*e_options)[0])
+        if True: hists_EleDen['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepW_index'       ,'FFTool_forsyst_ltt_EleDen','zgam',*e_options)[0])
+        if do_z: hists_EleDen['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepleadZ_index'   ,'FFTool_forsyst_tlt_EleDen','zgam',*e_options)[0])
+        if do_z: hists_EleDen['zjet_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepsubleadZ_index','FFTool_forsyst_ttl_EleDen','zgam',*e_options)[0])
 
         # now for ttbar
-        hists_MuNum ['ttbar_sr']   = anaplot.GetPassEventBkgHistos('lepPt_antilep0_index'   ,'FFTool_forsyst_%s_ttt_MuNum'%(z_w) ,'ttbar',options.file,normalize=options.normalize,rebin=rebin_mu)[0]
-        if True: hists_MuDen ['ttbar_sr']   = anaplot.GetPassEventBkgHistos('lepPt_lepW_index'       ,'FFTool_forsyst_ltt_MuDen','ttbar',options.file,normalize=options.normalize,rebin=rebin_mu)[0]
-        if do_z: hists_MuDen ['ttbar_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepleadZ_index'   ,'FFTool_forsyst_tlt_MuDen','ttbar',options.file,normalize=options.normalize,rebin=rebin_mu)[0])
-        if do_z: hists_MuDen ['ttbar_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepsubleadZ_index','FFTool_forsyst_ttl_MuDen','ttbar',options.file,normalize=options.normalize,rebin=rebin_mu)[0])
+        hists_MuNum ['ttbar_sr']   = anaplot.GetPassEventBkgHistos('lepPt_antilep0_index'   ,'FFTool_forsyst_%s_ttt_MuNum'%(z_w) ,'ttbar',*mu_options)[0]
+        if True: hists_MuDen ['ttbar_sr']   = anaplot.GetPassEventBkgHistos('lepPt_lepW_index'       ,'FFTool_forsyst_ltt_MuDen','ttbar',*mu_options)[0]
+        if do_z: hists_MuDen ['ttbar_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepleadZ_index'   ,'FFTool_forsyst_tlt_MuDen','ttbar',*mu_options)[0])
+        if do_z: hists_MuDen ['ttbar_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepsubleadZ_index','FFTool_forsyst_ttl_MuDen','ttbar',*mu_options)[0])
 
-        hists_EleNum['ttbar_sr']   = anaplot.GetPassEventBkgHistos('lepPt_antilep0_index'   ,'FFTool_forsyst_%s_ttt_EleNum'%(z_w),'ttbar',options.file,normalize=options.normalize,rebin=rebin_e)[0]
-        if True: hists_EleDen['ttbar_sr']   = anaplot.GetPassEventBkgHistos('lepPt_lepW_index'       ,'FFTool_forsyst_ltt_EleDen','ttbar',options.file,normalize=options.normalize,rebin=rebin_e)[0]
-        if do_z: hists_EleDen['ttbar_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepleadZ_index'   ,'FFTool_forsyst_tlt_EleDen','ttbar',options.file,normalize=options.normalize,rebin=rebin_e)[0])
-        if do_z: hists_EleDen['ttbar_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepsubleadZ_index','FFTool_forsyst_ttl_EleDen','ttbar',options.file,normalize=options.normalize,rebin=rebin_e)[0])
+        hists_EleNum['ttbar_sr']   = anaplot.GetPassEventBkgHistos('lepPt_antilep0_index'   ,'FFTool_forsyst_%s_ttt_EleNum'%(z_w),'ttbar',*e_options)[0]
+        if True: hists_EleDen['ttbar_sr']   = anaplot.GetPassEventBkgHistos('lepPt_lepW_index'       ,'FFTool_forsyst_ltt_EleDen','ttbar',*e_options)[0]
+        if do_z: hists_EleDen['ttbar_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepleadZ_index'   ,'FFTool_forsyst_tlt_EleDen','ttbar',*e_options)[0])
+        if do_z: hists_EleDen['ttbar_sr'].Add(anaplot.GetPassEventBkgHistos('lepPt_lepsubleadZ_index','FFTool_forsyst_ttl_EleDen','ttbar',*e_options)[0])
 
         hists_MuNum ['zjet_sr'].SetName('zjet_sr');hists_MuNum ['zjet_sr'].SetTitle('zjet+z#gamma SR FF');
         hists_EleNum['zjet_sr'].SetName('zjet_sr');hists_EleNum['zjet_sr'].SetTitle('zjet+z#gamma SR FF');
