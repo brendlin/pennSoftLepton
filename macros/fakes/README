@@ -38,6 +38,8 @@
 ## - ttbarextrapolationsyst.py (ignore for now)
 ## - ttbarsr.py (ignore for now)
 
+
+
 ## Running the cutflow:
 # The cutflow is the WZ signal selection. Note that some cuts are applied at the
 # ntuple level; only the remaining cuts are applied here. This conf file uses
@@ -50,6 +52,8 @@ cd CheckSR
 hadd -f all.root hist*.root
 cp $ROOTCOREBIN/../pennSoftLepton/macros/ExamplePlotTreesConfig.py .
 plot.py -f all.root --config ExamplePlotTreesConfig.py -p wz,data -k FFTool_ttt_allNum
+
+
 
 ## Calculating the Fake Factor in the region MTW < 30, MET < 40 
 # The Fake Factors are derived using a Z+jet-enriched region with MTW<30 GeV and MET<40 GeV.
@@ -102,6 +106,8 @@ hadd -f FakeFactors_wid.root wid_official_elec/FakeFactors.root wid_official_muo
 
 # This is the end of the prescription to obtain Z+jet fake factors.
 
+
+
 ## Getting the ttbar ZCR Scale Factor
 # For this we use the z_ttvalid instance. This procedure is used to obtain the scale factors used to
 # normalize ttbar in the ZCR.
@@ -117,6 +123,8 @@ cp $ROOTCOREBIN/../pennSoftLepton/macros/ExamplePlotTreesConfig.py .
 plot.py -f all.root --config ExamplePlotTreesConfig.py -p qqww,ttv,singletop,zz,wz,tw,ttbar,zjet,zgam,data -k FFTool_z_ttvalid_ltt_euuDen
 plot.py -f all.root --config ExamplePlotTreesConfig.py -p qqww,ttv,singletop,zz,wz,tw,ttbar,zjet,zgam,data -k FFTool_z_ttvalid_ltt_ueeDen
 plot.py -f all.root --config ExamplePlotTreesConfig.py -p qqww,ttv,singletop,zz,wz,tw,ttbar,zjet,zgam,data -k FFTool_z_ttvalid_ltt_allDen --save
+
+
 
 ## Getting the Z+jet estimate (the ZCR result multiplied by the fake factor)
 # Here we take the fake factor root file from the previous steps, and use it to get the Z+jet estimate
@@ -134,12 +142,17 @@ plotdatadriven.py -f all.root
 ln -s ../../UserIntput_ZCR.py .
 plot.py -f all.root --config UserInput_ZCR.py -p qqww,vvv,tother,ttv,tz,singletop,tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,zjetdd -k FFTool_z_data_ltt_allNum
 
-# For obtaining the systematic uncertainties:
+
+
+# For obtaining the Z+jet systematic uncertainties:
+## JOEY: I need to clean this up a bit / make it more user-friendly. Will do this after September 5.
+
 cd Denominator;
 ntupleJob.py --config FakeFactorZjet.conf --bkgs qqww,vvv,tother,ttv,tz,singletop,tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --instances FFTool_z_data_ltt,FFTool_z_data_tlt,FFTool_z_data_ttl --out ZCR_Systematics --systematics
 cd ZCR_Systematics
 plotdatadriven.py -f all.root
-# ^ need to clean this up a bit / make it more user-friendly
+
+
 
 ## Making/Plotting ZCR Validation Plots
 # The above was used to obtain the Z+jet estimate. The following can also be used to make additional
@@ -165,12 +178,12 @@ plot.py -f all.root --config UserInput_ZCR.py -p ttv,zz,wz,tw,ttbar,zjet,zgam,da
 plot.py -f all.root --config UserInput_ZCR.py -p ttv,zz,wz,tw,ttbar,zjet,zgam,data -k FFTool_z_valid_ttl_uuuDen --save
 
 
+
 ## Making/Plotting TTBAR SR SCALE FACTOR
 # The ttbar estimate is estimated using a control region exactly the same as the signal region (three
 # tight leptons), except that a DFOS pair is requested instead of a SFOS pair. This is the procedure
 # to make that selection.
 
-# Edit FakeFactorZjet.conf
 cd Numerator
 ntupleJob.py --config FakeFactorZjet.conf --bkgs qqww,vvv,tother,ttv,tz,singletop,tw,ttbar,wz,zgam,zjee,zjmm,zjtt,zz,data --out TtbarCRptSR --instances FFTool_ttcr_ttt
 cd TtbarCRptSR
@@ -181,11 +194,12 @@ plot.py -f all.root --config UserInput_ttbarSR.py -p vvv,ttv,zz,wz,qqww,tw,ttbar
 plot.py -f all.root --config UserInput_ttbarSR.py -p vvv,ttv,zz,wz,qqww,tw,ttbar,zjet,zgam,data -k FFTool_ttcr_ttt_ueeNum --save
 plot.py -f all.root --config UserInput_ttbarSR.py -p vvv,ttv,zz,wz,qqww,tw,ttbar,zjet,zgam,data -k FFTool_ttcr_ttt_AllNum --save
 
-## Getting TTBAR SR RESULT
-## Getting TTBAR SR RESULT
-## Getting TTBAR SR RESULT
-## PLEASE DEAR GOD WHEN DOING SYSTEMATICS NAME YOUR FOLDERS wp_* and wm_*!!!!!!!
-## Joey, ask me to clarify what I mean by that.
+
+
+## Getting the TTBAR SR RESULT
+# We plot ttbar MC in the SR, multiplied by the scale factor obtained above.
+# PLEASE DEAR GOD WHEN DOING SYSTEMATICS NAME YOUR FOLDERS wp_* and wm_* !!!!!!!
+# Joey, ask me to clarify what I mean by that.
 
 cd Numerator
 ntupleJob.py --config FakeFactorZjet.conf --bkgs ttbar,tw,qqww --out TtbarSR       --instances FFTool_ttt
@@ -208,44 +222,19 @@ cd wm_TtbarSR/ && hadd -f all.root hist*.root && cd ../
 cd wm_TtbarSR_Ufake/ && hadd -f all.root hist*.root && cd ../
 cd wm_TtbarSR_Efake/ && hadd -f all.root hist*.root && cd ../
 
-## SYSTEMATICS TREATMENT
-## SYSTEMATICS TREATMENT
-## SYSTEMATICS TREATMENT
+
+
+## Z+JET FAKE FACTOR COMPOSITION SYSTEMATICS
+# Joey I need to explain this better:
 # check the hacks in the tool. Specifically the tests in the SR FF to see that the fake lepton is indeed fake. (Look for FFTool_forsyst_Xid_ttt mentions.)
 # for the ZID you need to lower the W lepton pt to 15 GeV (from 20 GeV)
-# Joey ask me what I mean by this stuff.
 
+** procedure is missing **
 
-## DISTRIBUTIONS FOR EMMANUEL/JOANA
-## DISTRIBUTIONS FOR EMMANUEL/JOANA
-## DISTRIBUTIONS FOR EMMANUEL/JOANA
-
-ntupleJob.py --config FakeFactorZjet.conf --bkgs qqww,tw,ttbar,wz,zz,data --instances FFTool_z_data_ltt,FFTool_z_data_tlt,FFTool_z_data_ttl --out ZCR_EmmanuelBinning
-ntupleJob.py --config FakeFactorZjet.conf --bkgs qqww,tw,ttbar,wz,zz,data --instances FFTool_z_data_ltt,FFTool_z_data_tlt,FFTool_z_data_ttl --out ZCR_EmmanuelBinning_wplus --wplus
-ntupleJob.py --config FakeFactorZjet.conf --bkgs qqww,tw,ttbar,wz,zz,data --instances FFTool_z_data_ltt,FFTool_z_data_tlt,FFTool_z_data_ttl --out ZCR_EmmanuelBinning_wminus --wminus
-
-
-ntupleJob.py --config FakeFactorZjet.conf --bkgs ttbar,tw,qqww --out TtbarSR_EmmanuelBinning --instances FFTool_ttt
-ntupleJob.py --config FakeFactorZjet.conf --bkgs ttbar,tw,qqww --out TtbarSR_EmmanuelBinning_wplus --instances FFTool_ttt --wplus
-ntupleJob.py --config FakeFactorZjet.conf --bkgs ttbar,tw,qqww --out TtbarSR_EmmanuelBinning_wminus --instances FFTool_ttt --wminus
-             
-mkdir -p FakesPlotsAll && cd FakesPlotsAll
-hadd -f all.root ../Denominator/ZCR_EmmanuelBinning/hist*.root ../Numerator/TtbarSR_EmmanuelBinning/hist*.root
-fakedistributions.py
-cd -
-mkdir -p FakesPlotsWplus && cd FakesPlotsWplus
-hadd -f all.root ../Denominator/ZCR_EmmanuelBinning_wplus/hist*.root ../Numerator/TtbarSR_EmmanuelBinning_wplus/hist*.root
-fakedistributions.py
-cd -
-mkdir -p FakesPlotsWminus && cd FakesPlotsWminus
-hadd -f all.root ../Denominator/ZCR_EmmanuelBinning_wminus/hist*.root ../Numerator/TtbarSR_EmmanuelBinning_wminus/hist*.root
-fakedistributions.py
-cd -
 
 
 ## TTBAR EXTRAPOLATION SYSTEMATIC - ZCR
-## TTBAR EXTRAPOLATION SYSTEMATIC - ZCR
-## TTBAR EXTRAPOLATION SYSTEMATIC - ZCR
+# Needs a description
 
 cd TtbarExtrapolation;
 run_ttbarsystematics.sh
@@ -255,20 +244,21 @@ ttbarextrapolationsyst.py uee all
 ttbarextrapolationsyst.py uuu all
 
 
-## TTBAR FF Estimate - It's So Easy
-## TTBAR FF Estimate - It's So Easy
-## TTBAR FF Estimate - It's So Easy
+
+## TTBAR FF Estimate 
+# Needs a description
 
 ntupleJob.py --config FakeFactorZjet.conf --bkgs qqww,tw,ttbar --instances FFTool_z_est_tt_ltt,FFTool_z_est_tt_tlt,FFTool_z_est_tt_ttl --out ZCR_SimpleTtbarEst --systematics
 cd ZCR_SimpleTtbarEst
 hadd -f all.root hist*.root
 plotdatadriven.py -f all.root -k z_est_tt --bkgs ttbar
 
+
+
 ## Z MC CLOSURE TEST
-## Z MC CLOSURE TEST
-## Z MC CLOSURE TEST
-##  - Link the MC to the pennSoftLepton/data directory
-##  - for Systematics, turn off the ones you don't need (otherwise it will CRASH!)
+# Needs a description.
+# - Link the MC to the pennSoftLepton/data directory
+# - for Systematics, turn off the ones you don't need (otherwise it will CRASH!)
 
 cd Denominator
 ntupleJob.py --config FakeFactorZjet.conf --bkgs zjee,zjmm,zjtt,zgam --out ZClosure --instances FFTool_z_mccl_ltt,FFTool_z_mccl_tlt,FFTool_z_mccl_ttl --systematics
@@ -286,11 +276,3 @@ plot.py -f all.root -p zjet,zgam --config UserInput_ZCR.py -k FFTool_ttt_ueeNum
 plot.py -f all.root -p zjet,zgam --config UserInput_ZCR.py -k FFTool_ttt_uuuNum
 
 plot.py -f all.root -p zjet,zgam,data --config UserInput_ZCR.py -k FFTool_ttt_allNum --ratio --save
-
-## AUXILIARY PLOTS: Z+JET VR AND TTBAR CR
-## AUXILIARY PLOTS: Z+JET VR AND TTBAR CR
-## AUXILIARY PLOTS: Z+JET VR AND TTBAR CR
-
-plotvr.py -f all.root --config UserInput.py -p vvv,tother,ttv,tz,zz,ttbar,data --save
-plotttbarcr.py -f all.root --config UserInput_ttbarSR.py --save
-
