@@ -22,6 +22,7 @@ def main(options,args) :
     ROOT.gROOT.SetBatch(False)
 
     plotfunc.SetupStyle()
+    ROOT.gStyle.SetPaintTextFormat("4.3f ")
     
     #
     # Draw plots
@@ -31,6 +32,7 @@ def main(options,args) :
     for v in options.variables.split(',') :
         if not v : continue
         xlabel = options.histformat[v][3]
+        n,low,high = options.histformat[v][:3]
 
         bkg_hists = []
         sig_hists = []
@@ -42,16 +44,19 @@ def main(options,args) :
 
         if options.file :
             bkg_processes = options.processes.replace('data','').replace(',,',',')
-            bkg_hists = anaplot.GetPassEventBkgHistos(v,options.key,bkg_processes,options.file,normalize=options.normalize,rebin=rebin)
+            bkg_hists = anaplot.GetPassEventBkgHistos(v,options.key,bkg_processes,options.file,normalize=options.normalize,rebin=rebin,n=n,low=low,high=high)
             anaplot.PrepareBkgHistosForStack(bkg_hists)
             if 'data' in options.processes :
-                data_hist = anaplot.GetPassEventBkgHistos(v,options.key,'data',options.file,normalize=options.normalize,rebin=rebin)[0]
+                data_hist = anaplot.GetPassEventBkgHistos(v,options.key,'data',options.file,normalize=options.normalize,rebin=rebin,n=n,low=low,high=high)[0]
+                #data_hist = anaplot.GetPassEventBkgHistos(v,'FFTool_z_mccl_ltt_allNum','zjetdd',options.file,normalize=options.normalize,rebin=rebin,n=n,low=low,high=high)[0]
+
                 
         if options.susy :
             sig_hists = anaplot.GetPassEventSigHistos(v,options.key,options.susy,normalize=options.normalize,rebin=rebin)
 
 
-        cans.append(anaplot.DrawHistos(v,v,xlabel,bkg_hists,sig_hists,data_hist=data_hist,dostack=options.stack,log=options.log,ratio=options.ratio,fb=options.fb))
+        cans.append(anaplot.DrawHistos('%s_%s'%(options.key,v),v,xlabel,bkg_hists,sig_hists,data_hist=data_hist,dostack=options.stack,log=options.log,ratio=options.ratio,fb=options.fb))
+        taxisfunc.SetXaxisRanges(cans[-1],low,high)
 
     #
     # Cutflow
@@ -71,6 +76,7 @@ def main(options,args) :
     if options.save :
         for can in cans :
             can.Print(can.GetName()+'.pdf')
+            can.Print(can.GetName()+'.eps')
 
     print 'done.'
     return
