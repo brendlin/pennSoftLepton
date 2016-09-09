@@ -4,6 +4,36 @@
 #################################################################################################################
 212272  -----   -----   UNKNOWN_GEN           TEMPORARY_ROBSAMPLE_REPLACE          Sample_ttbar
 
+393004	160.0	100.0	MadGraphPythia8EvtGen SM_C1N1_160_100_1LMET50		   higgsino_1LMET50
+393030	405.0	400.0	MadGraphPythia8EvtGen SM_C1N1_405_400_1LMET50		   higgsino_1LMET50
+393001	110.0	100.0	MadGraphPythia8EvtGen SM_C1N1_110_100_1LMET50		   higgsino_1LMET50
+393034	460.0	400.0	MadGraphPythia8EvtGen SM_C1N1_460_400_1LMET50		   higgsino_1LMET50
+393035	500.0	400.0	MadGraphPythia8EvtGen SM_C1N1_500_400_1LMET50		   higgsino_1LMET50
+393005	200.0	100.0	MadGraphPythia8EvtGen SM_C1N1_200_100_1LMET50		   higgsino_1LMET50
+393017	300.0	200.0	MadGraphPythia8EvtGen SM_C1N1_300_200_1LMET50		   higgsino_1LMET50
+393022	310.0	250.0	MadGraphPythia8EvtGen SM_C1N1_310_250_1LMET50		   higgsino_1LMET50
+393010	210.0	150.0	MadGraphPythia8EvtGen SM_C1N1_210_150_1LMET50		   higgsino_1LMET50
+393020	270.0	250.0	MadGraphPythia8EvtGen SM_C1N1_270_250_1LMET50		   higgsino_1LMET50
+393026	320.0	300.0	MadGraphPythia8EvtGen SM_C1N1_320_300_1LMET50		   higgsino_1LMET50
+393002	120.0	100.0	MadGraphPythia8EvtGen SM_C1N1_120_100_1LMET50		   higgsino_1LMET50
+393031	410.0	400.0	MadGraphPythia8EvtGen SM_C1N1_410_400_1LMET50		   higgsino_1LMET50
+393029	400.0	300.0	MadGraphPythia8EvtGen SM_C1N1_400_300_1LMET50		   higgsino_1LMET50
+393012	205.0	200.0	MadGraphPythia8EvtGen SM_C1N1_205_200_1LMET50		   higgsino_1LMET50
+393014	220.0	200.0	MadGraphPythia8EvtGen SM_C1N1_220_200_1LMET50		   higgsino_1LMET50
+393033	440.0	400.0	MadGraphPythia8EvtGen SM_C1N1_440_400_1LMET50		   higgsino_1LMET50
+393008	170.0	150.0	MadGraphPythia8EvtGen SM_C1N1_170_150_1LMET50		   higgsino_1LMET50
+393016	260.0	200.0	MadGraphPythia8EvtGen SM_C1N1_260_200_1LMET50		   higgsino_1LMET50
+393025	310.0	300.0	MadGraphPythia8EvtGen SM_C1N1_310_300_1LMET50		   higgsino_1LMET50
+393006	155.0	150.0	MadGraphPythia8EvtGen SM_C1N1_155_150_1LMET50		   higgsino_1LMET50
+393015	240.0	200.0	MadGraphPythia8EvtGen SM_C1N1_240_200_1LMET50		   higgsino_1LMET50
+393011	250.0	150.0	MadGraphPythia8EvtGen SM_C1N1_250_150_1LMET50		   higgsino_1LMET50
+393019	260.0	250.0	MadGraphPythia8EvtGen SM_C1N1_260_250_1LMET50		   higgsino_1LMET50
+393000	105.0	100.0	MadGraphPythia8EvtGen SM_C1N1_105_100_1LMET50		   higgsino_1LMET50
+393027	340.0	300.0	MadGraphPythia8EvtGen SM_C1N1_340_300_1LMET50		   higgsino_1LMET50
+393003	140.0	100.0	MadGraphPythia8EvtGen SM_C1N1_140_100_1LMET50		   higgsino_1LMET50
+393007	160.0	150.0	MadGraphPythia8EvtGen SM_C1N1_160_150_1LMET50		   higgsino_1LMET50
+393013	210.0	200.0	MadGraphPythia8EvtGen SM_C1N1_210_200_1LMET50		   higgsino_1LMET50
+
 205048  100.0     0.0   Herwigpp_UEEE4        WZ_C1_100_N1_0                       mc12_c1n2_lepW
 205049  200.0     0.0   Herwigpp_UEEE4        WZ_C1_200_N1_0                       mc12_c1n2_lepW
 205050  300.0     0.0   Herwigpp_UEEE4        WZ_C1_300_N1_0                       mc12_c1n2_lepW
