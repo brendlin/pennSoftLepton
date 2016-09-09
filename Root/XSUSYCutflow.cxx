@@ -275,15 +275,19 @@ void PSL::XSUSYCutflow::loop(void){
   m_EDM->met = new xAOD::MissingETContainer;
   m_EDM->met_aux = new xAOD::MissingETAuxContainer;
   m_EDM->met->setStore(m_EDM->met_aux);
+  
+  const xAOD::Vertex* PrimVx=0;
+  PrimVx = m_SUSYObjDef->GetPrimVtx();
+  if (!PrimVx) return;
+  
   m_SUSYObjDef->GetMET(*m_EDM->met
                        ,m_EDM->jets
                        ,m_EDM->electrons
                        ,m_EDM->muons
                        ,m_EDM->photons
                        ,m_EDM->taus
-                       ).isSuccess();
+                       ,true, true).isSuccess();
 
-  
   xAOD::MissingETContainer::const_iterator metterm = m_EDM->met->find("RefEle");
   if (metterm==m_EDM->met->end()) { MSG_INFO("Error! RefEle missing!"); exit(1); }
   m_evtdef.refEle_tv2 = TVector2((*metterm)->mpx(),(*metterm)->mpy());
