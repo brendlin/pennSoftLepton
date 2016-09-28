@@ -240,6 +240,14 @@ namespace PSL
     ,vLt
     ,vMeff
     ,vMetOverMeff
+    ,vHLT_xe110_mht_xe70_L1XE50
+    ,vHLT_xe110_mht_xe75_L1XE50
+    ,vHLT_xe110_mht_L1XE50
+    ,vHLT_xe130_mht_L1XE50
+    ,vcell_xe70
+    ,vcell_xe75
+    ,vtruthmet_Et
+    ,vtruthmet_phi
     // Add_new_variables_here
     ,N_VARIABLES
   };
@@ -640,6 +648,7 @@ namespace PSL
      ,tHLT_mu18 
      //e-mu trigger
      ,tHLT_e17_lhloose_mu14
+     ,tHLT_xe100_mht_L1XE50
      ,N_TRIGGERS
   };
 
