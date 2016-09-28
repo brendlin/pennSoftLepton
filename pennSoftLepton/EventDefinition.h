@@ -80,6 +80,13 @@ namespace PSL
     bool m_pass_trig_mu; //!
     bool m_pass_trig_match; //!
 
+    bool m_HLT_xe110_mht_xe70_L1XE50; //!
+    bool m_HLT_xe110_mht_xe75_L1XE50; //!
+    bool m_HLT_xe110_mht_L1XE50; //!
+    bool m_HLT_xe130_mht_L1XE50; //! 
+    bool m_cell_xe70; //!
+    bool m_cell_xe75; //!
+
     LeptonChannel::LeptonChannel chan; //!
     LeptonChannel::LeptonChannel chan_antiid; //!
     std::vector<PSL::Particle> leps; //!
@@ -123,6 +130,11 @@ namespace PSL
     double   refGamma_sumet ; //!
     TVector2 softTerm_tv2   ; //!
     double   softTerm_sumet ; //!
+    TVector2 truthmet_tv2   ; //!
+    double   truthmet_sumet ; //!
+
+    double truthmet_Et(void){return truthmet_tlv().Et();};
+    double truthmet_phi(void){return truthmet_tlv().Phi();};
 
     double met_Et (void){return met_tlv().Et() ;};
     double met_phi(void){return met_tlv().Phi();};
@@ -152,6 +164,12 @@ namespace PSL
       mtlv.SetPxPyPzE(met_tv2.X(),met_tv2.Y(),0,met_tv2.Mod());      
       return mtlv;
     }
+
+    TLorentzVector truthmet_tlv(void){
+      TLorentzVector mtlv;
+      mtlv.SetPxPyPzE(truthmet_tv2.X(), truthmet_tv2.Y(),0, truthmet_tv2.Mod());
+      return mtlv;
+    }
     //TLorentzVector met_tlv; //!
 
     void Reset(void){
@@ -164,6 +182,13 @@ namespace PSL
       m_pass_trig_ele = true;
       m_pass_trig_mu = true;
 
+      m_HLT_xe110_mht_xe70_L1XE50 = false;
+      m_HLT_xe110_mht_xe75_L1XE50 = false;
+      m_HLT_xe110_mht_L1XE50 = false;
+      m_HLT_xe130_mht_L1XE50 = false;
+      m_cell_xe70 = false;
+      m_cell_xe75 = false;
+      
       n_baseline_ele = 0;
       n_baseline_mu = 0;
       n_baseline_tau = 0;
@@ -277,6 +302,14 @@ namespace PSL
     int PassTriggerEle(){return m_pass_trig_ele ? 1 : 0;}
     int PassTriggerMu(){return m_pass_trig_mu ? 1 : 0;}
     int PassTriggerMatch(){return m_pass_trig_match ? 1 : 0;}
+    
+    int HLT_xe110_mht_xe70_L1XE50() {return m_HLT_xe110_mht_xe70_L1XE50 ? 1:0;}
+    int HLT_xe110_mht_xe75_L1XE50() {return m_HLT_xe110_mht_xe75_L1XE50? 1:0;}
+    int HLT_xe110_mht_L1XE50() {return m_HLT_xe110_mht_L1XE50? 1:0;}
+    int HLT_xe130_mht_L1XE50() {return m_HLT_xe130_mht_L1XE50? 1:0;}
+    int cell_xe70() {return m_cell_xe70? 1:0;}
+    int cell_xe75() {return m_cell_xe75? 1:0;}
+    
     // transverse masses
 
     double Mt(void){
@@ -737,6 +770,7 @@ namespace PSL
     double GetEventVariable(Variable v);
 
     double met_Et_gev        (void){return met_Et        ()/1000.;};
+    double truthmet_Et_gev   (void){return truthmet_Et   ()/1000.;};
     double met_sumet_gev     (void){return met_sumet       /1000.;};
     double refEle_gev        (void){return refEle        ()/1000.;};
     double refEle_etx_gev    (void){return refEle_etx    ()/1000.;};
