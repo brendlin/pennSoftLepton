@@ -294,7 +294,12 @@ double PSL::xAODWrapper::GetEventVariable(PSL::Variable v){
     }
     else d = -1;
   }
-
+  else if (v == vHLT_xe110_mht_xe70_L1XE50       ) d = m_evtdef->HLT_xe110_mht_xe70_L1XE50();
+  else if (v == vHLT_xe110_mht_xe75_L1XE50       ) d = m_evtdef->HLT_xe110_mht_xe75_L1XE50();
+  else if (v == vHLT_xe110_mht_L1XE50       ) d = m_evtdef->HLT_xe110_mht_L1XE50();
+  else if (v == vHLT_xe130_mht_L1XE50       ) d = m_evtdef->HLT_xe130_mht_L1XE50();
+  else if (v == vcell_xe70 ) d = m_evtdef->cell_xe70();
+  else if (v == vcell_xe75 ) d = m_evtdef->cell_xe75();
   // Add_new_variables_here to GetEventVariable
   //
   // If it is a object-definition-dependent variable, get it from the EventDefinition.
@@ -984,7 +989,7 @@ EL::StatusCode PSL::xAODWrapper::execute()
   if (photons_aux  ){ delete photons_aux  ; photons_aux   = 0 ;}
   if (met          ){ delete met          ; met           = 0 ;}
   if (met_aux      ){ delete met_aux      ; met_aux       = 0 ;}
-
+ 
   if (!m_event->retrieve(eventInfo,"EventInfo" ).isSuccess()) {
     MSG_INFO("Error! EventInfo not found!");
     return EL::StatusCode::FAILURE;
@@ -1064,6 +1069,14 @@ EL::StatusCode PSL::xAODWrapper::execute()
   }
 
   if (IsMC()) {
+    if (!m_event->retrieve(truthmet,"MET_Truth").isSuccess()) {
+      MSG_INFO("Error! MET_Truth not found!");
+      return EL::StatusCode::FAILURE;
+    }
+    /*else{
+      double MET = (*truthmet->find("NonInt"))->sumet();
+      MSG_WARNING("MET is " << MET);
+      }*/
     if (!m_event->retrieve(truthjets,"AntiKt4TruthJets").isSuccess()) {
       MSG_INFO("Error! AntiKt4TruthJets not found!");
       return EL::StatusCode::FAILURE;
@@ -1436,6 +1449,11 @@ bool PSL::xAODWrapper::PassTrigger(Trigger2015 t){ // trigger enum
 }
 
 void PSL::xAODWrapper::FillTriggerBits(void){
+  /*const Trig::ChainGroup* cg_dbg = m_trigDecTool->getChainGroup("HLT_.*");
+  for(auto trig : cg_dbg->getListOfTriggers()){
+    MSG_INFO(trig);
+  }
+  MSG_ABORT("finished printing all triggers!");*/
   if (m_evtdef->trigger_bits_set) return;
   m_evtdef->trigger_bits.reset();
   if (!m_trigDecTool) {
@@ -2047,10 +2065,12 @@ PSL::Particle PSL::xAODWrapper::GetZZAntiIDParticle(void) {
   // load the truth muon and electron containers
   if (!m_event->retrieve(truthelectrons,"TruthElectrons").isSuccess()) {
     MSG_INFO("Error! TruthElectrons not found!");
+    return PSL::Particle();
     exit(1);
   }  
   if (!m_event->retrieve(truthmuons,"TruthMuons").isSuccess()) {
     MSG_INFO("Error! TruthMuons not found!");
+    return PSL::Particle();
     exit(1);
   }
 

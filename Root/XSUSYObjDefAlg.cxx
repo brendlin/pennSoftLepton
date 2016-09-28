@@ -138,6 +138,7 @@ void PSL::XSUSYObjDefAlg::loop(void){
   if (m_EDM->photons_aux  ){ delete m_EDM->photons_aux  ; m_EDM->photons_aux   = 0 ;}
   if (m_EDM->met          ){ delete m_EDM->met          ; m_EDM->met           = 0 ;}
   if (m_EDM->met_aux      ){ delete m_EDM->met_aux      ; m_EDM->met_aux       = 0 ;}
+  if (m_EDM->truthmet     ){ delete m_EDM->truthmet     ; m_EDM->truthmet      = 0 ;}
 
   // baseline jets (before overlap) automatically have a 20 GeV hard-coded cut.
   // ptmin and eta_max are enforced on the bad_jet bit.

@@ -169,6 +169,14 @@ const std::vector<PSL::evtvar_props> PSL::GetAllEvtVariableProperties(){
     p.push_back(evtvar_props(vLt                        ,"Lt"                        ,"L_{T} [GeV]"               , 500,    0,  500));
     p.push_back(evtvar_props(vMeff                      ,"Meff"                      ,"M_{eff}^{L} [GeV]"         , 500,    0,  500));
     p.push_back(evtvar_props(vMetOverMeff               ,"MetOverMeff"               ,"E_{T}^{miss}/M_{eff}"      , 100,    0,  5));
+    p.push_back(evtvar_props(vHLT_xe110_mht_xe70_L1XE50 ,"HLT_xe110_mht_xe70_L1XE50" ,"HLT_xe110_mht_xe70_L1XE50" ,   2,    0,    2,true));
+    p.push_back(evtvar_props(vHLT_xe110_mht_xe75_L1XE50 ,"HLT_xe110_mht_xe75_L1XE50" ,"HLT_xe110_mht_xe75_L1XE50" ,   2,    0,    2,true));
+    p.push_back(evtvar_props(vHLT_xe110_mht_L1XE50       ,"HLT_xe110_mht_L1XE50"      ,"HLT_xe110_mht_L1XE50"      ,   2,    0,    2,true));
+    p.push_back(evtvar_props(vHLT_xe130_mht_L1XE50      ,"HLT_xe130_mht_L1XE50"      ,"HLT_xe130_mht_L1XE50"      ,   2,    0,    2,true));
+    p.push_back(evtvar_props(vcell_xe70                 ,"cell_xe70"                 ,"cell_xe70"                 ,   2,    0,    2,true));
+    p.push_back(evtvar_props(vcell_xe75                 ,"cell_xe75"                 ,"cell_xe75"                 ,   2,    0,    2,true));
+    p.push_back(evtvar_props(vtruthmet_Et               ,"truthmet_Et"               ,"E_{T}^{miss} [GeV]"   , 400,    0,  400));
+    p.push_back(evtvar_props(vtruthmet_phi              ,"truthmet_phi"              ,"met_phi"              , 100,   -4,    4));
   } // Add_new_variables_here
   return p;
 }
@@ -847,7 +855,8 @@ const std::vector<std::pair<PSL::Trigger2015,std::string> > PSL::GetTriggerPrope
     trig_pairs.push_back(std::make_pair(tHLT_mu14                                   ,"HLT_mu14"                 ));
     trig_pairs.push_back(std::make_pair(tHLT_mu18                                   ,"HLT_mu18"                 ));
     trig_pairs.push_back(std::make_pair(tHLT_e17_lhloose_mu14                       ,"HLT_e17_lhloose_mu14"     ));
-  }
+    trig_pairs.push_back(std::make_pair(tHLT_xe100_mht_L1XE50                       ,"HLT_xe100_mht_L1XE50"     ));
+   }
   return trig_pairs;
 }
 

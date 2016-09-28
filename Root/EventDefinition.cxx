@@ -62,6 +62,12 @@ void PSL::EventDefinition::FillVectorOfFunctions(){
   m_VariableFunctions_int[vPassTriggerMatch       ] = &EventDefinition::PassTriggerMatch     ;
   m_VariableFunctions_int[vnBaselineJet           ] = &EventDefinition::NBaselineJet         ;
   m_VariableFunctions_int[vnSignalJet             ] = &EventDefinition::NSignalJet           ;
+  m_VariableFunctions_int[vHLT_xe110_mht_xe70_L1XE50]=&EventDefinition::HLT_xe110_mht_xe70_L1XE50;
+  m_VariableFunctions_int[vHLT_xe110_mht_xe75_L1XE50]=&EventDefinition::HLT_xe110_mht_xe75_L1XE50;
+  m_VariableFunctions_int[vHLT_xe110_mht_L1XE50   ]=&EventDefinition::HLT_xe110_mht_L1XE50   ;
+  m_VariableFunctions_int[vHLT_xe130_mht_L1XE50   ]=&EventDefinition::HLT_xe130_mht_L1XE50   ;
+  m_VariableFunctions_int[vcell_xe70              ]=&EventDefinition::cell_xe70              ;
+  m_VariableFunctions_int[vcell_xe75              ]=&EventDefinition::cell_xe75              ;
 
   // now the double functions
   m_VariableFunctions_double[vmet_Et          ] = &EventDefinition::met_Et_gev               ;
@@ -133,6 +139,8 @@ void PSL::EventDefinition::FillVectorOfFunctions(){
   m_VariableFunctions_double[vLt              ] = &EventDefinition::Lt_gev                   ;
   m_VariableFunctions_double[vMeff            ] = &EventDefinition::Meff_gev                 ;
   m_VariableFunctions_double[vMetOverMeff     ] = &EventDefinition::MetOverMeff              ;
+  m_VariableFunctions_double[vtruthmet_Et     ] = &EventDefinition::truthmet_Et_gev          ;
+  m_VariableFunctions_double[vtruthmet_phi    ] = &EventDefinition::truthmet_phi             ;
   return;
 }
 
@@ -181,6 +189,8 @@ void PSL::EventDefinition::MakeCopy(EventDefinition& evtdef) const{
   evtdef.refGamma_sumet = refGamma_sumet;
   evtdef.softTerm_tv2   = softTerm_tv2  ;
   evtdef.softTerm_sumet = softTerm_sumet;
+  evtdef.truthmet_tv2        = truthmet_tv2       ;
+  evtdef.truthmet_sumet      = truthmet_sumet     ;
 }
 
 //

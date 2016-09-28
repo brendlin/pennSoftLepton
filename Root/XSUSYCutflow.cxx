@@ -23,6 +23,8 @@
 #include "ElectronPhotonFourMomentumCorrection/EgammaCalibrationAndSmearingTool.h"
 #include "IsolationCorrections/IsolationCorrectionTool.h"
 
+#include "xAODTrigMissingET/TrigMissingETContainer.h"
+
 // this is needed to distribute the algorithm to the workers
 ClassImp(PSL::XSUSYCutflow)
   
@@ -211,10 +213,10 @@ void PSL::XSUSYCutflow::loop(void){
   ////////////////////////////////////////////////////////////////////////
 
   // --- select baseline electrons & muons. We will do OR next
-  /* for(unsigned int i=0;i<m_EDM->electrons->size();++i){
+  for(unsigned int i=0;i<m_EDM->electrons->size();++i){
     const xAOD::Electron* ele = m_EDM->getElectron(i);
     // initialize decorators to false
-    //dec_baseline(*ele) = false;
+    //dec_baseline(*ele) = true;
     dec_zlep(*ele) = false;
     dec_wlep(*ele) = false;
     // baseline
@@ -222,12 +224,12 @@ void PSL::XSUSYCutflow::loop(void){
     //dec_baseline(*ele) = true;
     //    dec_passOR(*ele) = dec_baseline(*ele);
     //(void)m_SUSYObjDef->IsSignalElectron(*ele,2.47,5,0.5);
-    }*/
+    }
 
   for(unsigned int i=0;i<m_EDM->muons->size();++i){
     const xAOD::Muon* muon = m_EDM->getMuon(i);
     // initialize decorators to false
-    //dec_baseline(*muon) = false;
+    //dec_baseline(*muon) = true;
     dec_zlep(*muon) = false;
     dec_wlep(*muon) = false;
     // baseline
@@ -325,6 +327,12 @@ void PSL::XSUSYCutflow::loop(void){
   m_evtdef.met_tv2 = TVector2((*metterm)->mpx(),(*metterm)->mpy());
   m_evtdef.met_sumet = (*metterm)->sumet();
 
+  if (m_EDM->truthmet->size() != 0){
+  metterm = m_EDM->truthmet->find("NonInt");
+  if (metterm==m_EDM->truthmet->end()) { MSG_INFO("Error! NonInt missing!"); exit(1); }
+  m_evtdef.truthmet_tv2 = TVector2((*metterm)->mpx(),(*metterm)->mpy());
+  m_evtdef.truthmet_sumet = (*metterm)->sumet();
+  }
   // for(unsigned int i=0;i<m_EDM->met->size();++i){
   //   xAOD::MissingET* metterm = m_EDM->met->at(i);
   //   MSG_INFO(Form("MET term %s px = %f py = %f",
@@ -549,6 +557,32 @@ p.is_Bjet = m_SUSYObjDef->IsBJet(*jet,true,jet_bjet_mv1);*/
   if (!m_SUSYObjDef->isData()) theYear =  m_SUSYObjDef->treatAsYear();
  
   m_EDM->FillTriggerBits();
+
+  //Quick study
+  const xAOD::TrigMissingETContainer* cellMet(0);
+  if (!(m_EDM->m_event->retrieve(cellMet, "HLT_xAOD__TrigMissingETContainer_TrigEFMissingET")).isSuccess()) MSG_ERROR("Cannot open cell_met");
+  if (cellMet->size() == 0)return;
+  //MSG_ERROR("cell met not empty!");
+  float cell_x = cellMet->front()->ex() * 0.001;
+  float cell_y = cellMet->front()->ey() * 0.001;
+  float cell_met = sqrt(cell_x*cell_x + cell_y*cell_y);
+  
+  const xAOD::TrigMissingETContainer* mhtMet(0);
+  if(!(m_EDM->m_event->retrieve(mhtMet, "HLT_xAOD__TrigMissingETContainer_TrigEFMissingET_mht")).isSuccess()) MSG_ERROR("cannot open mht met");
+  if (mhtMet->size() == 0) return;
+  //MSG_ERROR("mht met not empty");
+  float mht_x = mhtMet->front()->ex() * 0.001;
+  float mht_y = mhtMet->front()->ey() * 0.001;
+  float mht_met = sqrt(mht_x*mht_x + mht_y*mht_y);
+
+  //MSG_ERROR("trig pass: " << m_SUSYObjDef->IsTrigPassed("HLT_xe100_mht_L1XE50")<< " " << m_EDM->PassTrigger(PSL::tHLT_xe110_mht_L1XE50) <<  " cell met: " << cell_met << " mht met: " << mht_met);
+  m_evtdef.m_HLT_xe110_mht_xe70_L1XE50 = m_SUSYObjDef->IsTrigPassed("HLT_xe100_mht_L1XE50") && mht_met > 110 && cell_met > 70;
+  m_evtdef.m_HLT_xe110_mht_xe75_L1XE50 = m_SUSYObjDef->IsTrigPassed("HLT_xe100_mht_L1XE50") && mht_met > 110 && cell_met > 75;
+  m_evtdef.m_HLT_xe110_mht_L1XE50 = m_SUSYObjDef->IsTrigPassed("HLT_xe100_mht_L1XE50") && mht_met > 110;
+  m_evtdef.m_HLT_xe130_mht_L1XE50 = m_SUSYObjDef->IsTrigPassed("HLT_xe100_mht_L1XE50") && mht_met > 130;
+  m_evtdef.m_cell_xe70 = cell_met > 70;
+  m_evtdef.m_cell_xe75 = cell_met > 75;
+
   if(theYear==2015){
     if(m_EDM->PassTrigger(PSL::tHLT_2e12_lhloose_L12EM10VH)|| m_EDM->PassTrigger(PSL::tHLT_e17_lhloose_mu14)){// || m_EDM->PassTrigger(PSL::tHLT_2e17_lhloose)){  
       m_evtdef.m_pass_trig_ele = true;
